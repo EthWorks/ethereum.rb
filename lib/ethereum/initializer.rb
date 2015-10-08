@@ -17,5 +17,11 @@ module Ethereum
       end
     end
 
+    def build_all
+      @contracts.each do |contract|
+        contract.build(@client)
+      end
+    end
+
   end
 end
