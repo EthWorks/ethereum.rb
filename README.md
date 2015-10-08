@@ -14,6 +14,8 @@ A simple library for Ethereum.
 
 We currently support UNIX/Linux environments and Windows IPC support on the roadmap.
 
+You will need to have a properly working Ruby installation.  We recommend [RVM](http://rvm.io/)
+
 To use this library you will need to have a running Ethereum node with IPC support enabled (default).  We currently support [Go-Ethereum client](https://github.com/ethereum/go-ethereum)
 
 ## Installation
