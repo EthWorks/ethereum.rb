@@ -1,6 +1,4 @@
 require 'socket'
-require 'active_support'
-require 'active_support/core_ext'
 module Ethereum
   class IpcClient
     attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions
