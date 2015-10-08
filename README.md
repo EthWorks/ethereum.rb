@@ -60,6 +60,18 @@ simple_name_registry_instance.transact_and_wait_register("0x5b6cb65d40b0e27fab87
 simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
 ```
 
+### Run contracts using a different address
+
+```ruby
+simple_name_registry_instance.as("0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1")
+```
+
+### Point contract instance to a previously deployed contract
+
+```ruby
+simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
+```
+
 ## Roadmap
 
 * Add JSON RPC Client support
