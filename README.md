@@ -69,6 +69,12 @@ simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e
 * Add more examples
 * API documentation
 
+## Support 
+
+Please join our Gitter chat room or open a new issue in this repository
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/DigixGlobal/ethereum-ruby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
