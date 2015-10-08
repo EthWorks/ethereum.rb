@@ -72,7 +72,7 @@ module Ethereum
 
         functions.each do |fun|
           if fun.constant
-            define_method "call_#{fun.name.downcase}".to_sym do |*args|
+            define_method "call_#{fun.name.underscore}".to_sym do |*args|
               formatter = Ethereum::Formatter.new
               arg_types = fun.inputs.collect(&:type)
               #out_types = fun.outputs.collect(&:type)
@@ -86,7 +86,7 @@ module Ethereum
               return {result: connection.call({to: self.address, from: self.sender, data: payload.join()})["result"].gsub(/^0x/,'').scan(/.{64}/)}
             end
           else
-            define_method "transact_#{fun.name.downcase}".to_sym do |*args|
+            define_method "transact_#{fun.name.underscore}".to_sym do |*args|
               formatter = Ethereum::Formatter.new
               arg_types = fun.inputs.collect(&:type)
               connection = self.connection
@@ -98,6 +98,12 @@ module Ethereum
               end
               txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
               return Ethereum::Transaction.new(txid, self.connection)
+            end
+            define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|
+              function_name = "transact_#{fun.name.underscore}".to_sym
+              tx = self.send(function_name, *args)
+              tx.wait_for_miner
+              return tx
             end
           end
         end
