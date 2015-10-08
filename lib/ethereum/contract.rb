@@ -96,7 +96,8 @@ module Ethereum
               arg_types.zip(args).each do |arg|
                 payload << formatter.to_payload(arg)
               end
-              return connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
+              txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
+              return Ethereum::Transaction.new(txid, self.connection)
             end
           end
         end
