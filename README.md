@@ -28,12 +28,14 @@ Or install it yourself as:
 
 ## Basic Usage
 
-**IPC Client Connection**
+### IPC Client Connection
+
 ```ruby
 client = Ethereum::IpcClient.new("#{ENV['HOME']}/.ethereum_testnet/geth.ipc")
 ```
 
-**Load a Solidity contract and deploy**
+### Solidity contract compilation and deployment
+
 ```ruby
 init = Ethereum::Initializer.new("#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol", client)
 init.build_all
@@ -41,7 +43,7 @@ simple_name_registry_instance = SimpleNameRegistry.new
 simple_name_registry_instance.deploy_and_wait
 ```
 
-**Solidity Functions**
+### Transacting and Calling Solidity Functions
 
 Solidity functions are exposed as transact_<underscore_function_name>(params) (or transact_and_wait_<underscore_function_name>(params))  and call_<underscore_function_name>(params) e.g.:
 
@@ -66,7 +68,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/DigixGlobal/ethereum-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
-
 
 ## License
 
