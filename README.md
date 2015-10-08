@@ -83,6 +83,8 @@ simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 ## Roadmap
 
 * Add JSON RPC Client support
+* Add support for creating and sending of raw transactions
+* Offline account creation
 * Add Windows IPC Client (named pipes)
 * Solidity constant function output should be properly formatted according to the ouput data type
 * Unit testing and contract testing examples
