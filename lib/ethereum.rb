@@ -9,4 +9,6 @@ module Ethereum
   require 'ethereum/function_input'
   require 'ethereum/function_output'
   require 'ethereum/formatter'
+  require 'ethereum/transaction'
+  require 'ethereum/deployment'
 end

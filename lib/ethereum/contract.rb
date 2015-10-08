@@ -24,34 +24,20 @@ module Ethereum
         end
 
         define_method :deploy do
-          deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: code})
-          self.instance_variable_set("@deployment_transaction", deploytx["result"])
+          deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: code})["result"]
+          self.instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
-
-        define_method :mined? do
-          mined = connection.get_transaction_by_hash(self.deployment_transaction)["result"]["blockNumber"].present? rescue nil
-          return mined.present?
+        define_method :deployment do
+          self.instance_variable_get("@deployment")
         end
 
-        define_method :code_deployed? do
-          begin
-            address = connection.get_transaction_receipt(self.deployment_transaction)["result"]["contractAddress"] 
-            self.instance_variable_set("@address", address)
-            return connection.get_code(address)["result"]  != "0x"
-          rescue 
-            return false
-          end
-        end
-        
-        define_method :deployed? do
-          self.code_deployed? 
+        define_method :deploy_and_wait do |time = 60.seconds|
+          self.deploy
+          self.deployment.wait_for_deployment(time)
+          self.instance_variable_set("@address", self.deployment.contract_address)
         end
 
-        define_method :deployment_transaction do
-          self.instance_variable_get("@deployment_transaction")
-        end
-      
         define_method :at do |addr|
           self.instance_variable_set("@address", addr) 
         end
@@ -97,7 +83,7 @@ module Ethereum
               arg_types.zip(args).each do |arg|
                 payload << formatter.to_payload(arg)
               end
-              return connection.call({to: self.address, from: self.sender, data: payload.join()})
+              return {result: connection.call({to: self.address, from: self.sender, data: payload.join()})["result"].gsub(/^0x/,'').scan(/.{64}/)}
             end
           else
             define_method "transact_#{fun.name.downcase}".to_sym do |*args|
