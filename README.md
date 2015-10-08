@@ -61,11 +61,34 @@ simple_name_registry_instance.deploy_and_wait
 
 ### Transacting and Calling Solidity Functions
 
-Solidity functions are exposed as transact_<underscore_function_name>(params) (or transact_and_wait_<underscore_function_name>(params))  and call_<underscore_function_name>(params) e.g.:
+Solidity functions are exposed using the following conventions: 
+
+```
+transact_[function_name](params) 
+transact_and_wait_[function_name](params)  
+call_[function_name](params)
+```
+
+**Example Contract in Solidity**
+```
+contract SimpleNameRegistry {
+
+  mapping (address => bool) public myMapping;
+
+  function register(address _a, bytes32 _b) {
+  }
+
+  function getSomeValue(address _x) public constant returns(bool b, address b) {
+  }
+
+}
+```
 
 ```ruby
 simple_name_registry_instance.transact_and_wait_register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
 simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
+simple_name_registry_instance.call_get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
+simple_name_registry_instance.call_my_mapping("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
 ```
 
 ### Run contracts using a different address
