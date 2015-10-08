@@ -5,8 +5,8 @@ module Ethereum
   class IpcClient
     attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions
 
-    def initialize
-      @ipcpath = "/Users/aeufemio/.ethereum_testnet/geth.ipc"
+    def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc")
+      @ipcpath = ipcpath
       @id = 1
       @batch = []
     end

@@ -1,12 +1,12 @@
 module Ethereum
 
   class Initializer
-    attr_accessor :contracts, :file
+    attr_accessor :contracts, :file, :client
 
-    def initialize(file)
+    def initialize(file, client = Ethereum::IpcClient.new)
       @file = File.read(file)
-      client = IpcClient.new
-      sol_output = client.compile_solidity(@file)
+      @client = client
+      sol_output = @client.compile_solidity(@file)
       contracts = sol_output["result"].keys
       @contracts = []
       contracts.each do |contract|
