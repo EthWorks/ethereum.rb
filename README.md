@@ -1,8 +1,14 @@
-# Ethereum
+# Ethereum library for Ruby
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ethereum`. To experiment with that code, run `bin/console` for an interactive prompt.
+A simple library for Ethereum.
 
-TODO: Delete this and the text above, and describe your gem
+## Features
+
+* IPC Client support
+* Compile and deploy Solidity contracts
+* Expose deployed contracts as Ruby classes
+* Test solidity contracts with a Ruby testing framework of your choice
+* Call and wait for the result of Solidity function calls.
 
 ## Installation
 
@@ -20,9 +26,36 @@ Or install it yourself as:
 
     $ gem install ethereum
 
-## Usage
+## Basic Usage
 
-TODO: Write usage instructions here
+**IPC Client Connection**
+```ruby
+client = Ethereum::IpcClient.new("#{ENV['HOME']}/.ethereum_testnet/geth.ipc")
+```
+
+**Load a Solidity contract and deploy**
+```ruby
+init = Ethereum::Initializer.new("#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol", client)
+init.build_all
+simple_name_registry_instance = SimpleNameRegistry.new
+simple_name_registry_instance.deploy_and_wait
+```
+
+**Solidity Functions**
+
+Solidity functions are exposed as transact_<underscore_function_name>(params) (or transact_and_wait_<underscore_function_name>(params))  and call_<underscore_function_name>(params) e.g.:
+
+```ruby
+simple_name_registry_instance.transact_and_wait_register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
+simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
+```
+
+## Roadmap
+
+* Solidity constant function output should be properly formatted according to the ouput data type
+* API documentation
+* Unit testing and contract testing examples
+* Add more examples
 
 ## Development
 
@@ -32,7 +65,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ethereum. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/DigixGlobal/ethereum-ruby. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 
 ## License
