@@ -4,11 +4,17 @@ A simple library for Ethereum.
 
 ## Features
 
-* IPC Client support
+* IPC Client with batch calls support
 * Compile and deploy Solidity contracts
 * Expose deployed contracts as Ruby classes
 * Test solidity contracts with a Ruby testing framework of your choice
 * Call and wait for the result of Solidity function calls.
+
+## Requirements
+
+We currently support UNIX/Linux environments and Windows IPC support on the roadmap.
+
+To use this library you will need to have a running Ethereum node with IPC support enabled (default).  We currently support [Go-Ethereum client](https://github.com/ethereum/go-ethereum)
 
 ## Installation
 
@@ -54,10 +60,12 @@ simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e
 
 ## Roadmap
 
+* Add JSON RPC Client support
+* Add Windows IPC Client (named pipes)
 * Solidity constant function output should be properly formatted according to the ouput data type
-* API documentation
 * Unit testing and contract testing examples
 * Add more examples
+* API documentation
 
 ## Development
 
