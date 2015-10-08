@@ -1,4 +1,6 @@
 require "ethereum/version"
+require 'active_support'
+require 'active_support/core_ext'
 require 'pry'
 
 module Ethereum
