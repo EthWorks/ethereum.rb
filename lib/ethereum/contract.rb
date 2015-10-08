@@ -16,10 +16,40 @@ module Ethereum
     def build(connection)
       class_name = @name
       functions = @functions
+      code = @code
       class_methods = Class.new do
 
         define_method "connection".to_sym do
-          return connection
+          connection
+        end
+
+        define_method :deploy do
+          deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: code})
+          self.instance_variable_set("@deployment_transaction", deploytx["result"])
+        end
+
+
+        define_method :mined? do
+          mined = connection.get_transaction_by_hash(self.deployment_transaction)["result"]["blockNumber"].present? rescue nil
+          return mined.present?
+        end
+
+        define_method :code_deployed? do
+          begin
+            address = connection.get_transaction_receipt(self.deployment_transaction)["result"]["contractAddress"] 
+            self.instance_variable_set("@address", address)
+            return connection.get_code(address)["result"]  != "0x"
+          rescue 
+            return false
+          end
+        end
+        
+        define_method :deployed? do
+          self.code_deployed? 
+        end
+
+        define_method :deployment_transaction do
+          self.instance_variable_get("@deployment_transaction")
         end
       
         define_method :at do |addr|
