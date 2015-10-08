@@ -6,7 +6,7 @@ require 'ethereum/version'
 Gem::Specification.new do |spec|
   spec.name          = "ethereum"
   spec.version       = Ethereum::VERSION
-  spec.authors       = ["Digix"]
+  spec.authors       = ["DigixGlobal Pte Ltd (https://dgx.io)"]
   spec.email         = ["ace@dgx.io"]
 
   spec.summary       = %q{Ethereum libraries for Ruby}
@@ -32,5 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "pry"
   spec.add_dependency "activesupport"
-  spec.add_dependency "digest-sha3"
+  spec.add_dependency "sha3-pure-ruby"
 end
