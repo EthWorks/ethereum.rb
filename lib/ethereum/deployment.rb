@@ -31,10 +31,10 @@ module Ethereum
       @valid_deployment = @connection.get_code(@contract_address)["result"] != "0x"
     end
 
-    def wait_for_deployment(timeout = 60.seconds)
+    def wait_for_deployment(timeout = 1500.seconds)
       start_time = Time.now
       while self.deployed? == false
-        raise Timeout::Error if ((Time.now - start_time) > timeout) 
+        raise "Transaction #{@id} timed out." if ((Time.now - start_time) > timeout) 
         sleep 5 
         return true if self.deployed? 
       end

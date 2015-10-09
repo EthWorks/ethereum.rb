@@ -14,7 +14,7 @@ module Ethereum
       @mined = @connection.get_transaction_by_hash(@id)["result"]["blockNumber"].present?
     end
 
-    def wait_for_miner(timeout = 60.seconds)
+    def wait_for_miner(timeout = 1500.seconds)
       start_time = Time.now
       while self.mined? == false
         raise Timeout::Error if ((Time.now - start_time) > timeout)
