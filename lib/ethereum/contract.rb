@@ -71,41 +71,42 @@ module Ethereum
         end
 
         functions.each do |fun|
-          if fun.constant
-            define_method "call_#{fun.name.underscore}".to_sym do |*args|
-              formatter = Ethereum::Formatter.new
-              arg_types = fun.inputs.collect(&:type)
-              #out_types = fun.outputs.collect(&:type)
-              connection = self.connection
-              return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-              payload = []
-              payload << fun.signature
-              arg_types.zip(args).each do |arg|
-                payload << formatter.to_payload(arg)
-              end
-              return {result: connection.call({to: self.address, from: self.sender, data: payload.join()})["result"].gsub(/^0x/,'').scan(/.{64}/)}
+
+          define_method "call_#{fun.name.underscore}".to_sym do |*args|
+            formatter = Ethereum::Formatter.new
+            arg_types = fun.inputs.collect(&:type)
+            #out_types = fun.outputs.collect(&:type)
+            connection = self.connection
+            return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
+            payload = []
+            payload << fun.signature
+            arg_types.zip(args).each do |arg|
+              payload << formatter.to_payload(arg)
             end
-          else
-            define_method "transact_#{fun.name.underscore}".to_sym do |*args|
-              formatter = Ethereum::Formatter.new
-              arg_types = fun.inputs.collect(&:type)
-              connection = self.connection
-              return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-              payload = []
-              payload << fun.signature
-              arg_types.zip(args).each do |arg|
-                payload << formatter.to_payload(arg)
-              end
-              txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
-              return Ethereum::Transaction.new(txid, self.connection)
-            end
-            define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|
-              function_name = "transact_#{fun.name.underscore}".to_sym
-              tx = self.send(function_name, *args)
-              tx.wait_for_miner
-              return tx
-            end
+            return {result: connection.call({to: self.address, from: self.sender, data: payload.join()})["result"].gsub(/^0x/,'').scan(/.{64}/)}
           end
+
+          define_method "transact_#{fun.name.underscore}".to_sym do |*args|
+            formatter = Ethereum::Formatter.new
+            arg_types = fun.inputs.collect(&:type)
+            connection = self.connection
+            return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
+            payload = []
+            payload << fun.signature
+            arg_types.zip(args).each do |arg|
+              payload << formatter.to_payload(arg)
+            end
+            txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
+            return Ethereum::Transaction.new(txid, self.connection)
+          end
+
+          define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|
+            function_name = "transact_#{fun.name.underscore}".to_sym
+            tx = self.send(function_name, *args)
+            tx.wait_for_miner
+            return tx
+          end
+
         end
       end
       Object.const_set(class_name, class_methods)
