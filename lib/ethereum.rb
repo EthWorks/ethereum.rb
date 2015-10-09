@@ -1,6 +1,7 @@
 require "ethereum/version"
 require 'active_support'
 require 'active_support/core_ext'
+require 'sha3-pure-ruby'
 
 module Ethereum
   require 'ethereum/ipc_client'
