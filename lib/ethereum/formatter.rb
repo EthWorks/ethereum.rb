@@ -54,11 +54,11 @@ module Ethereum
     end
 
     def uint_to_payload(uint)
-      self.to_twos_complement(uint)
+      self.to_twos_complement(uint).rjust(64, '0')
     end
 
     def int_to_payload(int)
-      self.to_twos_complement(uint)
+      self.to_twos_complement(uint).rjust(64, '0')
     end
 
     def bytes_to_payload(bytes)

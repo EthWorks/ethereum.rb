@@ -83,7 +83,9 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            return {result: connection.call({to: self.address, from: self.sender, data: payload.join()})["result"].gsub(/^0x/,'').scan(/.{64}/)}
+            raw_result = connection.call({to: self.address, from: self.sender, data: payload.join()})["result"]
+            formatted_result = raw_result.gsub(/^0x/,'').scan(/.{64}/)
+            return {data: payload.join(), raw: raw_result, formatted: formatted_result}
           end
 
           define_method "transact_#{fun.name.underscore}".to_sym do |*args|
@@ -97,7 +99,7 @@ module Ethereum
               payload << formatter.to_payload(arg)
             end
             txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
-            return Ethereum::Transaction.new(txid, self.connection)
+            return Ethereum::Transaction.new(txid, self.connection, payload.join())
           end
 
           define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|

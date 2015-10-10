@@ -20,7 +20,7 @@ describe Ethereum do
   end
 
   it "should test a call_(Ethereum Contract Function)" do
-    expect(@simple_name_registry.call_three_params[:result].class).to be(Array)
+    expect(@simple_name_registry.call_three_params.keys.should =~ [:data, :raw, :formatted])
   end
 
 
