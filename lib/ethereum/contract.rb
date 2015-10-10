@@ -99,7 +99,7 @@ module Ethereum
               payload << formatter.to_payload(arg)
             end
             txid = connection.send_transaction({to: self.address, from: self.sender, data: payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
-            return Ethereum::Transaction.new(txid, self.connection, payload.join())
+            return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 
           define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|

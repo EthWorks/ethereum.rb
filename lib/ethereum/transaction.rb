@@ -1,13 +1,14 @@
 module Ethereum
 
   class Transaction
-    attr_accessor :id, :mined, :connection, :input
+    attr_accessor :id, :mined, :connection, :input, :input_parameters
 
-    def initialize(id, connection, data)
+    def initialize(id, connection, data, input_parameters = [])
       @mined = false
       @connection = connection
       @id = id
       @input = data
+      @input_parameters = input_parameters
     end
 
     def mined?
