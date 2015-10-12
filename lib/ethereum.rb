@@ -4,7 +4,9 @@ require 'active_support/core_ext'
 require 'sha3-pure-ruby'
 
 module Ethereum
+  require 'ethereum/client'
   require 'ethereum/ipc_client'
+  require 'ethereum/http_client'
   require 'ethereum/initializer'
   require 'ethereum/contract'
   require 'ethereum/function'
