@@ -120,7 +120,7 @@ module Ethereum
 
         end
       end
-      Object.const_set(class_name, class_methods)
+      Object.const_set(class_name, class_methods) unless Object.const_defined?(class_name)
     end
 
   end
