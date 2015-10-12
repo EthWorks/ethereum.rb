@@ -7,8 +7,10 @@ describe Ethereum do
     @formatter = Ethereum::Formatter.new
   end
 
-  it 'has a version number' do
-    expect(Ethereum::VERSION).not_to be nil
+  describe "Ethereum Version" do
+    it 'has a version number' do
+      expect(Ethereum::VERSION).to eq("0.4.0")
+    end
   end
   
   describe "Deployment" do
@@ -19,7 +21,7 @@ describe Ethereum do
       @coinbase = @contract_with_params.connection.coinbase["result"]
       @contract_with_params.deploy_and_wait(60, @coinbase)
       expect(true).to be(true)
-      address = @formatter.to_address(@contract_with_params.call_get_setting[:raw])
+      address = @contract_with_params.call_get_setting[:formatted][0]
       expect(address).to eq(@coinbase)
     end
 
@@ -43,7 +45,7 @@ describe Ethereum do
     it "should test a call_(Ethereum Contract Function)" do
       expect(@simple_name_registry.call_three_params.keys).to match_array([:data, :raw, :formatted])
       expect(@simple_name_registry.call_three_params[:raw]).to eq("0x000000000000000000000000385acafdb80b71ae001f1dbd0d65e62ec2fff0556368616e67652074686520776f726c64000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007a69")
-      expect(@simple_name_registry.call_three_params[:formatted]).to match_array(["000000000000000000000000385acafdb80b71ae001f1dbd0d65e62ec2fff055", "6368616e67652074686520776f726c6400000000000000000000000000000000", "0000000000000000000000000000000000000000000000000000000000007a69"])
+      expect(@simple_name_registry.call_three_params[:formatted]).to match_array(["0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "change the world", 31337])
       expect(@simple_name_registry.call_three_params[:data]).to eq("a817ccac")
     end
 

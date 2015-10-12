@@ -74,6 +74,11 @@ module Ethereum
       self.send(converter, args[1]) 
     end
 
+    def from_payload(args)
+      converter = "output_to_#{self.get_base_type(args[0])}".to_sym
+      self.send(converter, args[1])
+    end
+
     def output_to_address(bytes)
       self.to_address(bytes)
     end

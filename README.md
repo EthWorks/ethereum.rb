@@ -110,11 +110,10 @@ simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 * Add Windows IPC Client (named pipes)
 * Add support for creating and sending of raw transactions
 * Offline account creation
-* Solidity constant function output should be properly formatted according to the ouput data type
-* Unit testing and contract testing examples.  Use [web3.js](https://github.com/ethereum/web3.js) tests as a baseline.
 * ContractTransaction class
 * Add more examples
 * API documentation
+* Unit testing and contract testing examples.  Use [web3.js](https://github.com/ethereum/web3.js) tests as a baseline.
 
 ## Support 
 
