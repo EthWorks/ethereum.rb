@@ -8,6 +8,7 @@ A simple library for Ethereum.
 * IPC Client with batch calls support
 * HTTP Client with batch calls support
 * Compile and deploy Solidity contracts
+* Deploy contracts with constructor parameters.
 * Expose deployed contracts as Ruby classes
 * Test solidity contracts with a Ruby testing framework of your choice
 * Call and wait for the result of Solidity function calls.
