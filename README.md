@@ -57,7 +57,7 @@ client = Ethereum::IpcClient.new("#{ENV['HOME']}/.ethereum_testnet/geth.ipc")
 init = Ethereum::Initializer.new("#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol", client)
 init.build_all
 simple_name_registry_instance = SimpleNameRegistry.new
-simple_name_registry_instance.deploy_and_wait
+simple_name_registry_instance.deploy_and_wait(60)
 ```
 
 ### Transacting and Calling Solidity Functions

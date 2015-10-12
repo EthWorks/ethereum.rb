@@ -1,13 +1,15 @@
+require 'pry'
 module Ethereum
   class Contract
 
-    attr_accessor :code, :name, :functions, :abi
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs
 
     def initialize(name, code, abi)
       @name = name
       @code = code
       @abi = abi
       @functions = []
+      @constructor_inputs = @abi.detect {|x| x["type"] == "constructor"}["inputs"]
       @abi.select {|x| x["type"] == "function" }.each do |abifun|
         @functions << Ethereum::Function.new(abifun) 
       end
@@ -16,6 +18,7 @@ module Ethereum
     def build(connection)
       class_name = @name
       functions = @functions
+      constructor_inputs = @constructor_inputs
       code = @code
       class_methods = Class.new do
 
@@ -23,7 +26,13 @@ module Ethereum
           connection
         end
 
-        define_method :deploy do
+        define_method :deploy do |*params|
+          raise "Missing constructor parameter" and return if params.length != constructor_inputs.length
+          formatter = Ethereum::Formatter.new
+          constructor_inputs.each_index do |i|
+            args = [constructor_inputs[i]["type"], params[i]]
+            code << formatter.to_payload(args)
+          end
           deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: code})["result"]
           self.instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
@@ -32,8 +41,8 @@ module Ethereum
           self.instance_variable_get("@deployment")
         end
 
-        define_method :deploy_and_wait do |time = 60.seconds|
-          self.deploy
+        define_method :deploy_and_wait do |time = 60.seconds, *params|
+          self.deploy(*params)
           self.deployment.wait_for_deployment(time)
           self.instance_variable_set("@address", self.deployment.contract_address)
         end
