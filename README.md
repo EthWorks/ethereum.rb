@@ -6,6 +6,7 @@ A simple library for Ethereum.
 
 * Pure Ruby implementation
 * IPC Client with batch calls support
+* HTTP Client with batch calls support
 * Compile and deploy Solidity contracts
 * Expose deployed contracts as Ruby classes
 * Test solidity contracts with a Ruby testing framework of your choice
@@ -105,7 +106,6 @@ simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 
 ## Roadmap
 
-* Add JSON RPC Client support
 * Add Windows IPC Client (named pipes)
 * Add support for creating and sending of raw transactions
 * Offline account creation
