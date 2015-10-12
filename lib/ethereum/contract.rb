@@ -1,4 +1,3 @@
-require 'pry'
 module Ethereum
   class Contract
 
