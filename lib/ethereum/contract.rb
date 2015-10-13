@@ -8,7 +8,7 @@ module Ethereum
       @code = code
       @abi = abi
       @functions = []
-      @constructor_inputs = @abi.detect {|x| x["type"] == "constructor"}["inputs"]
+      @constructor_inputs = @abi.detect {|x| x["type"] == "constructor"}["inputs"] rescue nil
       @abi.select {|x| x["type"] == "function" }.each do |abifun|
         @functions << Ethereum::Function.new(abifun) 
       end
