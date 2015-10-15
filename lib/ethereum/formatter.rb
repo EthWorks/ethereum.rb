@@ -1,6 +1,34 @@
 module Ethereum
   class Formatter
 
+    UNITS = {
+      wei:        1,
+      kwei:       1000,
+      ada:        1000,
+      femtoether: 1000,
+      mwei:       1000000,
+      babbage:    1000000,
+      picoether:  1000000,
+      gwei:       1000000000,
+      shannon:    1000000000,
+      nanoether:  1000000000,
+      nano:       1000000000,
+      szabo:      1000000000000,
+      microether: 1000000000000,
+      micro:      1000000000000,
+      finney:     1000000000000000,
+      milliether: 1000000000000000,
+      milli:      1000000000000000,
+      ether:      1000000000000000000,
+      eth:        1000000000000000000,
+      kether:     1000000000000000000000,
+      grand:      1000000000000000000000,
+      einstein:   1000000000000000000000,
+      mether:     1000000000000000000000000,
+      gether:     1000000000000000000000000000,
+      tether:     1000000000000000000000000000000
+    }
+
     def from_bool(boolval)
       boolval ? "1" : "0"
     end
@@ -27,6 +55,14 @@ module Ethereum
 
     def to_address(hexstring)
       "0x" + hexstring[-40..-1]
+    end
+
+    def to_wei(amount, unit)
+      BigDecimal.new(UNITS[unit.to_sym] * amount, 18).to_s.to_i
+    end
+
+    def from_wei(amount, unit)
+      (BigDecimal.new(amount, 18) / BigDecimal.new(UNITS[unit.to_sym], 18)).to_s
     end
 
     def from_address(address)
