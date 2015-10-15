@@ -1,4 +1,3 @@
-require 'pry'
 require 'net/http'
 module Ethereum
   class HttpClient < Client
