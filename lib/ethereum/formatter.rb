@@ -95,6 +95,10 @@ module Ethereum
       self.to_int(bytes)
     end
 
+    def output_to_bool(bytes)
+      return bytes == "0x0000000000000000000000000000000000000000000000000000000000000001"
+    end
+
     def to_output(args)
       converter = "output_to_#{self.get_base_type(args[0])}".to_sym
       self.send(converter, args[1])
