@@ -96,7 +96,7 @@ module Ethereum
     end
 
     def output_to_bool(bytes)
-      self.to_bool(bytes.gsub(/^0x/,'')
+      self.to_bool(bytes.gsub(/^0x/,''))
     end
 
     def to_output(args)
