@@ -96,7 +96,7 @@ module Ethereum
     end
 
     def output_to_bool(bytes)
-      return bytes == "0x0000000000000000000000000000000000000000000000000000000000000001"
+      self.to_bool(bytes.gsub(/^0x/,'')
     end
 
     def to_output(args)
