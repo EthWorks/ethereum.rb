@@ -29,6 +29,13 @@ module Ethereum
       tether:     1000000000000000000000000000000
     }
 
+    def valid_address?(address_string)
+      address = address_string.gsub(/^0x/,'')
+      return false if address == "0000000000000000000000000000000000000000"
+      return false if address.length != 40
+      return !(address.match(/[0-9a-fA-F]+/).nil?)
+    end
+
     def from_bool(boolval)
       boolval ? "1" : "0"
     end
