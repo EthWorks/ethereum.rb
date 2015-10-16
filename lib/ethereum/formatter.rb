@@ -58,11 +58,11 @@ module Ethereum
     end
 
     def to_wei(amount, unit)
-      BigDecimal.new(UNITS[unit.to_sym] * amount, 18).to_s.to_i
+      BigDecimal.new(UNITS[unit.to_sym] * amount, 16).to_s.to_i
     end
 
     def from_wei(amount, unit)
-      (BigDecimal.new(amount, 18) / BigDecimal.new(UNITS[unit.to_sym], 18)).to_s
+      (BigDecimal.new(amount, 16) / BigDecimal.new(UNITS[unit.to_sym], 16)).to_s
     end
 
     def from_address(address)
