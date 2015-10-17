@@ -9,7 +9,7 @@ describe Ethereum do
 
   describe "Ethereum Version" do
     it 'has a version number' do
-      expect(Ethereum::VERSION).to eq("0.4.40")
+      expect(Ethereum::VERSION).to eq("0.4.41")
     end
   end
   
@@ -20,8 +20,7 @@ describe Ethereum do
       @contract_with_params = ContractWithParams.new
       @coinbase = @contract_with_params.connection.coinbase["result"]
       @contract_with_params.deploy_and_wait(60, @coinbase)
-      expect(true).to be(true)
-      address = @contract_with_params.call_get_setting[:formatted][0]
+      address = @contract_with_params.call_get_setting__[:formatted][0]
       expect(address).to eq(@coinbase)
     end
 

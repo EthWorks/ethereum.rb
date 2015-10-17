@@ -12,5 +12,9 @@ contract ContractWithParams {
     return setting;
   }
 
+  function getSetting(uint _a) public constant returns (uint) {
+    return _a * _a;
+  }
+
 }
 

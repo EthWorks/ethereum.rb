@@ -84,10 +84,12 @@ module Ethereum
 
         functions.each do |fun|
 
-          define_method "call_#{fun.name.underscore}".to_sym do |*args|
+          fun_count = functions.select {|x| x.name == fun.name }.count
+          derived_function_name = (fun_count == 1) ? "#{fun.name.underscore}" : "#{fun.name.underscore}__#{fun.inputs.collect {|x| x.type}.join("__")}"
+
+          define_method "call_#{derived_function_name}".to_sym do |*args|
             formatter = Ethereum::Formatter.new
             arg_types = fun.inputs.collect(&:type)
-            #out_types = fun.outputs.collect(&:type)
             connection = self.connection
             return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
             payload = []
@@ -101,7 +103,7 @@ module Ethereum
             return {data: payload.join(), raw: raw_result, formatted: output}
           end
 
-          define_method "transact_#{fun.name.underscore}".to_sym do |*args|
+          define_method "transact_#{derived_function_name}".to_sym do |*args|
             formatter = Ethereum::Formatter.new
             arg_types = fun.inputs.collect(&:type)
             connection = self.connection
@@ -115,8 +117,8 @@ module Ethereum
             return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 
-          define_method "transact_and_wait_#{fun.name.underscore}".to_sym do |*args|
-            function_name = "transact_#{fun.name.underscore}".to_sym
+          define_method "transact_and_wait_#{derived_function_name}".to_sym do |*args|
+            function_name = "transact_#{derived_function_name}".to_sym
             tx = self.send(function_name, *args)
             tx.wait_for_miner
             return tx

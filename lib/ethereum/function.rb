@@ -1,7 +1,7 @@
 module Ethereum
   class Function
 
-    attr_accessor :name, :inputs, :outputs, :signature, :constant, :function_string
+    attr_accessor :name, :inputs, :outputs, :signature, :constant, :function_string 
 
     def initialize(data)
       @name = data["name"]
