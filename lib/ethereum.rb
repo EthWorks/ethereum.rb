@@ -16,4 +16,6 @@ module Ethereum
   require 'ethereum/formatter'
   require 'ethereum/transaction'
   require 'ethereum/deployment'
+  require 'ethereum/project_initializer'
+  require 'ethereum/contract_initializer'
 end

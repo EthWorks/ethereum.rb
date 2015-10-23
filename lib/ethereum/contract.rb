@@ -30,11 +30,13 @@ module Ethereum
         end
 
         define_method :deploy do |*params|
-          raise "Missing constructor parameter" and return if params.length != constructor_inputs.length
           formatter = Ethereum::Formatter.new
-          constructor_inputs.each_index do |i|
-            args = [constructor_inputs[i]["type"], params[i]]
-            code << formatter.to_payload(args)
+          if constructor_inputs.present?
+            raise "Missing constructor parameter" and return if params.length != constructor_inputs.length
+            constructor_inputs.each_index do |i|
+              args = [constructor_inputs[i]["type"], params[i]]
+              code << formatter.to_payload(args)
+            end
           end
           deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: code})["result"]
           self.instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
