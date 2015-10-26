@@ -42,7 +42,6 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          puts "sending payload #{deploy_payload}"
           deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: deploy_payload})["result"]
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
