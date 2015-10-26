@@ -23,6 +23,7 @@ module Ethereum
       functions = @functions
       constructor_inputs = @constructor_inputs
       code = @code
+
       class_methods = Class.new do
 
         define_method "connection".to_sym do
@@ -88,8 +89,16 @@ module Ethereum
 
           fun_count = functions.select {|x| x.name == fun.name }.count
           derived_function_name = (fun_count == 1) ? "#{fun.name.underscore}" : "#{fun.name.underscore}__#{fun.inputs.collect {|x| x.type}.join("__")}"
+          call_function_name = "call_#{derived_function_name}".to_sym
+          call_function_name_alias = "c_#{derived_function_name}".to_sym
+          call_raw_function_name = "call_raw_#{derived_function_name}".to_sym
+          call_raw_function_name_alias = "cr_#{derived_function_name}".to_sym
+          transact_function_name = "transact_#{derived_function_name}".to_sym
+          transact_function_name_alias = "t_#{derived_function_name}".to_sym
+          transact_and_wait_function_name = "transact_and_wait_#{derived_function_name}".to_sym
+          transact_and_wait_function_name_alias = "tw_#{derived_function_name}".to_sym
 
-          define_method "call_#{derived_function_name}".to_sym do |*args|
+          define_method call_raw_function_name do |*args|
             formatter = Ethereum::Formatter.new
             arg_types = fun.inputs.collect(&:type)
             connection = self.connection
@@ -102,15 +111,20 @@ module Ethereum
             raw_result = connection.call({to: self.address, from: self.sender, data: payload.join()})["result"]
             formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
             output = formatted_result.collect {|x| formatter.from_payload(x) }
-            #return {data: payload.join(), raw: raw_result, formatted: output}
-            if output.length == 0
+            return {data: payload.join(), raw: raw_result, formatted: output}
+          end
+
+          define_method call_function_name do |*args|
+            data = self.send(call_raw_function_name, *args)
+            output = data[:formatted]
+            if output.length == 1 
               return output[0]
             else 
               return output
             end
           end
 
-          define_method "transact_#{derived_function_name}".to_sym do |*args|
+          define_method transact_function_name do |*args|
             formatter = Ethereum::Formatter.new
             arg_types = fun.inputs.collect(&:type)
             connection = self.connection
@@ -124,12 +138,17 @@ module Ethereum
             return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 
-          define_method "transact_and_wait_#{derived_function_name}".to_sym do |*args|
+          define_method transact_and_wait_function_name do |*args|
             function_name = "transact_#{derived_function_name}".to_sym
             tx = self.send(function_name, *args)
             tx.wait_for_miner
             return tx
           end
+
+          alias_method call_function_name_alias, call_function_name
+          alias_method call_raw_function_name_alias, call_raw_function_name
+          alias_method transact_function_name_alias, transact_function_name
+          alias_method transact_and_wait_function_name_alias, transact_and_wait_function_name
 
         end
       end
