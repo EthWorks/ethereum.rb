@@ -102,7 +102,8 @@ module Ethereum
             raw_result = connection.call({to: self.address, from: self.sender, data: payload.join()})["result"]
             formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
             output = formatted_result.collect {|x| formatter.from_payload(x) }
-            return {data: payload.join(), raw: raw_result, formatted: output}
+            #return {data: payload.join(), raw: raw_result, formatted: output}
+            return output
           end
 
           define_method "transact_#{derived_function_name}".to_sym do |*args|

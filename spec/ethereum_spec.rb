@@ -9,7 +9,7 @@ describe Ethereum do
 
   describe "Ethereum Version" do
     it 'has a version number' do
-      expect(Ethereum::VERSION).to eq("0.4.50")
+      expect(Ethereum::VERSION).to eq("0.4.60")
     end
   end
   
