@@ -103,7 +103,11 @@ module Ethereum
             formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
             output = formatted_result.collect {|x| formatter.from_payload(x) }
             #return {data: payload.join(), raw: raw_result, formatted: output}
-            return output
+            if output.length == 0
+              return output[0]
+            else 
+              return output
+            end
           end
 
           define_method "transact_#{derived_function_name}".to_sym do |*args|

@@ -1,3 +1,3 @@
 module Ethereum
-  VERSION = "0.4.60"
+  VERSION = "0.4.61"
 end
