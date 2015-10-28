@@ -1,12 +1,14 @@
 contract DigixConfiguration {
   
   address owner;
-  Directory.Data admins;
+  Directory.AddressBoolMap admins;
 
-  mapping (bytes32 => address) configurations;
+  mapping (bytes32 => address) configaddr;
+  mapping (bytes32 => uint256) configint;
 
   event SetOwner(address indexed owner, address indexed by);
-  event AddConfigEntry(bytes32 indexed key, address indexed val, address indexed by);
+  event AddConfigEntryA(bytes32 indexed key, address indexed val, address indexed by);
+  event AddConfigEntryI(bytes32 indexed key, uint256 indexed val, address indexed by);
   event RegisterAdmin(address indexed account, address indexed by);
   event UnregisterAdmin(address indexed account, address indexed by);
 
@@ -27,14 +29,24 @@ contract DigixConfiguration {
     SetOwner(_newowner, msg.sender);
   }
 
-  function addConfigEntry(bytes32 _key, address _val) ifowner {
-    address _oldaddress = configurations[_key];
-    configurations[_key] = _val;
-    AddConfigEntry(_key, _val, msg.sender);
+  function addConfigEntryAddr(bytes32 _key, address _val) ifowner {
+    address _oldaddress = configaddr[_key];
+    configaddr[_key] = _val;
+    AddConfigEntryA(_key, _val, msg.sender);
   }
 
-  function getConfigEntry(bytes32 _key) public constant returns (address) {
-    return configurations[_key];
+  function getConfigEntryAddr(bytes32 _key) public constant returns (address) {
+    return configaddr[_key];
+  }
+
+  function addConfigEntryInt(bytes32 _key, uint256 _val) ifowner {
+    uint256 _oldaddress = configint[_key];
+    configint[_key] = _val;
+    AddConfigEntryI(_key, _val, msg.sender);
+  }
+
+  function getConfigEntryInt(bytes32 _key) public constant returns (uint256) {
+    return configint[_key];
   }
   
   function registerAdmin(address _acct) ifowner {

@@ -1,10 +1,8 @@
-import "contracts/DigixConfiguration.sol";
-import "contracts/Directory.sol";
+import "contracts/GenericRegistry.sol";
 
-contract VendorRegistry {
+contract VendorRegistry is GenericRegistry {
 
-  address config;
-  Directory.Data vendors;
+  Directory.AddressBoolMap vendors;
 
   struct Vendor {
     bytes32 name;
@@ -12,18 +10,8 @@ contract VendorRegistry {
 
   mapping (address => Vendor) vendorNames;
   
-  modifier ifadmin { if(isAdmin(msg.sender)) _ }
-
   function VendorRegistry(address _conf) {
     config = _conf;
-  }
-
-  function isAdmin(address _acct) public returns (bool) {
-    return DigixConfiguration(config).isAdmin(_acct);
-  }
-
-  function getConfigAddress() public returns (address) {
-    return config;
   }
 
   function register(address _acct) ifadmin {

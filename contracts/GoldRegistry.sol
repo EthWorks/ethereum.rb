@@ -1,48 +1,81 @@
 import "contracts/DigixConfiguration.sol";
-import "contracts/Directory.sol";
-import "contracts/VendorRegistry.sol";
-import "contracts/CustodianRegistry.sol";
-import "contracts/AuditorRegistry.sol";
+import "contracts/GenericInterface.sol";
+import "contracts/Gold.sol";
 
-contract GoldRegistry {
+contract GoldRegistry is GenericInterface {
  
   address config;
 
-  Directory.Data active;
+  Directory.AddressBoolMap entries;
+  Directory.AddressAddressMap custodianPending;
+
+  struct Asset {
+    address vendor;
+    address custodian;
+    bytes32 vendorDoc;
+    bytes32 custodianDoc;
+  }
+
+  mapping (address => Directory.AddressBoolMap) vendorAssets;
+  mapping (address => Directory.AddressBoolMap) custodianAssets;
+  mapping (address => Asset) registeredAssets;
 
   function GoldRegistry(address _conf) {
     config = _conf;
   }
 
-  modifier ifvendor { if(isVendor(msg.sender)) _ }
-  modifier ifcustodian { if(isCustodian(msg.sender)) _ }
-  modifier ifauditor { if(isAuditor(msg.sender)) _ }
+  event AddGold(address indexed gold, address indexed vendor);
+  event CustodianAssignment(address indexed gold, address indexed custodian, address indexed vendor);
+  event RemoveGold(address indexed gold, address indexed custodian);
 
-  function vendorRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/vendor");
-  }
-
-  function custodianRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/custodian");
-  }
-  
-  function auditorRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/auditor");
+  function registerGold(address _gold, address _owner, bytes32 _doc) ifvendor {
+    if (!Directory.insert(entries, _gold)) throw;
+    if (!Directory.insert(vendorAssets[msg.sender], _gold)) throw;
+    Asset _asset = registeredAssets[_gold];
+    _asset.vendor = msg.sender;
+    _asset.vendorDoc = _doc;
+    Gold(_gold).register(_owner);
   }
 
-  function isVendor(address _vend) public returns (bool) {
-    return VendorRegistry(vendorRegistry()).isVendor(_vend);
-  }
-  
-  function isCustodian(address _cust) public returns (bool) {
-    return CustodianRegistry(custodianRegistry()).isCustodian(_cust);
-  }
-  
-  function isAuditor(address _audt) public returns (bool) {
-    return AuditorRegistry(custodianRegistry()).isAuditor(_audt);
+  function isRegistered(address _gold) public returns (bool) {
+    return Directory.contains(entries, _gold);
   }
 
-  function registerGold(address _gold) {
+  function isVendorOf(address _gold, address _vndr) public returns (bool) {
+    return Directory.contains(vendorAssets[_vndr], _gold);
+  }
+
+  function isCustodianOf(address _gold, address _cstdn) public returns (bool) {
+    return Directory.contains(custodianAssets[_cstdn], _gold);
+  }
+
+  function delegateCustodian(address _gold, address _cstdn) ifvendor {
+    if (isVendorOf(_gold, msg.sender)) {
+      if (!Directory.insert(custodianPending, _gold, _cstdn)) throw;
+      CustodianAssignment(_gold, _cstdn, msg.sender);
+    }
+  }
+
+  function receiveFromVendor(address _gold, bytes32 _doc) ifcustodian {
+    if (Directory.containsAndMatches(custodianPending, _gold, msg.sender)) {
+      if (!Directory.remove(custodianPending, _gold)) throw;
+      if (!Directory.insert(custodianAssets[msg.sender], _gold)) throw; 
+      Asset _asset = registeredAssets[_gold];
+      _asset.custodian = msg.sender;
+      _asset.custodianDoc = _doc;
+      Gold(_gold).activate(); 
+    }
+  }
+
+  function submitAudit(address _gold, bytes32 _doc, bool _passed) ifauditor {
+
+  }
+
+  function requestRedemption(address _gold) ifowner {
+
+  }
+
+  function markRedeemed(address _gold) ifcustodian {
 
   }
 

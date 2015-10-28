@@ -9,10 +9,10 @@ module Ethereum
       @binary = contract["bin"] unless contract.nil?
       @name = contract_name
       @project_initializer = project_initializer
-      matchdata = /_+[a-zA-Z]+_+/.match(@binary)
+      matchdata = @binary.scan(/_+[a-zA-Z]+_+/).uniq
       @needs_linking = matchdata.present?
       if @needs_linking
-        @libraries = matchdata.to_a.collect do |libname|
+        @libraries = matchdata.collect do |libname|
           {name: libname.gsub(/_+/,''), sigil: libname}
         end
       end

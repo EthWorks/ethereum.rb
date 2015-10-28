@@ -1,16 +1,14 @@
-import "contracts/VendorRegistry.sol";
-import "contracts/CustodianRegistry.sol";
-import "contracts/AuditorRegistry.sol";
+import "contracts/GenericInterface.sol";
 
-contract Interface {
+contract Interface is GenericInterface {
 
   address owner;
-  address config;
 
-  Directory.Data employees;
+  Directory.AddressBoolMap employees;
 
   modifier ifowner { if(owner == msg.sender) _ }
   modifier ifemployee { if(isEmployee(msg.sender)) _ }
+  modifier ifemployeeorigin { if(isEmployee(tx.origin)) _ }
 
   function registerEmployee(address _acct) ifowner {
     if (!Directory.insert(employees, _acct))
@@ -24,34 +22,6 @@ contract Interface {
 
   function isEmployee(address _acct) public returns (bool) {
     return Directory.contains(employees, _acct);
-  }
-
-  function goldRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/gold");
-  }
-  
-  function vendorRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/vendor");
-  }
-  
-  function custodianRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/custodian");
-  }
-  
-  function auditorRegistry() public returns (address) {
-    return DigixConfiguration(config).getConfigEntry("registry/auditor");
-  }
-
-  function isCustodian(address _cust) public returns (bool) {
-    return CustodianRegistry(custodianRegistry()).isCustodian(_cust);
-  }
-
-  function isAuditor(address _adtr) public returns (bool) {
-    return AuditorRegistry(auditorRegistry()).isAuditor(_adtr);
-  }
-
-  function isVendor(address _vndr) public returns (bool) {
-    return VendorRegistry(vendorRegistry()).isVendor(_vndr);
   }
 
 }

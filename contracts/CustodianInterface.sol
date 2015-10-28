@@ -1,4 +1,6 @@
 import "contracts/Interface.sol";
+import "contracts/Gold.sol";
+import "contracts/GoldRegistry.sol";
 
 contract CustodianInterface is Interface {
 
@@ -6,11 +8,14 @@ contract CustodianInterface is Interface {
     owner = msg.sender;
     config = _config;
   }
-  
-  function publishReceipt(address _gold, bytes32 _file) ifemployee {
-    
+
+  function receiveFromVendor(address _gold, bytes32 _doc) ifemployee {
+    GoldRegistry(goldRegistry()).receiveFromVendor(_gold, _doc);
   }
 
+  function transferCustodian(address _gold, address _cstdn) ifemployee {
+  }
+  
   function isRedeemable(address _gold) public returns (bool) {
     return true;
   }

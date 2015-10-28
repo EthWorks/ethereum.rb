@@ -1,7 +1,7 @@
 contract AuditorRegistry {
 
   address config;
-  Directory.Data auditors;
+  Directory.AddressBoolMap auditors;
 
   function CustodianRegistry(address _conf) {
     config = _conf;
