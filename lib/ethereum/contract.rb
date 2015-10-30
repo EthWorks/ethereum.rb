@@ -42,7 +42,7 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.send_transaction({from: self.sender, gas: 2000000, gasPrice: 60000000000, data: deploy_payload})["result"]
+          deploytx = connection.send_transaction({from: self.sender, gas: self.gas, gasPrice: self.gas_price, data: deploy_payload})["result"]
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
@@ -85,7 +85,7 @@ module Ethereum
         end
 
         define_method :gas do 
-          instance_variable_get("@gas") || 2000000
+          instance_variable_get("@gas") || 3000000
         end
 
         functions.each do |fun|
