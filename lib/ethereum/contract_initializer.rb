@@ -44,6 +44,11 @@ module Ethereum
       contract.build(connection)
     end
 
+    def generate_javascripts(path)
+      data = {name: @name, abi: @abi, binary: @binary}
+      File.open(File.join(path, "#{@name}.json"), 'w') {|f| f.puts data.to_json}
+    end
+
   end
 
 end
