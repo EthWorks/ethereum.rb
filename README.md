@@ -12,6 +12,7 @@ A simple library for Ethereum.
 * Expose deployed contracts as Ruby classes
 * Test solidity contracts with a Ruby testing framework of your choice
 * Call and wait for the result of Solidity function calls.
+* Contract events 
 
 ## Ruby Compatibility
 

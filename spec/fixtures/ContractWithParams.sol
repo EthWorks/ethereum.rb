@@ -12,6 +12,10 @@ contract ContractWithParams {
     return setting;
   }
 
+  function genEvent() {
+    MyEvent(msg.sender, block.timestamp);
+  }
+
   function getSetting(uint _a) public constant returns (uint) {
     return _a * _a;
   }

@@ -1,8 +1,7 @@
-require 'pry'
 module Ethereum
   class ContractEvent
 
-    attr_accessor :name, :signature, :input_types, :inputs, :event_string 
+    attr_accessor :name, :signature, :input_types, :inputs, :event_string, :address, :client
 
     def initialize(data)
       @name = data["name"]
@@ -10,6 +9,18 @@ module Ethereum
       @inputs = data["inputs"].collect {|x| x["name"]}
       @event_string = "#{@name}(#{@input_types.join(",")})"
       @signature = Digest::SHA3.hexdigest(@event_string, 256)
+    end
+
+    def set_address(address)
+      @address = address
+    end
+
+    def register_filter(*args)
+      @client. 
+    end
+
+    def set_client(client)
+      @client = client
     end
 
   end

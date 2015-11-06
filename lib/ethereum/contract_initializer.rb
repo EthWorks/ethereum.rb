@@ -2,7 +2,7 @@ module Ethereum
 
   class ContractInitializer
 
-    attr_accessor :abi, :binary, :name, :libraries, :needs_linking, :project_initializer
+    attr_accessor :abi, :binary, :name, :libraries, :needs_linking, :project_initializer, :contract
 
     def initialize(contract_name, contract, project_initializer)
       @abi = JSON.parse(contract["abi"]) unless contract.nil?
@@ -40,8 +40,8 @@ module Ethereum
     end
 
     def build(connection)
-      contract = Ethereum::Contract.new(@name, @binary, @abi) 
-      contract.build(connection)
+      @contract = Ethereum::Contract.new(@name, @binary, @abi) 
+      @contract.build(connection)
     end
 
     def generate_javascripts(path)

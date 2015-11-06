@@ -23,6 +23,7 @@ module Ethereum
       functions = @functions
       constructor_inputs = @constructor_inputs
       binary = @code
+      events = @events
 
       class_methods = Class.new do
 
@@ -46,6 +47,10 @@ module Ethereum
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
+        define_method :events do
+          return events
+        end
+
         define_method :deployment do
           instance_variable_get("@deployment")
         end
@@ -54,10 +59,18 @@ module Ethereum
           self.deploy(*params)
           self.deployment.wait_for_deployment(time)
           instance_variable_set("@address", self.deployment.contract_address)
+          self.events.each do |event|
+            event.set_address(self.deployment.contract_address)
+            event.set_client(connection)
+          end
         end
 
         define_method :at do |addr|
           instance_variable_set("@address", addr) 
+          self.events.each do |event|
+            event.set_address(addr)
+            event.set_client(connection)
+          end
         end
 
         define_method :address do
@@ -86,6 +99,51 @@ module Ethereum
 
         define_method :gas do 
           instance_variable_get("@gas") || 3000000
+        end
+
+        events.each do |evt|
+          define_method "nf_#{evt.name.underscore}".to_sym do |params = {}|
+            params[:to_block] ||= "latest"
+            params[:from_block] ||= "0x0"
+            params[:address] ||=  instance_variable_get("@address")
+            params[:topics] = evt.signature
+            payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: params[:address]}
+            filter_id = connection.new_filter(payload)
+            return filter_id["result"]
+          end
+
+          define_method "gfl_#{evt.name.underscore}".to_sym do |filter_id|
+            formatter = Ethereum::Formatter.new
+            logs = connection.get_filter_logs(filter_id)
+            collection = []
+            logs["result"].each do |result|
+              inputs = evt.input_types
+              outputs = inputs.zip(result["topics"][1..-1])
+              data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
+              outputs.each do |output|
+                data[:topics] << formatter.from_payload(output)
+              end
+              collection << data 
+            end
+            return collection
+          end
+
+          define_method "gfc_#{evt.name.underscore}".to_sym do |filter_id|
+            formatter = Ethereum::Formatter.new
+            logs = connection.get_filter_changes(filter_id)
+            collection = []
+            logs["result"].each do |result|
+              inputs = evt.input_types
+              outputs = inputs.zip(result["topics"][1..-1])
+              data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
+              outputs.each do |output|
+                data[:topics] << formatter.from_payload(output)
+              end
+              collection << data 
+            end
+            return collection
+          end
+
         end
 
         functions.each do |fun|
