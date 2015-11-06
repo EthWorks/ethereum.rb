@@ -15,10 +15,6 @@ module Ethereum
       @address = address
     end
 
-    def register_filter(*args)
-      @client. 
-    end
-
     def set_client(client)
       @client = client
     end
