@@ -8,7 +8,7 @@ module Ethereum
       ENV['ETHEREUM_SOLIDITY_BINARY'] ||= "/usr/local/bin/solc"
       solidity = ENV['ETHEREUM_SOLIDITY_BINARY']
       contract_dir = location
-      compile_command = "#{solidity} --combined-json abi,bin #{contract_dir}"
+      compile_command = "#{solidity} --optimize --optimize-runs 200 --combined-json abi,bin #{contract_dir}"
       raw_data = `#{compile_command}`
       data = JSON.parse(raw_data)
       @contract_names = data["contracts"].keys
