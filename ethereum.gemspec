@@ -12,10 +12,8 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Ethereum libraries for Ruby}
   spec.description   = %q{Ethereum libraries for ruby programming language.}
   spec.homepage      = "https://github.com/DigixGlobal/ethereum-ruby"
-  spec.license       = "MIT"
+  spec.license       = "GPL"
 
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
   if spec.respond_to?(:metadata)
     spec.metadata['allowed_push_host'] = "https://rubygems.org"
   else
