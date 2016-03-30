@@ -4,10 +4,8 @@ module Ethereum
     attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri
 
     def initialize(host, port)
-      ENV['ETHEREUM_RPC_HOST'] ||= host
-      ENV['ETHEREUM_RPC_PORT'] ||= port
-      @host = ENV['ETHEREUM_RPC_HOST']
-      @port = ENV['ETHEREUM_RPC_PORT']
+      @host = host
+      @port = port
       @id = 1
       @uri = URI("http://#{@host}:#{@port}")
       @batch = []
