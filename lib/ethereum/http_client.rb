@@ -3,11 +3,15 @@ module Ethereum
   class HttpClient < Client
     attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri
 
-    def initialize(host, port)
+    def initialize(host, port, ssl = false)
       @host = host
       @port = port
       @id = 1
-      @uri = URI("http://#{@host}:#{@port}")
+      if ssl
+        @uri = URI("https://#{@host}:#{@port}")
+      else
+        @uri = URI("http://#{@host}:#{@port}")
+      end
       @batch = []
     end
 
