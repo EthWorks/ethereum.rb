@@ -1,13 +1,17 @@
 require 'net/http'
 module Ethereum
   class HttpClient < Client
-    attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri, :ssl
+    attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri, :ssl, :logger, :log
 
-    def initialize(host, port, ssl = false)
+    def initialize(host, port, ssl = false, log = true)
       @host = host
       @port = port
       @id = 1
       @ssl = ssl
+      @log = log
+      if @log == true
+        @logger = Logger.new("/tmp/ethereum_ruby_http.log")
+      end
       if ssl
         @uri = URI("https://#{@host}:#{@port}")
       else
@@ -27,6 +31,9 @@ module Ethereum
         end
         header = {'Content-Type' => 'application/json'}
         request = ::Net::HTTP::Post.new(uri, header)
+        if @log == true
+          @logger.info("Sending #{payload.to_json}")
+        end
         request.body = payload.to_json
         response =  http.request(request)
         return JSON.parse(response.body)

@@ -1,12 +1,16 @@
 require 'socket'
 module Ethereum
   class IpcClient < Client
-    attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions
+    attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions, :log, :logger
 
-    def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc")
+    def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc", log = true)
       @ipcpath = ipcpath
       @id = 1
       @batch = []
+      @log = log
+      if @log == true
+        @logger = Logger.new("/tmp/ethereum_ruby_ipc.log")
+      end
     end
 
     RPC_COMMANDS.each do |rpc_command|
@@ -16,6 +20,9 @@ module Ethereum
         payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
         socket = UNIXSocket.new(@ipcpath)
         socket.write(payload.to_json)
+        if @log == true
+          @logger.info("Sending #{payload.to_json}")
+        end
         socket.close_write
         read = socket.read
         socket.close_read

@@ -30,5 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "pry"
   spec.add_dependency "activesupport"
-  spec.add_dependency "sha3-pure-ruby"
+  spec.add_dependency "sha3-pure-ruby", "0.1.1"
 end
