@@ -24,6 +24,9 @@ module Ethereum
       method_name = "#{rpc_command.split("_")[1].underscore}"
       define_method method_name do |*args|
         command = rpc_command
+        if command == "eth_call"
+          args << "latest"
+        end
         payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
         http = ::Net::HTTP.new(@host, @port)
         if @ssl

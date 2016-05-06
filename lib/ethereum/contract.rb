@@ -169,7 +169,7 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            raw_result = connection.call({to: self.address, from: self.sender, data: "0x" + payload.join()})["result"]
+            raw_result = connection.call({to: self.address, from: self.sender, data: payload.join()})["result"]
             formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
             output = formatted_result.collect {|x| formatter.from_payload(x) }
             return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
