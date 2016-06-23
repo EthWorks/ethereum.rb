@@ -30,6 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "pry"
 
-  spec.add_dependency "activesupport", "~> 4.2.6"
+  spec.add_dependency "activesupport"
   spec.add_dependency "digest-sha3", "~> 1.1"
 end
