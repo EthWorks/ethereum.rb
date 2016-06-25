@@ -3,7 +3,7 @@ module Ethereum
   class HttpClient < Client
     attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri, :ssl, :logger, :log
 
-    def initialize(host, port, ssl = false, log = true)
+    def initialize(host, port, ssl = false, log = false)
       @host = host
       @port = port
       @id = 1
