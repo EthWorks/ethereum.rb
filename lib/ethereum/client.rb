@@ -38,7 +38,7 @@ module Ethereum
         read = send_single(payload)
         output = JSON.parse(read)
 
-        raise RpcIdMissmatchError unless output['id'] == @id+1
+        raise RpcIdMissmatchError unless output['id'] == @id
 
         return output
       end
