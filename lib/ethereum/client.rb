@@ -6,11 +6,10 @@ module Ethereum
     # https://github.com/ethereum/go-ethereum/wiki/Management-APIs
     RPC_MANAGEMENT_COMMANDS = %w(admin_addPeer admin_datadir admin_nodeInfo admin_peers admin_setSolc admin_startRPC admin_startWS admin_stopRPC admin_stopWS debug_backtraceAt debug_blockProfile debug_cpuProfile debug_dumpBlock debug_gcStats debug_getBlockRlp debug_goTrace debug_memStats debug_seedHash debug_setHead debug_setBlockProfileRate debug_stacks debug_startCPUProfile debug_startGoTrace debug_stopCPUProfile debug_stopGoTrace debug_traceBlock debug_traceBlockByNumber debug_traceBlockByHash debug_traceBlockFromFile debug_traceTransaction debug_verbosity debug_vmodule debug_writeBlockProfile debug_writeMemProfile miner_hashrate miner_makeDAG miner_setExtra miner_setGasPrice miner_start miner_startAutoDAG miner_stop miner_stopAutoDAG personal_importRawKey personal_listAccounts personal_lockAccount personal_newAccount personal_unlockAccount personal_sendTransaction txpool_content txpool_inspect txpool_status)
 
-    attr_accessor :command, :id, :batch, :log, :logger
+    attr_accessor :command, :id, :log, :logger
 
     def initialize(log = false)
       @id = 0
-      @batch = []
       @log = log
 
       if @log == true
@@ -21,10 +20,6 @@ module Ethereum
     def get_id
       @id = @id + 1
       return @id
-    end
-
-    def clear_batch
-      @batch = []
     end
 
     (RPC_COMMANDS + RPC_MANAGEMENT_COMMANDS).each do |rpc_command|
@@ -41,12 +36,6 @@ module Ethereum
         read = send_single(payload)
         output = JSON.parse(read)
         return output
-      end
-
-      define_method "#{method_name}_batch" do |*args|
-        command = rpc_command
-        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
-        @batch << payload.to_json
       end
     end
 

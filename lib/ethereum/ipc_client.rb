@@ -16,21 +16,6 @@ module Ethereum
       return read
     end
 
-    def send_batch
-      socket = UNIXSocket.new(@ipcpath)
-      socket.puts(@batch.join(" "))
-      read = socket.gets
-      socket.close
-      collection = read.chop.split("}{").collect do |output|
-        if output[0] == "{"
-          JSON.parse("#{output}}")["result"]
-        else
-          JSON.parse("{#{output}}")["result"]
-        end
-      end
-      return collection
-    end
-
   end
 end
 
