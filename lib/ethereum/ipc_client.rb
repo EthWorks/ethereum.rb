@@ -1,7 +1,7 @@
 require 'socket'
 module Ethereum
   class IpcClient < Client
-    attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions, :log, :logger
+    attr_accessor :ipcpath, :converted_transactions
 
     def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc", log = false)
       super(log)

@@ -1,7 +1,7 @@
 require 'net/http'
 module Ethereum
   class HttpClient < Client
-    attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri, :ssl, :logger, :log
+    attr_accessor :host, :port, :converted_transactions, :uri, :ssl
 
     def initialize(host, port, ssl = false, log = false)
       super(log)
