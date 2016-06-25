@@ -22,13 +22,12 @@ module Ethereum
         end
         payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
         socket = UNIXSocket.new(@ipcpath)
-        socket.write(payload.to_json)
         if @log == true
           @logger.info("Sending #{payload.to_json}")
         end
-        socket.close_write
-        read = socket.read
-        socket.close_read
+        socket.puts(payload.to_json)
+        read = socket.gets
+        socket.close
         output = JSON.parse(read)
         return output
       end
@@ -42,9 +41,9 @@ module Ethereum
 
     def send_batch
       socket = UNIXSocket.new(@ipcpath)
-      socket.write(@batch.join(" "))
-      socket.close_write
-      read = socket.read
+      socket.puts(@batch.join(" "))
+      read = socket.gets
+      socket.close
       collection = read.chop.split("}{").collect do |output|
         if output[0] == "{"
           JSON.parse("#{output}}")["result"]
