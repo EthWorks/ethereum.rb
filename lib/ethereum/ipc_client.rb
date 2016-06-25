@@ -4,13 +4,8 @@ module Ethereum
     attr_accessor :command, :id, :ipcpath, :batch, :converted_transactions, :log, :logger
 
     def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc", log = false)
+      super(log)
       @ipcpath = ipcpath
-      @id = 1
-      @batch = []
-      @log = log
-      if @log == true
-        @logger = Logger.new("/tmp/ethereum_ruby_ipc.log")
-      end
     end
 
     RPC_COMMANDS.each do |rpc_command|

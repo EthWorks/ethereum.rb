@@ -4,20 +4,15 @@ module Ethereum
     attr_accessor :command, :id, :host, :port, :batch, :converted_transactions, :uri, :ssl, :logger, :log
 
     def initialize(host, port, ssl = false, log = false)
+      super(log)
       @host = host
       @port = port
-      @id = 1
       @ssl = ssl
-      @log = log
-      if @log == true
-        @logger = Logger.new("/tmp/ethereum_ruby_http.log")
-      end
       if ssl
         @uri = URI("https://#{@host}:#{@port}")
       else
         @uri = URI("http://#{@host}:#{@port}")
       end
-      @batch = []
     end
 
     RPC_COMMANDS.each do |rpc_command|
