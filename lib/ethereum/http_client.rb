@@ -15,37 +15,20 @@ module Ethereum
       end
     end
 
-    RPC_COMMANDS.each do |rpc_command|
-      method_name = "#{rpc_command.split("_")[1].underscore}"
-      define_method method_name do |*args|
-        command = rpc_command
-        if command == "eth_call"
-          args << "latest"
-        end
-        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
-        http = ::Net::HTTP.new(@host, @port)
-        if @ssl
-          http.use_ssl = true
-        end
-        header = {'Content-Type' => 'application/json'}
-        request = ::Net::HTTP::Post.new(uri, header)
-        if @log == true
-          @logger.info("Sending #{payload.to_json}")
-        end
-        request.body = payload.to_json
-        response =  http.request(request)
-        return JSON.parse(response.body)
+    def send_single(payload)
+      http = ::Net::HTTP.new(@host, @port)
+      if @ssl
+        http.use_ssl = true
       end
-
-      define_method "#{method_name}_batch" do |*args|
-        command = rpc_command
-        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
-        @batch << payload.to_json
-      end
+      header = {'Content-Type' => 'application/json'}
+      request = ::Net::HTTP::Post.new(uri, header)
+      request.body = payload
+      response = http.request(request)
+      return response.body
     end
 
     def send_batch
-
+      raise NotImplementedError
     end
 
   end
