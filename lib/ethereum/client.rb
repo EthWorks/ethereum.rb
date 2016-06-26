@@ -12,14 +12,26 @@ module Ethereum
     def initialize(log = false)
       @id = 0
       @log = log
+      @batch = nil
 
       if @log == true
         @logger = Logger.new("/tmp/ethereum_ruby_http.log")
       end
     end
 
+    def batch
+      @batch = []
+
+      yield
+      result = send_batch(@batch)
+
+      @batch = nil
+
+      return result
+    end
+
     def get_id
-      @id = rand(9999999999) + 1
+      @id += 1
       return @id
     end
 
@@ -30,17 +42,20 @@ module Ethereum
         if command == "eth_call"
           args << "latest"
         end
-        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}.to_json
+        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
         if @log == true
-          @logger.info("Sending #{payload}")
+          @logger.info("Sending #{payload.to_json}")
         end
 
-        read = send_single(payload)
-        output = JSON.parse(read)
-
-        raise RpcIdMissmatchError unless output['id'] == @id
-
-        return output
+        if @batch
+          @batch << payload
+          return true
+        else
+          read = send_single(payload.to_json)
+          output = JSON.parse(read)
+          raise RpcIdMissmatchError unless output['id'] == @id
+          return output
+        end
       end
     end
 

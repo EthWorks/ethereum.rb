@@ -16,6 +16,13 @@ module Ethereum
       return read
     end
 
+    def send_batch(batch)
+      result = send_single(batch.to_json)
+      result = JSON.parse(result)
+
+      # Make sure the order is the same as it was when batching calls
+      # See 6 Batch here http://www.jsonrpc.org/specification
+      return result.sort_by! { |c| c['id'] }
+    end
   end
 end
-
