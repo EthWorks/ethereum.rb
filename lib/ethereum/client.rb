@@ -26,6 +26,7 @@ module Ethereum
       result = send_batch(@batch)
 
       @batch = nil
+      @id = 0 # Reset id
 
       return result
     end
@@ -54,6 +55,7 @@ module Ethereum
           read = send_single(payload.to_json)
           output = JSON.parse(read)
           raise RpcIdMissmatchError unless output['id'] == @id
+          @id = 0 # Reset id
           return output
         end
       end
