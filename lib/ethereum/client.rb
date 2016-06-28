@@ -38,6 +38,27 @@ module Ethereum
       @id = 0
     end
 
+    def int_to_hex(n)
+      return "0x#{n.to_s(16)}"
+    end
+
+    def add_hex_prefix(s)
+      s.start_with?('0x') ? s : "0x#{s}"
+    end
+
+    # https://github.com/ethereum/wiki/wiki/JSON-RPC#output-hex-values
+    def encode_params(params)
+      return params.map do |p|
+        if p.is_a?(Integer)
+          int_to_hex(p)
+        elsif p.is_a?(String)
+          add_hex_prefix(p)
+        else
+          p
+        end
+      end
+    end
+
     (RPC_COMMANDS + RPC_MANAGEMENT_COMMANDS).each do |rpc_command|
       method_name = "#{rpc_command.underscore}"
       define_method method_name do |*args|
@@ -45,7 +66,8 @@ module Ethereum
         if command == "eth_call"
           args << "latest"
         end
-        payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
+        payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
+
         if @log == true
           @logger.info("Sending #{payload.to_json}")
         end
