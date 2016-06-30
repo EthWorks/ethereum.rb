@@ -42,17 +42,11 @@ module Ethereum
       return "0x#{n.to_s(16)}"
     end
 
-    def add_hex_prefix(s)
-      s.start_with?('0x') ? s : "0x#{s}"
-    end
-
     # https://github.com/ethereum/wiki/wiki/JSON-RPC#output-hex-values
     def encode_params(params)
       return params.map do |p|
         if p.is_a?(Integer)
           int_to_hex(p)
-        elsif p.is_a?(String)
-          add_hex_prefix(p)
         else
           p
         end
