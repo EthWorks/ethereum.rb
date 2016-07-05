@@ -17,6 +17,12 @@ module Ethereum
       end
     end
 
+    def self.create(host_or_ipcpath, log = false)
+      return IpcClient.new(host_or_ipcpath) if host_or_ipcpath.include? '.ipc'
+      return HttpClient.new(host_or_ipcpath) if host_or_ipcpath.include? 'http'
+      raise ArgumentError.new('Unable to detect client type')
+    end
+
     def batch
       @batch = []
 

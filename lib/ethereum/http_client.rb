@@ -3,11 +3,14 @@ module Ethereum
   class HttpClient < Client
     attr_accessor :host, :port, :uri, :ssl
 
-    def initialize(host, port, ssl = false, log = false)
+    def initialize(host, log = false)
       super(log)
-      @host = host
-      @port = port
-      @ssl = ssl
+      uri = URI.parse(host)
+      raise ArgumentError unless ['http', 'https'].include? uri.scheme
+      @host = uri.host
+      @port = uri.port
+      
+      @ssl = uri.scheme == 'https'
       if ssl
         @uri = URI("https://#{@host}:#{@port}")
       else
