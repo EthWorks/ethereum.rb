@@ -1,7 +1,7 @@
 require "ethereum/version"
 require 'active_support'
 require 'active_support/core_ext'
-require 'digest/sha3'
+require 'sha3'
 
 module Ethereum
   require 'ethereum/client'

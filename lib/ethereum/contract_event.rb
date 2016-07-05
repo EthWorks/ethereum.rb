@@ -8,7 +8,7 @@ module Ethereum
       @input_types = data["inputs"].collect {|x| x["type"]}
       @inputs = data["inputs"].collect {|x| x["name"]}
       @event_string = "#{@name}(#{@input_types.join(",")})"
-      @signature = Digest::SHA3.hexdigest(@event_string, 256)
+      @signature = SHA3::Digest::SHA256.hexdigest(@event_string)
     end
 
     def set_address(address)
