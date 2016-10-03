@@ -60,7 +60,7 @@ module Ethereum
     end
 
     (RPC_COMMANDS + RPC_MANAGEMENT_COMMANDS).each do |rpc_command|
-      method_name = "#{rpc_command.underscore}"
+      method_name = rpc_command.underscore
       define_method method_name do |*args|
         command = rpc_command
         if command == "eth_call"

@@ -3,7 +3,7 @@ module Ethereum
   class IpcClient < Client
     attr_accessor :ipcpath
 
-    def initialize(ipcpath = "#{ENV['HOME']}/.ethereum/geth.ipc", log = false)
+    def initialize(ipcpath = "#{ENV['HOME']}/Library/Ethereum/geth.ipc", log = false)
       super(log)
       @ipcpath = ipcpath
     end
