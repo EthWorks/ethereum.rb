@@ -43,7 +43,7 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.send_transaction({from: self.sender, gas: self.gas, gasPrice: self.gas_price, data: "0x" + deploy_payload})["result"]
+          deploytx = connection.eth_send_transaction({from: self.sender, gas: self.gas, gasPrice: self.gas_price, data: "0x" + deploy_payload})["result"]
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
@@ -82,7 +82,7 @@ module Ethereum
         end
 
         define_method :sender do
-          instance_variable_get("@sender") || connection.coinbase["result"]
+          instance_variable_get("@sender") || connection.eth_coinbase["result"]
         end
 
         define_method :set_gas_price do |gp|
@@ -195,7 +195,7 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            txid = connection.send_transaction({to: self.address, from: self.sender, data: "0x" + payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
+            txid = connection.eth_send_transaction({to: self.address, from: self.sender, data: "0x" + payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
             return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 

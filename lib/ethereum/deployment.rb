@@ -39,7 +39,6 @@ module Ethereum
         return true if self.deployed? 
       end
     end
-
   end
 
 end

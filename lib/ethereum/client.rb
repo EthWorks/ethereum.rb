@@ -78,6 +78,9 @@ module Ethereum
         else
           read = send_single(payload.to_json)
           output = JSON.parse(read)
+          if @log == true
+            @logger.info("Received #{output.to_json}")
+          end
           reset_id
           return output
         end
