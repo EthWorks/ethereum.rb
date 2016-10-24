@@ -43,7 +43,7 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.eth_send_transaction({from: self.sender, gas: self.gas, gasPrice: self.gas_price, data: "0x" + deploy_payload})["result"]
+          deploytx = connection.eth_send_transaction({from: self.sender, data: "0x" + deploy_payload})["result"]
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
@@ -59,7 +59,7 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.eth_estimate_gas({from: self.sender, gas: self.gas, gasPrice: self.gas_price, data: "0x" + deploy_payload})["result"]
+          deploytx = connection.eth_estimate_gas({from: self.sender, data: "0x" + deploy_payload})["result"]
         end
 
         define_method :events do
@@ -184,7 +184,8 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            raw_result = connection.call({to: self.address, from: self.sender, data: payload.join()})["result"]
+            raw_result = connection.eth_call({to: self.address, from: self.sender, data: "0x" + payload.join()})
+            raw_result = raw_result["result"]
             formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
             output = formatted_result.collect {|x| formatter.from_payload(x) }
             return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
@@ -210,7 +211,7 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            txid = connection.eth_send_transaction({to: self.address, from: self.sender, data: "0x" + payload.join(), gas: self.gas, gasPrice: self.gas_price})["result"]
+            txid = connection.eth_send_transaction({to: self.address, from: self.sender, data: "0x" + payload.join()})["result"]
             return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 
