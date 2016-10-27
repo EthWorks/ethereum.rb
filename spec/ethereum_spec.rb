@@ -3,13 +3,13 @@ require 'spec_helper'
 describe Ethereum do
 
   before(:all) do
-    @client = Ethereum::HttpClient.new("172.16.135.102", "8545")
+    @client = Ethereum::HttpClient.new("http://172.16.135.102", "8545")
     @formatter = Ethereum::Formatter.new
   end
 
   describe "Ethereum Version" do
     it 'has a version number' do
-      expect(Ethereum::VERSION).to eq("0.4.90")
+      expect(Ethereum::VERSION).to eq("1.5.15")
     end
   end
   
