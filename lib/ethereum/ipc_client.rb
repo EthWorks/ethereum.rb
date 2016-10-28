@@ -11,7 +11,7 @@ module Ethereum
     def send_single(payload)
       socket = UNIXSocket.new(@ipcpath)
       socket.puts(payload)
-      read = socket.gets
+      read = socket.recvmsg(nil)[0]
       socket.close
       return read
     end
