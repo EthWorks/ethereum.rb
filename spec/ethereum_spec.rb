@@ -3,14 +3,8 @@ require 'spec_helper'
 describe Ethereum do
 
   before(:all) do
-    @client = Ethereum::HttpClient.new("http://172.16.135.102", "8545")
+    @client = Ethereum::HttpClient.new("http://localhost:8545")
     @formatter = Ethereum::Formatter.new
-  end
-
-  describe "Ethereum Version" do
-    it 'has a version number' do
-      expect(Ethereum::VERSION).to eq("1.5.15")
-    end
   end
   
   describe "Deployment" do
@@ -23,7 +17,6 @@ describe Ethereum do
       address = @contract_with_params.call_get_setting__
       expect(address).to eq(@coinbase)
     end
-
   end
 
 
@@ -39,10 +32,6 @@ describe Ethereum do
     it "should perform a contract transaction, wait for its completion, return an Ethereum::Transaction object" do
       tx = @simple_name_registry.transact_and_wait_register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
       expect(tx.class).to be(Ethereum::Transaction)
-    end
-
-    it "should test a call_(Ethereum Contract Function)" do
-      expect(true).to be(true)
     end
 
   end
