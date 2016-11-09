@@ -7,7 +7,7 @@ describe Ethereum do
   end
   
   it "should compile contract" do
-    @init = Ethereum::Initializer.new("#{Dir.pwd}/spec/fixtures/SimpleNameRegistry.sol", @client)
+    @init = Ethereum::Initializer.new("#{Dir.pwd}/spec/fixtures/greeter.sol", @client)
     @init.build_all
     @simple_name_registry = SimpleNameRegistry.new
     @simple_name_registry.deploy_and_wait(60)

@@ -1,28 +1,39 @@
+require 'tmpdir'
+
 module Ethereum
   class Solidity
 
-    def initialize(tmp_path = nil, bin_path = "solc")
-      @tmp_path = Pathname.new(tmp_path || "#{Dir.pwd}/tmp")
+    def initialize(bin_path = "solc")
       @bin_path = bin_path
+      @args = "--bin --abi --userdoc --devdoc --add-std --optimize -o"      
     end
 
+    
     def compile(filename)
-      args = "--bin --abi --userdoc --devdoc --add-std --optimize -o"
-      cmd = "#{@bin_path} #{args} '#{@tmp_path}' '#{filename}'"
-      raise SystemCallError, "Unanable to run solc compliers" unless system(cmd)
-      abi = file_for(filename, 'abi')
-      bin = file_for(filename, 'bin')
-      {abi: abi, bin: bin}
+      {}.tap do |result|
+        Dir.mktmpdir do |dir|
+          execute_solc(dir, filename)
+          Dir.foreach(dir) do |file|
+            process_file(dir, file, result)
+          end
+        end
+      end
     end
-  
-    def file_for(path, extension)
-      File.read(path_for(path, extension))
-    end
-  
-    def path_for(path, extension)
-      path = Pathname.new(path).basename(".sol")
-      @tmp_path.join("#{path}.#{extension}")
-    end
-
-  end
+    
+    private    
+      def process_file(dir, file, result)
+        extension = File.extname(file)
+        path = "#{dir}/#{file}"
+        basename = File.basename(path, extension)
+        unless File.directory?(path)
+          result[basename] ||= {}
+          result[basename][extension[1..-1]] = File.read(path) 
+        end
+      end
+      
+      def execute_solc(dir, filename)
+        cmd = "#{@bin_path} #{@args} '#{dir}' '#{filename}'"
+        raise SystemCallError, "Unanable to run solc compliers" unless system(cmd)    
+      end    
+  end 
 end
