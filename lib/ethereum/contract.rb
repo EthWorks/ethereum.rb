@@ -19,7 +19,7 @@ module Ethereum
     end
 
     def build(connection)
-      class_name = @name
+      class_name = @name.camelize
       functions = @functions
       constructor_inputs = @constructor_inputs
       binary = @code
@@ -70,9 +70,9 @@ module Ethereum
           instance_variable_get("@deployment")
         end
 
-        define_method :deploy_and_wait do |time = 60.seconds, *params|
+        define_method :deploy_and_wait do |time = 200.seconds, *params, **args, &block|
           self.deploy(*params)
-          self.deployment.wait_for_deployment(time)
+          self.deployment.wait_for_deployment(time, **args, &block)
           instance_variable_set("@address", self.deployment.contract_address)
           self.events.each do |event|
             event.set_address(self.deployment.contract_address)

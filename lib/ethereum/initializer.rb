@@ -8,12 +8,13 @@ module Ethereum
       @client = client
       # sol_output = @client.eth_compile_solidity(@file)
       sol_output = Ethereum::Solidity.new.compile(file)
-      contracts = sol_output["result"].keys
+      contracts = sol_output.keys
+
       @contracts = []
       contracts.each do |contract|
-        abi = sol_output["result"][contract]["info"]["abiDefinition"] 
+        abi = JSON.parse(sol_output[contract]["abi"] )
         name = contract
-        code = sol_output["result"][contract]["code"]
+        code = sol_output[contract]["bin"]
         @contracts << Ethereum::Contract.new(name, code, abi)
       end
     end

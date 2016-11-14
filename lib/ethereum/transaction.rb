@@ -13,7 +13,7 @@ module Ethereum
 
     def mined?
       return true if @mined
-      @mined = @connection.get_transaction_by_hash(@id)["result"]["blockNumber"].present?
+      @mined = @connection.eth_get_transaction_by_hash(@id)["result"]["blockNumber"].present?
     end
 
     def wait_for_miner(timeout = 1500.seconds)

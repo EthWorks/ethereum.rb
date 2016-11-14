@@ -119,6 +119,10 @@ module Ethereum
       self.from_utf8(bytes).ljust(64, '0')
     end
 
+    def string_to_payload(bytes)
+      self.bytes_to_payload(bytes)
+    end
+
     def get_base_type(typename)
       typename.gsub(/\d+/,'')
     end
