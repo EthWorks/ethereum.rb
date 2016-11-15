@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'spec_helper'
 
 describe Ethereum do
@@ -9,6 +10,15 @@ describe Ethereum do
 
     it 'should work' do
       expect(@client.eth_protocol_version).to be_instance_of Hash
+    end
+
+    it 'should find default path' do
+      real = Tempfile.new('real')
+      deleted = Tempfile.new('deleted')
+      paths = [deleted.path, real.path]
+      deleted.unlink
+      expect(Ethereum::IpcClient.default_path(paths)).to eq real.path
+      real.unlink
     end
 
     it 'should support batching' do
