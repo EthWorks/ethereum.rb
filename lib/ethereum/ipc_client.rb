@@ -5,10 +5,11 @@ module Ethereum
 
     IPC_PATHS = [
       "#{ENV['HOME']}/.parity/jsonrpc.ipc",
-      "#{ENV['HOME']}/Library/Ethereum/geth.ipc"
+      "#{ENV['HOME']}/Library/Ethereum/geth.ipc",
+      "#{ENV['HOME']}/Library/Ethereum/testnet/geth.ipc"
     ]
 
-    def initialize(ipcpath = nil, log = false)
+    def initialize(ipcpath = nil, log = true)
       super(log)
       ipcpath ||= IpcClient.default_path
       @ipcpath = ipcpath

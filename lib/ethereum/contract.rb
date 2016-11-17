@@ -1,6 +1,10 @@
 module Ethereum
   class Contract
 
+    DEFAULT_GAS_PRICE = 60000000000
+
+    DEFAULT_GAS = 3000000
+
     attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events
 
     def initialize(name, code, abi)
@@ -44,6 +48,7 @@ module Ethereum
           end
           deploy_payload = deploy_code + deploy_arguments
           deploytx = connection.eth_send_transaction({from: self.sender, data: "0x" + deploy_payload})["result"]
+          raise "Failed to deploy, did you unlock #{self.sender} account? Transaction hash: #{deploytx}" if deploytx.nil? || deploytx == "0x0000000000000000000000000000000000000000000000000000000000000000"
           instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
         end
 
@@ -97,7 +102,7 @@ module Ethereum
         end
 
         define_method :sender do
-          instance_variable_get("@sender") || connection.eth_coinbase["result"]
+          instance_variable_get("@sender") || connection.default_account
         end
 
         define_method :set_gas_price do |gp|
@@ -105,7 +110,7 @@ module Ethereum
         end
 
         define_method :gas_price do
-          instance_variable_get("@gas_price") || 60000000000
+          instance_variable_get("@gas_price") || DEFAULT_GAS_PRICE
         end
 
         define_method :set_gas do |gas|
@@ -113,7 +118,7 @@ module Ethereum
         end
 
         define_method :gas do 
-          instance_variable_get("@gas") || 3000000
+          instance_variable_get("@gas") || DEFAULT_GAS
         end
 
         events.each do |evt|

@@ -44,6 +44,10 @@ module Ethereum
       @id = 0
     end
 
+    def default_account
+      eth_accounts["result"][0]
+    end
+
     def int_to_hex(n)
       return "0x#{n.to_s(16)}"
     end
