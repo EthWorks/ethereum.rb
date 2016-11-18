@@ -1,7 +1,6 @@
-require 'ethereum'
-
 namespace :ethereum do
   namespace :test do
+
     desc "Setup testing environment for ethereum node"
     task :setup do
       @client = Ethereum::IpcClient.new
@@ -21,7 +20,7 @@ namespace :ethereum do
       formatter = Ethereum::Formatter.new
       balance = formatter.to_int(balance)
       balance = formatter.from_wei(balance).to_f
-      puts "balance: #{balance.class}"
+
       if balance.to_f > 0.02
         puts "Done. You're ready to run tests.\nTests will use ether from account: #{@client.default_account} with #{balance} ether"
       else

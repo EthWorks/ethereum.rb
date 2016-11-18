@@ -20,4 +20,7 @@ module Ethereum
   require 'ethereum/deployment'
   require 'ethereum/project_initializer'
   require 'ethereum/contract_initializer'
+  require 'ethereum/railtie' if defined?(Rails)
 end
+
+
