@@ -22,5 +22,3 @@ module Ethereum
   require 'ethereum/contract_initializer'
   require 'ethereum/railtie' if defined?(Rails)
 end
-
-

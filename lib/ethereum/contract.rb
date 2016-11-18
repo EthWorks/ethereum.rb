@@ -22,12 +22,12 @@ module Ethereum
       end
     end
 
-    def self.from_file(path, client)
+    def self.from_file(path, client = IpcClient.new)
       @init = Ethereum::Initializer.new(path, client)
       @init.build_all.first.class_object.new
     end
 
-    def self.from_blockchain(name, address, abi, client)
+    def self.from_blockchain(name, address, abi, client = IpcClient.new)
       contract = Ethereum::Contract.new(name, nil, abi)
       contract.build(client)
       contract_instance = contract.class_object.new
