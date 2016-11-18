@@ -5,7 +5,7 @@ module Ethereum
 
     DEFAULT_GAS = 3000000
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object
 
     def initialize(name, code, abi)
       @name = name
@@ -22,12 +22,26 @@ module Ethereum
       end
     end
 
+    def self.from_file(path, client)
+      @init = Ethereum::Initializer.new(path, client)
+      @init.build_all.first.class_object.new
+    end
+
+    def self.from_blockchain(name, address, abi, client)
+      contract = Ethereum::Contract.new(name, nil, abi)
+      contract.build(client)
+      contract_instance = contract.class_object.new
+      contract_instance.at address
+      contract_instance
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
       constructor_inputs = @constructor_inputs
       binary = @code
       events = @events
+      abi = @abi
 
       class_methods = Class.new do
 
@@ -69,6 +83,10 @@ module Ethereum
 
         define_method :events do
           return events
+        end
+
+        define_method :abi do
+          return abi
         end
 
         define_method :deployment do
@@ -238,6 +256,7 @@ module Ethereum
         Object.send(:remove_const, class_name)
       end
       Object.const_set(class_name, class_methods)
+      @class_object = class_methods
     end
 
   end

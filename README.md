@@ -14,6 +14,11 @@ A simple library for Ethereum.
 * Call and wait for the result of Solidity function calls.
 * Contract events 
 
+## Ethereum Node Compatibility
+
+* Tested on parity
+* Might work with geth
+
 ## Ruby Compatibility
 
 * Ruby 2.x
@@ -50,17 +55,29 @@ Or install it yourself as:
 ### IPC Client Connection
 
 ```ruby
-client = Ethereum::IpcClient.new("#{ENV['HOME']}/.ethereum_testnet/geth.ipc")
+client = Ethereum::IpcClient.new
 ```
 
 ### Solidity contract compilation and deployment
 
 ```ruby
-init = Ethereum::Initializer.new("#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol", client)
+path = "#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol"
+init = Ethereum::Initializer.new(path, client)
 init.build_all
 simple_name_registry_instance = SimpleNameRegistry.new
 simple_name_registry_instance.deploy_and_wait(60)
 ```
+
+or with simplifed syntax:
+
+```ruby
+simple_name_registry_instance = Ethereum::Contract.from_file(path, client)
+simple_name_registry_instance.deploy_and_wait(60)
+```
+
+### Get contract from blockchain
+
+simple_name_registry_instance = Ethereum::Contract.from_blockchain("SimpleNameRegistry", address, abi, client)
 
 ### Transacting and Calling Solidity Functions
 
@@ -108,7 +125,6 @@ simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 
 ## Roadmap
 
-* Add Windows IPC Client (named pipes)
 * Add support for creating and sending of raw transactions
 * Offline account creation
 * ContractTransaction class

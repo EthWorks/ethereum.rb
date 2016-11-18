@@ -4,9 +4,7 @@ module Ethereum
     attr_accessor :contracts, :file, :client
 
     def initialize(file, client = Ethereum::IpcClient.new)
-      # @file = File.read(file)
       @client = client
-      # sol_output = @client.eth_compile_solidity(@file)
       sol_output = Ethereum::Solidity.new.compile(file)
       contracts = sol_output.keys
 
