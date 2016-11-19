@@ -1,38 +1,21 @@
+require 'open3'
+
 namespace :ethereum do
-  namespace :test do
+  namespace :node do
 
-    desc "Setup testing environment for ethereum node"
-    task :setup do
-      @client = Ethereum::IpcClient.new
-
-      network_id = @client.net_version["result"].to_i
-      raise "Error: Run your tests on testnet. Use parity --chain testnet" if network_id != 2
-
-      accounts = @client.eth_accounts["result"]
-      if accounts.size > 0
-        puts "Account already exist, skipping this step"
-      else
-        puts "Creating account..."
-        `parity --chain testnet account new`
-      end
-
-      balance = @client.eth_get_balance(@client.default_account)["result"]
-      formatter = Ethereum::Formatter.new
-      balance = formatter.to_int(balance)
-      balance = formatter.from_wei(balance).to_f
-
-      if balance.to_f > 0.02
-        puts "Done. You're ready to run tests.\nTests will use ether from account: #{@client.default_account} with #{balance} ether"
-      else
-        puts "Not enough ether to run tests. \nYou have: #{balance} ether. \nYou need at least 0.02 ether to run tests.\nTransfer ether to account: #{@client.default_account}.\nThe easiest way to get ether is to use Ethereum Testnet Faucet."
-      end
+    desc "Run testnet node "
+    task :test do
+      stdout, stdeerr, status = Open3.capture3("parity --chain testnet account list")
+      account = stdeerr.split(/[\[,\]]/)[1]
+      system "parity --chain testnet --password ~/.parity/pass --unlock #{account}"
     end
 
-    namespace :node do
-      desc "Setup testing environment for ethereum node"
-      task :run do
-        `parity --chain testnet`
-      end
+    desc "Run morden (production) node"
+    task :test do
+      stdout, stdeerr, status = Open3.capture3("parity account list")
+      account = stdeerr.split(/[\[,\]]/)[1]
+      system "parity --password ~/.parity/pass --unlock #{account}"
     end
+
   end
 end

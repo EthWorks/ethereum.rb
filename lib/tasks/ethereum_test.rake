@@ -1,20 +1,15 @@
-require 'open3'
-
 namespace :ethereum do
-  namespace :node do
+  namespace :contract do
 
-    desc "Run testnet node "
-    task :test do
-      stdout, stdeerr, status = Open3.capture3("parity --chain testnet account list")
-      account = stdeerr.split(/[\[,\]]/)[1]
-      system "parity --chain testnet --password ~/.parity/pass --unlock #{account}"
-    end
-
-    desc "Run morden (production) node"
-    task :test do
-      stdout, stdeerr, status = Open3.capture3("parity account list")
-      account = stdeerr.split(/[\[,\]]/)[1]
-      system "parity --password ~/.parity/pass --unlock #{account}"
+    desc "Compile"
+    task :compile, [:path] do |t, args|
+      contract = Ethereum::Solidity.new.compile(args[:path])
+      puts "Contract abi:"
+      puts contract["Works"]["abi"]
+      puts
+      puts "Contract binary code:"
+      puts contract["Works"]["bin"]
+      puts
     end
 
   end
