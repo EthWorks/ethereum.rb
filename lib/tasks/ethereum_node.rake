@@ -7,14 +7,16 @@ namespace :ethereum do
     task :test do
       stdout, stdeerr, status = Open3.capture3("parity --chain testnet account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      system "parity --chain testnet --password ~/.parity/pass --unlock #{account}"
+      cmd = "parity --chain testnet --password ~/.parity/pass --unlock #{account}"
+      puts cmd
+      system cmd
     end
 
     desc "Run morden (production) node"
-    task :test do
+    task :run do
       stdout, stdeerr, status = Open3.capture3("parity account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      system "parity --password ~/.parity/pass --unlock #{account}"
+      system "parity --password ~/.parity/pass --unlock #{account} --no-jsonrpc"
     end
 
   end
