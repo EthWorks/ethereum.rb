@@ -6,7 +6,7 @@ namespace :ethereum do
       @client = Ethereum::IpcClient.new
 
       network_id = @client.net_version["result"].to_i
-      raise "Error: Run your tests on testnet. Use parity --chain testnet" if network_id != 2
+      raise "Error: Run your tests on ropsten testnet. Use rake ethereum:node:test to run node. Net id: #{network_id}" if network_id != 3
 
       accounts = @client.eth_accounts["result"]
       if accounts.size > 0

@@ -7,7 +7,7 @@ namespace :ethereum do
     task :test do
       stdout, stdeerr, status = Open3.capture3("parity --chain testnet account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      cmd = "parity --chain testnet --password ~/.parity/pass --unlock #{account}"
+      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account}"
       puts cmd
       system cmd
     end
@@ -16,7 +16,14 @@ namespace :ethereum do
     task :run do
       stdout, stdeerr, status = Open3.capture3("parity account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      system "parity --password ~/.parity/pass --unlock #{account} --no-jsonrpc"
+      system "parity --password ~/.parity/pass --unlock #{account}  --author #{account} --no-jsonrpc"
+    end
+
+    desc "Mine ethereum testing environment for ethereum node"
+    task :mine do
+        cmd = "ethminer"
+        puts cmd
+        system cmd
     end
 
   end
