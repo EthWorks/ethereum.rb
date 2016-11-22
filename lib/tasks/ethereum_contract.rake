@@ -1,3 +1,5 @@
+require File.expand_path("../../ethereum.rb", __FILE__)
+
 namespace :ethereum do
   namespace :contract do
 
@@ -16,7 +18,7 @@ namespace :ethereum do
     task :compile, [:path] do |t, args|
       puts "Deploing contract"
       @works = Ethereum::Contract.from_file(args[:path], @client)
-      @works.deploy_and_wait(&block) { puts "." }
+      @works.deploy_and_wait { puts "." }
       address = @works.deployment.contract_address
       puts "Contract deployed under address: #{address}"
     end
