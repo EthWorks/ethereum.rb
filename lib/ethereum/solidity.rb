@@ -1,6 +1,13 @@
 require 'tmpdir'
+require 'open3'
 
 module Ethereum
+  class CompilationError < StandardError; 
+    def initialize(msg)
+      super
+    end
+  end
+
   class Solidity
 
     def initialize(bin_path = "solc")
@@ -8,7 +15,6 @@ module Ethereum
       @args = "--bin --abi --userdoc --devdoc --add-std --optimize -o"      
     end
 
-    
     def compile(filename)
       {}.tap do |result|
         Dir.mktmpdir do |dir|
@@ -33,7 +39,9 @@ module Ethereum
       
       def execute_solc(dir, filename)
         cmd = "#{@bin_path} #{@args} '#{dir}' '#{filename}'"
-        raise SystemCallError, "Unanable to run solc compliers" unless system(cmd)    
+        stdout, stderr, status = Open3.capture3(cmd)
+        raise SystemCallError, "Unanable to run solc compliers" if status.exitstatus == 127
+        raise CompilationError, stderr unless status.exitstatus == 0
       end    
   end 
 end

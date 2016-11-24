@@ -23,6 +23,10 @@ describe Ethereum do
     expect(contract["mortal"]["bin"]).to eq MORTAL_BIN
   end
 
+  it "raises ComplicationError if there is a compilation error" do
+    expect { Ethereum::Solidity.new.compile("#{Dir.pwd}/spec/fixtures/ContractWithError.sol") }.to raise_error(Ethereum::CompilationError, /.*Error: Identifier not found or not unique.*/)
+  end
+
   it "raises SystemCallError if can't run solc" do
     expect { Ethereum::Solidity.new('no_solc').compile(@contract_path) }.to raise_error(SystemCallError)
   end
