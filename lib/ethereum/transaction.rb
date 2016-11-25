@@ -11,6 +11,10 @@ module Ethereum
       @input_parameters = input_parameters
     end
 
+    def address
+      @id
+    end
+
     def mined?
       return true if @mined
       @mined = @connection.eth_get_transaction_by_hash(@id)["result"]["blockNumber"].present?
@@ -25,6 +29,8 @@ module Ethereum
       end
     end
 
+    def self.from_blockchain(address, connection = IpcClient.new)
+      Transaction.new(address, connection, nil, nil)
+    end
   end
-
 end

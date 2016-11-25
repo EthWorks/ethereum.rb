@@ -12,7 +12,9 @@ describe Ethereum do
     path = "#{Dir.pwd}/spec/fixtures/Works.sol"
     @works = Ethereum::Contract.from_file(path, @client)
     address = @works.deploy_and_wait
-    @works.transact_and_wait_set("some4key", "somethevalue")
+    address_tx = @works.transact_and_wait_set("some4key", "somethevalue").address
+
+    expect(Ethereum::Transaction.from_blockchain(address_tx).mined?).to be true
 
     abi = @works.abi
     @works_reloaded = Ethereum::Contract.from_blockchain("WorksReloaded", address, abi, @client)
