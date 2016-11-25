@@ -2,10 +2,10 @@ class Ethereum::Singleton
   
   class << self
 
-    attr_accessor :client, :ipcpath, :host, :log, :instance
+    attr_accessor :client, :ipcpath, :host, :log, :instance, :default_account
   
     def instance
-      @instance ||= create_instance
+      @instance ||= configure_instance(create_instance)
     end
   
     def setup(&block)
@@ -15,7 +15,10 @@ class Ethereum::Singleton
     def reset
       @instance = nil
       @client = nil
-      @host = @log = @ipcpath = nil
+      @host = nil
+      @log = nil
+      @ipcpath = nil
+      @default_account = nil
     end
     
     private
@@ -23,6 +26,12 @@ class Ethereum::Singleton
         return Ethereum::IpcClient.new(@ipcpath) if @client == :ipc 
         return Ethereum::HttpClient.new(@host) if @client == :http
         Ethereum::IpcClient.new
+      end
+      
+      def configure_instance(instance)
+        instance.tap do |i|
+          i.default_account = @default_account if @default_account.present?
+        end
       end
   end
   
