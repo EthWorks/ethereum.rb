@@ -11,10 +11,9 @@ describe Ethereum do
   it "should build, deploy, use and kill simple contract" do
     path = "#{Dir.pwd}/spec/fixtures/Works.sol"
     @works = Ethereum::Contract.from_file(path, @client)
-    @works.deploy_and_wait
+    address = @works.deploy_and_wait
     @works.transact_and_wait_set("some4key", "somethevalue")
 
-    address = @works.deployment.contract_address
     abi = @works.abi
     @works_reloaded = Ethereum::Contract.from_blockchain("WorksReloaded", address, abi, @client)
     expect(@works_reloaded.call_get("some4key")).to eq "somethevalue"

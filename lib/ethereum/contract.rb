@@ -101,6 +101,7 @@ module Ethereum
             event.set_address(self.deployment.contract_address)
             event.set_client(connection)
           end
+          self.deployment.contract_address
         end
 
         define_method :at do |addr|
