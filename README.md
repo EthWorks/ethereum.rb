@@ -5,34 +5,16 @@ A simple library for Ethereum.
 ## Features
 
 * Pure Ruby implementation
-* IPC Client with batch calls support
-* HTTP Client with batch calls support
-* Compile and deploy Solidity contracts
-* Deploy contracts with constructor parameters.
-* Expose deployed contracts as Ruby classes
-* Test solidity contracts with a Ruby testing framework of your choice
-* Call and wait for the result of Solidity function calls.
+* IPC & HTTP Client with batch calls support
+* Compile Solidity contracts with solc compiler
+* Deploy and call contracts methods
 * Contract events 
 
-## Ethereum Node Compatibility
+## Compatibility and requirements
 
-* Tested on parity
-* Might work with geth
-
-## Ruby Compatibility
-
+* Tested on parity, might work with geth
 * Ruby 2.x
-* Ruby 1.9.x
-* JRuby
-* Rubinius
-
-## Requirements
-
-We currently support UNIX/Linux environments and Windows IPC support on the roadmap.
-
-You will need to have a properly working Ruby installation.  We recommend [RVM](http://rvm.io/)
-
-To use this library you will need to have a running Ethereum node with IPC support enabled (default).  We currently support [Go-Ethereum client](https://github.com/ethereum/go-ethereum)
+* UNIX/Linux environments 
 
 ## Installation
 
@@ -122,21 +104,6 @@ simple_name_registry_instance.as("0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1")
 ```ruby
 simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 ```
-
-## Roadmap
-
-* Add support for creating and sending of raw transactions
-* Offline account creation
-* ContractTransaction class
-* Add more examples
-* API documentation
-* Unit testing and contract testing examples.  Use [web3.js](https://github.com/ethereum/web3.js) tests as a baseline.
-
-## Support 
-
-Please join our Gitter chat room or open a new issue in this repository
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/DigixGlobal/ethereum-ruby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Development
 
