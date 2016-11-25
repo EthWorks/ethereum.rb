@@ -3,7 +3,7 @@ namespace :ethereum do
 
     desc "Setup testing environment for ethereum node"
     task :setup do
-      @client = Ethereum::IpcClient.new
+      @client = Ethereum::Singleton.instance
 
       network_id = @client.net_version["result"].to_i
       raise "Error: Run your tests on ropsten testnet. Use rake ethereum:node:test to run node. Net id: #{network_id}" if network_id != 3

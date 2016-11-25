@@ -22,7 +22,7 @@ class Ethereum::Singleton
       def create_instance
         return Ethereum::IpcClient.new(@ipcpath) if @client == :ipc 
         return Ethereum::HttpClient.new(@host) if @client == :http
-        nil
+        Ethereum::IpcClient.new
       end
   end
   

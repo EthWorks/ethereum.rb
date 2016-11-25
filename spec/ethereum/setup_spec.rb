@@ -3,8 +3,11 @@ require 'spec_helper'
 
 describe 'Ethereum::Singleton.instance' do
 
-    it 'should setup to IpcClient' do
+    before(:each) do
       Ethereum::Singleton.reset
+    end
+
+    it 'should setup to IpcClient' do
       Ethereum::Singleton.setup do |c|
         c.client = :ipc        
         c.ipcpath = "/tmp/some.ipc"
@@ -17,7 +20,6 @@ describe 'Ethereum::Singleton.instance' do
     end
 
     it 'should setup to HttpClient' do
-      Ethereum::Singleton.reset
       Ethereum::Singleton.setup do |c|
         c.client = :http
         c.host = "http://121.1.1.1:80"
@@ -30,9 +32,9 @@ describe 'Ethereum::Singleton.instance' do
       expect(instance.log).to be false
     end
     
-    it 'should be nil if no setup was done' do
-      Ethereum::Singleton.reset
-      expect(Ethereum::Singleton.instance).to be_nil
+    it 'should be IpcCLient by default' do
+      instance = Ethereum::Singleton.instance
+      expect(instance).to be_an_instance_of(Ethereum::IpcClient)
     end
 
 end
