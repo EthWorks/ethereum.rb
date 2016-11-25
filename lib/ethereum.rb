@@ -8,6 +8,7 @@ module Ethereum
   require 'ethereum/client'
   require 'ethereum/ipc_client'
   require 'ethereum/http_client'
+  require 'ethereum/singleton'
   require 'ethereum/solidity'
   require 'ethereum/initializer'
   require 'ethereum/contract'

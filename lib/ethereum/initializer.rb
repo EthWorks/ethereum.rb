@@ -5,7 +5,7 @@ module Ethereum
 
     def initialize(file, client = Ethereum::IpcClient.new)
       @client = client
-      sol_output = Ethereum::Solidity.new.compile(file)
+      sol_output = Solidity.new.compile(file)
       contracts = sol_output.keys
 
       @contracts = []
@@ -13,7 +13,7 @@ module Ethereum
         abi = JSON.parse(sol_output[contract]["abi"] )
         name = contract
         code = sol_output[contract]["bin"]
-        @contracts << Ethereum::Contract.new(name, code, abi)
+        @contracts << Contract.new(name, code, abi)
       end
     end
 
