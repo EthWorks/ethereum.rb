@@ -1,14 +1,14 @@
-# Ethereum library for Ruby
+# Ruby library for  connecting with Ethereum node
 
 A simple library for Ethereum.
 
-## Features
+## Highlights
 
 * Pure Ruby implementation
 * IPC & HTTP Client with batch calls support
 * Compile Solidity contracts with solc compiler
 * Deploy and call contracts methods
-* Contract events 
+* Contract events
 
 ## Compatibility and requirements
 
@@ -105,15 +105,28 @@ simple_name_registry_instance.as("0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1")
 simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 ```
 
+## Utils rake tasks
+
+```ruby
+rake ethereum:contract:compile[path]  # Compile a contract / Compile and deploy contract
+rake ethereum:node:mine               # Mine ethereum testing environment for ethereum node
+rake ethereum:node:run                # Run morden (production) node
+rake ethereum:node:test               # Run testnet node
+rake ethereum:test:setup              # Setup testing environment for ethereum node
+rake ethereum:transaction:byhash[id]  # Get info about transaction
+```
+
 ## Debbuging
 Logs from communication with node are available under following path:
 ```
 /tmp/ethereum_ruby_http.log
-
+```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. 
+Make sure `rake ethereum:test:setup` passes before running tests.
+Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
