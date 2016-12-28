@@ -132,7 +132,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Ethereum ruby
 
-This library has been forked from [ethereum-ruby](https://github.com/DigixGlobal/ethereum-ruby).
+This library has been forked from [ethereum-ruby](https://github.com/DigixGlobal/ethereum-ruby) by DigixGlobal Pte Ltd (https://dgx.io).
 
 ## License
 

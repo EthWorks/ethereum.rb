@@ -6,13 +6,13 @@ require 'ethereum/version'
 Gem::Specification.new do |spec|
   spec.name          = "ethereum"
   spec.version       = Ethereum::VERSION
-  spec.authors       = ["DigixGlobal Pte Ltd (https://dgx.io)"]
-  spec.email         = ["ace@dgx.io"]
+  spec.authors       = ["Marek Kirejczyk"]
+  spec.email         = ["marek.kirejczyk@gmail.com"]
 
-  spec.summary       = %q{Ethereum libraries for Ruby}
-  spec.description   = %q{Ethereum libraries for ruby programming language.}
-  spec.homepage      = "https://github.com/DigixGlobal/ethereum-ruby"
-  spec.license       = "GPL"
+  spec.summary       = %q{Ruby Ethereum client using the JSON-RPC interface}
+  spec.description   = %q{Ethereum.rb is Ruby Ethereum client using the JSON-RPC interface. Provides interface for sending transactions, creating and interacting with contracts as well as usefull toolkit to work with Ethereum node.}
+  spec.homepage      = "https://github.com/marekkirejczyk/ethereum.rb"
+  spec.license       = "MIT"
 
   if spec.respond_to?(:metadata)
     spec.metadata['allowed_push_host'] = "https://rubygems.org"
@@ -32,5 +32,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport"
   spec.add_dependency "sha3", "~> 0.2.6"
-  # spec.add_dependency "sha3-pure-ruby", "~>0.1.1"
 end
