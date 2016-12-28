@@ -8,7 +8,7 @@ describe Ethereum do
     raise "You need to have at an account with 0.02 ether to run test" if account_missing
   end
 
-  it "should build, deploy, use and kill simple contract" do
+  it "should build, deploy, use and kill simple contract", slow: true do
     path = "#{Dir.pwd}/spec/fixtures/Works.sol"
     @works = Ethereum::Contract.from_file(path, @client)
     address = @works.deploy_and_wait
