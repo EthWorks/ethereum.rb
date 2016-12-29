@@ -1,11 +1,16 @@
 language: ruby
 rvm:
   - 2.3.1
+addons:
+  apt:
+    packages:
+    - libstdc++6
+    - libc6
 before_install:
   - gem install bundler -v 1.11.2
   - wget http://d1h4xl4cr1h0mo.cloudfront.net/v1.4.7/x86_64-unknown-linux-gnu/parity_1.4.7_amd64.deb
   - sudo dpkg -i parity_1.4.7_amd64.deb
-  - mkdir ~/.parity
+  - mkdir ~/.parityg
   - wget https://raw.githubusercontent.com/ethcore/parity/master/ethcore/res/ethereum/ropsten.json --output-document ~/.parity/ropsten.json
 before_script:
   - parity --chain ~/.parity/ropsten.json --warp daemon /tmp/parity.pid
