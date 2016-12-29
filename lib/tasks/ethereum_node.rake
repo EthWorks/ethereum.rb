@@ -5,9 +5,9 @@ namespace :ethereum do
 
     desc "Run testnet node "
     task :test do
-      stdout, stdeerr, status = Open3.capture3("parity --chain testnet account list")
+      stdout, stdeerr, status = Open3.capture3("parity --chain ~/.parity/ropsten.json account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account}"
+      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account} daemon ~/.parity.pid"
       puts cmd
       system cmd
     end
@@ -40,7 +40,7 @@ namespace :ethereum do
              highest = formatter.to_int(result["highestBlock"])
              puts "Syncing block: #{current}/#{highest}"
            end
-           sleep 1
+           sleep 5
         end
       rescue
         puts "Ethereum node not running?"

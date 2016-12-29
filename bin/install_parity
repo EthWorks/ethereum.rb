@@ -1,0 +1,29 @@
+#!/bin/bash
+
+install_parity () {
+  sudo add-apt-repository ppa:ethereum/ethereum -y
+  sudo apt-get update
+  sudo apt-get install solc
+  wget http://d1h4xl4cr1h0mo.cloudfront.net/v1.4.8/x86_64-unknown-linux-gnu/parity_1.4.8_amd64.deb
+  sudo dpkg -i parity_1.4.8_amd64.deb
+}
+
+
+
+echo "Installing parity..."
+
+if [ `which parity` ]; then
+  echo "Parity cached, skipping"
+  install_parity
+else
+  echo "Settuping parity..."
+  install_parity
+  mkdir -p ~/.parity
+  wget https://raw.githubusercontent.com/ethcore/parity/master/ethcore/res/ethereum/ropsten.json --output-document ~/.parity/ropsten.json
+  echo $pass > ~/.parity/pass
+  mkdir -p ~/.parity/keys  
+  echo $wallet > ~/.parity/keys/10890ad6-5171-4945-be95-984d83394120
+  chown -R travis:travis ~/.parity
+fi
+
+ls -la ~/.parity

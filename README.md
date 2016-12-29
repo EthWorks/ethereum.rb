@@ -108,12 +108,14 @@ simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
 ## Utils rake tasks
 
 ```ruby
-rake ethereum:contract:compile[path]  # Compile a contract / Compile and deploy contract
-rake ethereum:node:mine               # Mine ethereum testing environment for ethereum node
-rake ethereum:node:run                # Run morden (production) node
-rake ethereum:node:test               # Run testnet node
-rake ethereum:test:setup              # Setup testing environment for ethereum node
-rake ethereum:transaction:byhash[id]  # Get info about transaction
+rake ethereum:contract:compile[path]            # Compile a contract / Compile and deploy contract
+rake ethereum:node:mine                         # Mine ethereum testing environment for ethereum node
+rake ethereum:node:run                          # Run morden (production) node
+rake ethereum:node:test                         # Run testnet node
+rake ethereum:test:setup                        # Setup testing environment for ethereum node
+rake ethereum:transaction:byhash[id]            # Get info about transaction
+rake ethereum:transaction:send[address,amount]  # Send [amount of] ether to an account
+
 ```
 
 ## Debbuging
