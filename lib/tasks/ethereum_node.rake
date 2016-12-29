@@ -26,5 +26,26 @@ namespace :ethereum do
         system cmd
     end
 
+    desc "Check if node is syncing"
+    task :waitforsync do
+      formatter = Ethereum::Formatter.new
+      begin
+        while (1) do
+           result = Ethereum::Singleton.instance.eth_syncing["result"]
+           unless result
+             puts "Synced"
+             break
+           else
+             current = formatter.to_int(result["currentBlock"])
+             highest = formatter.to_int(result["highestBlock"])
+             puts "Syncing block: #{current}/#{highest}"
+           end
+           sleep 1
+        end
+      rescue
+        puts "Ethereum node not running?"
+      end
+    end
+
   end
 end
