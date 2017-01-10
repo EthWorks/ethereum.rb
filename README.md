@@ -14,7 +14,20 @@ A simple library for Ethereum.
 
 * Tested on parity, might work with geth
 * Ruby 2.x
-* UNIX/Linux environments 
+* UNIX/Linux or OS X environment
+
+
+## Prerequisites
+
+Ethereum.rb requires installation of ethereum node and solidity compiler.
+
+### Ethereum node
+
+Currently the lib supports only [parity](https://ethcore.io/parity.html). It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. Library assumes that you have at least one wallet configured.
+
+### Solidity complier
+
+To be able to compile [solidity](https://github.com/ethereum/solidity) contracts you need to install solc compiler. Installation instructions are available [here](http://solidity.readthedocs.io/en/latest/installing-solidity.html).
 
 ## Installation
 
@@ -36,30 +49,56 @@ Or install it yourself as:
 
 ### IPC Client Connection
 
+To create client instance simply create Ethereum::IpcClient:
+
 ```ruby
 client = Ethereum::IpcClient.new
 ```
 
+You can also customize it with path to ipc file path and logging flag:
+
+```ruby
+client = Ethereum::IpcClient.new("~/.parity/mycustom.ipc", false)
+```
+
+If no ipc file path given, IpcClient looks for ipc file in default locations for parity and geth.
+By default logging is on and logs are saved in "/tmp/ethereum_ruby_http.log".
+
+
 ### Solidity contract compilation and deployment
 
+You can create contract from solidity source and deploy it to the blockchain.
+
 ```ruby
-path = "#{ENV['PWD']}/spec/fixtures/SimpleNameRegistry.sol"
-init = Ethereum::Initializer.new(path, client)
+contract = Ethereum::Contract.from_file("mycontract.sol", client)
+contract_instance = contract.deploy_and_wait
+```
+
+Deployment may take up to couple minutes.
+Or with more complex syntax (might be useful if you want to complie multiple contracts at once):
+
+```ruby
+init = Ethereum::Initializer.new("mycontract.sol", client)
 init.build_all
-simple_name_registry_instance = SimpleNameRegistry.new
-simple_name_registry_instance.deploy_and_wait(60)
+contract = MyContract.new
+contract_instance = contract.deploy_and_wait(60)
 ```
 
-or with simplifed syntax:
+Note that contract variable holds the reference to contract code, while contract_instance holds refernce to contract deployed to the blockchain. You can call contract functions on contract_instance as described in sections "Transacting and Calling Solidity Functions".
 
-```ruby
-simple_name_registry_instance = Ethereum::Contract.from_file(path, client)
-simple_name_registry_instance.deploy_and_wait(60)
-```
+All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
+If class of given name exist it will be undefined first to avoid name collision. 
 
 ### Get contract from blockchain
 
-simple_name_registry_instance = Ethereum::Contract.from_blockchain("SimpleNameRegistry", address, abi, client)
+The other way to obtain contract instance is get one form the blockchain. To do so you need a contract name, contract address and ABI definition.
+
+```ruby
+contract_instance = Ethereum::Contract.from_blockchain("MyContract", "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi, client)
+
+```
+
+Note that you need to specify contract name, that will be used to define new class in ruby, as it is not a part of ABI definition.
 
 ### Transacting and Calling Solidity Functions
 
