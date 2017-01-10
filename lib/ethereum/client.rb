@@ -67,7 +67,7 @@ module Ethereum
       method_name = rpc_command.underscore
       define_method method_name do |*args|
         command = rpc_command
-        if command == "eth_call"
+        if ["eth_getBalance", "eth_call"].include?(command)
           args << "latest"
         end
         payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
