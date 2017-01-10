@@ -12,10 +12,10 @@ A simple library for Ethereum.
 
 ## Compatibility and requirements
 
-* Tested on parity, might work with geth
+* Tested with parity 1.4.8, might work with geth
+* Tested with solc 0.4.8
 * Ruby 2.x
 * UNIX/Linux or OS X environment
-
 
 ## Prerequisites
 
