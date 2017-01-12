@@ -24,7 +24,9 @@ module Ethereum
 
     def self.from_file(path, client = Ethereum::Singleton.instance)
       @init = Ethereum::Initializer.new(path, client)
-      @init.build_all.first.class_object.new
+      contracts = @init.build_all
+      raise "No contracts complied" if contracts.empty?
+      contracts.first.class_object.new
     end
 
     def self.from_blockchain(name, address, abi, client = Ethereum::Singleton.instance)

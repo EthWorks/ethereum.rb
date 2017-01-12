@@ -16,7 +16,7 @@ module Ethereum
     end
 
     def self.default_path(paths = IPC_PATHS)
-      paths.select { |path| File.exist?(path) }.first
+      paths.select { |path| File.exist?(path) }.first || ""
     end
 
     def send_single(payload)
