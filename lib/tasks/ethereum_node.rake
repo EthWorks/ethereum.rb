@@ -7,7 +7,7 @@ namespace :ethereum do
     task :test do
       stdout, stdeerr, status = Open3.capture3("parity --chain ~/.parity/ropsten.json account list")
       account = stdeerr.split(/[\[,\]]/)[1]
-      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account} daemon ~/.parity.pid"
+      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account}"
       puts cmd
       system cmd
     end
