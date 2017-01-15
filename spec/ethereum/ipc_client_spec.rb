@@ -1,15 +1,13 @@
 require 'tempfile'
 require 'spec_helper'
 
-describe Ethereum do
+describe Ethereum::IpcClient do
 
-  describe 'IpcClient' do
-    before(:all) do
-      @client = Ethereum::IpcClient.new
-    end
+    subject { Ethereum::IpcClient.new }
+    let (:version) { subject.eth_protocol_version["result"] }
 
-    it 'should work' do
-      expect(@client.eth_protocol_version).to be_instance_of Hash
+    it 'is able to connect' do
+      expect(version).to be_instance_of String
     end
 
     it 'should find default path' do
@@ -22,9 +20,9 @@ describe Ethereum do
     end
 
     it 'should support batching' do
-      response = @client.batch do
-        @client.net_listening
-        @client.eth_block_number
+      response = subject.batch do
+        subject.net_listening
+        subject.eth_block_number
       end
 
       expect(response).to be_a Array
@@ -32,5 +30,5 @@ describe Ethereum do
       expect(response.first['result']).to be_in [true, false]
       expect(response.last['result']).to match /(0x)?[0-9a-f]+/i
     end
-  end
+
 end

@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Ethereum do
+describe Ethereum::HttpClient do
 
-  describe 'HttpClient' do
-    it 'should be able to connect' do
-      client = Ethereum::HttpClient.new('http://localhost:8545')
-      expect(client.eth_protocol_version).to be_instance_of Hash
-    end
+  subject { Ethereum::HttpClient.new('http://localhost:8545') }
+  let (:version) { subject.eth_protocol_version["result"] }
+
+  it 'is able to connect' do
+    expect(version).to be_instance_of String
   end
 
 end

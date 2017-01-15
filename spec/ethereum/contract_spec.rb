@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ethereum do
+describe Ethereum::Contract do
 
   let(:contract_path) { "#{Dir.pwd}/spec/fixtures/Works.sol" }
   let!(:client) { Ethereum::IpcClient.new }
