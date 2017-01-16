@@ -13,8 +13,7 @@ module Ethereum
         Ethereum::FunctionOutput.new(output)
       end
       @function_string = "#{@name}(#{@inputs.collect {|x| x.type }.join(",")})"
-      @signature = SHA3::Digest::SHA256.hexdigest(@function_string)[0..7]
-      # @signature = Digest::SHA3.hexdigest(@function_string, 256)[0..7]
+      @signature = Digest::SHA3.hexdigest(@function_string, 256)[0..7]
     end
 
   end

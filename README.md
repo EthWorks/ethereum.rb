@@ -1,4 +1,6 @@
-# Ruby library for  connecting with Ethereum node
+# Ethereum.rb
+
+[![Build Status](https://travis-ci.org/marekkirejczyk/ethereum.rb.svg?branch=master)](https://travis-ci.org/marekkirejczyk/ethereum.rb) [![security](https://hakiri.io/github/NullVoxPopuli/MetaHash/master.svg)](https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb)
 
 A simple library for Ethereum.
 
@@ -170,10 +172,6 @@ Make sure `rake ethereum:test:setup` passes before running tests.
 Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Status 
-
-[![Build Status](https://travis-ci.org/marekkirejczyk/ethereum.rb.svg?branch=master)](https://travis-ci.org/marekkirejczyk/ethereum.rb)
 
 ## Ethereum ruby
 
