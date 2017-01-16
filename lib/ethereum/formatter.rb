@@ -145,6 +145,10 @@ module Ethereum
       self.to_utf8(bytes)
     end
 
+    def output_to_string(bytes)
+      self.to_utf8(bytes)
+    end
+
     def output_to_uint(bytes)
       self.to_int(bytes)
     end
