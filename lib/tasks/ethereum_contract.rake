@@ -7,10 +7,10 @@ namespace :ethereum do
     task :compile, [:path] do |_, args|
       contract = Ethereum::Solidity.new.compile(args[:path])
       puts "Contract abi:"
-      puts contract["Works"]["abi"]
+      puts contract.map { |k, v| "#{k}: #{v["abi"]}" }.join("\n\n")
       puts
       puts "Contract binary code:"
-      puts contract["Works"]["bin"]
+      puts contract.map { |k, v| "#{k}: #{v["bin"]}" }.join("\n\n")
       puts
     end
 

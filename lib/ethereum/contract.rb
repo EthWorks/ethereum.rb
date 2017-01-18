@@ -29,6 +29,13 @@ module Ethereum
       contracts.first.class_object.new
     end
 
+    def self.from_code(name, code, abi_string, client = Ethereum::Singleton.instance)
+      contract = Ethereum::Contract.new(name, code, JSON.parse(abi_string))
+      contract.build(client)
+      contract_instance = contract.class_object.new
+      contract_instance
+    end
+
     def self.from_blockchain(name, address, abi, client = Ethereum::Singleton.instance)
       contract = Ethereum::Contract.new(name, nil, abi)
       contract.build(client)
@@ -95,9 +102,9 @@ module Ethereum
           instance_variable_get("@deployment")
         end
 
-        define_method :deploy_and_wait do |time = 200.seconds, *params, **args, &block|
+        define_method :deploy_and_wait do |*params, **args, &block|
           self.deploy(*params)
-          self.deployment.wait_for_deployment(time, **args, &block)
+          self.deployment.wait_for_deployment(**args, &block)
           instance_variable_set("@address", self.deployment.contract_address)
           self.events.each do |event|
             event.set_address(self.deployment.contract_address)

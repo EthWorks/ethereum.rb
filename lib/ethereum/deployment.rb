@@ -35,7 +35,7 @@ module Ethereum
       @valid_deployment ||= check_deployed
     end
 
-    def wait_for_deployment(timeout = DEFAULT_TIMEOUT, step: DEFAULT_STEP)
+    def wait_for_deployment(timeout: DEFAULT_TIMEOUT, step: DEFAULT_STEP)
       start_time = Time.now
       loop do
         raise "Transaction #{@id} timed out." if ((Time.now - start_time) > timeout) 
