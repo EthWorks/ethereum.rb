@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ethereum/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "ethereum"
+  spec.name          = "ethereum.rb"
   spec.version       = Ethereum::VERSION
   spec.authors       = ["Marek Kirejczyk"]
   spec.email         = ["marek.kirejczyk@gmail.com"]

@@ -80,7 +80,7 @@ module Ethereum
             end
           end
           deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.eth_estimate_gas({from: self.sender, data: "0x" + deploy_payload})["result"]
+          connection.eth_estimate_gas({from: self.sender, data: "0x" + deploy_payload})["result"]
         end
 
         define_method :events do

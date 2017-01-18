@@ -5,13 +5,13 @@ namespace :ethereum do
   namespace :transaction do
 
     desc "Get info about transaction"
-    task :byhash, [:id] do |t, args|
+    task :byhash, [:id] do |_, args|
       @client = Ethereum::Singleton.instance
       pp @client.eth_get_transaction_by_hash(args[:id])
     end
 
     desc "Send"
-    task :send, [:address, :amount] do |t, args|
+    task :send, [:address, :amount] do |_, args|
       @client = Ethereum::Singleton.instance
       @formatter = Ethereum::Formatter.new
       address = @formatter.to_address(args[:address])

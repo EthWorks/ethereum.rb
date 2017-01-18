@@ -8,7 +8,7 @@ class Ethereum::Singleton
       @instance ||= configure_instance(create_instance)
     end
   
-    def setup(&block)
+    def setup
       yield(self)
     end
     

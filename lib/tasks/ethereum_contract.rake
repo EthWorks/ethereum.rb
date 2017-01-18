@@ -4,7 +4,7 @@ namespace :ethereum do
   namespace :contract do
 
     desc "Compile a contract"
-    task :compile, [:path] do |t, args|
+    task :compile, [:path] do |_, args|
       contract = Ethereum::Solidity.new.compile(args[:path])
       puts "Contract abi:"
       puts contract["Works"]["abi"]
@@ -15,7 +15,7 @@ namespace :ethereum do
     end
 
     desc "Compile and deploy contract"
-    task :deploy, [:path] do |t, args|
+    task :deploy, [:path] do |_, args|
       puts "Deploing contract #{args[:path]}"
       @works = Ethereum::Contract.from_file(args[:path])
       @works.deploy_and_wait { puts "." }

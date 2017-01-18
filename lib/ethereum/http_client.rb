@@ -30,7 +30,7 @@ module Ethereum
       return response.body
     end
 
-    def send_batch(batch)
+    def send_batch(_batch)
       raise NotImplementedError
     end
   end

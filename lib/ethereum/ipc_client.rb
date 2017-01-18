@@ -27,7 +27,6 @@ module Ethereum
       return read
     end
 
-    # TODO: Not sure if multithread safe
     # Note: Guarantees the results are in the same order as defined in batch call.
     # client.batch do
     #   client.eth_block_number
