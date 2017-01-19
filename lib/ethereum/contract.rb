@@ -25,7 +25,7 @@ module Ethereum
     end
 
     def self.from_code(name, code, abi_string, client = Ethereum::Singleton.instance)
-      contract = Ethereum::Contract.new(name, code, JSON.parse(abi_string))
+      contract = Ethereum::Contract.new(name, code, JSON.parse(abi_string), client)
       contract.build(client)
       contract_instance = contract.class_object.new
       contract_instance
