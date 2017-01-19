@@ -4,6 +4,7 @@ require 'active_support/core_ext'
 require 'digest/sha3'
 
 module Ethereum
+  require 'ethereum/abi'
   require 'ethereum/client'
   require 'ethereum/ipc_client'
   require 'ethereum/http_client'

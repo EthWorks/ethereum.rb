@@ -5,21 +5,16 @@ module Ethereum
 
     DEFAULT_GAS = 3000000
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender
 
-    def initialize(name, code, abi)
+    def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
       @code = code
       @abi = abi
-      @functions = []
-      @events = []
-      @constructor_inputs = @abi.detect {|x| x["type"] == "constructor"}["inputs"] rescue nil
-      @abi.select {|x| x["type"] == "function" }.each do |abifun|
-        @functions << Ethereum::Function.new(abifun) 
-      end
-      @abi.select {|x| x["type"] == "event" }.each do |abievt|
-        @events << Ethereum::ContractEvent.new(abievt)
-      end
+      @constructor_inputs, @functions, @events = Ethereum::Abi.parse_abi(abi)
+      @formatter = Ethereum::Formatter.new
+      @client = client
+      @sender = client.default_account
     end
 
     def self.from_file(path, client = Ethereum::Singleton.instance)
@@ -44,6 +39,17 @@ module Ethereum
       contract_instance
     end
 
+    def deploy(client, *params)
+      if @constructor_inputs.present?
+        raise "Missing constructor parameter" and return if params.length != @constructor_inputs.length
+      end
+      deploy_arguments = @formatter.construtor_params_to_payload(@constructor_inputs, params)
+      payload = "0x" + @code + deploy_arguments
+      tx = client.eth_send_transaction({from: sender, data: payload})["result"]
+      raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
+      Ethereum::Deployment.new(tx, client)
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
@@ -51,6 +57,7 @@ module Ethereum
       binary = @code
       events = @events
       abi = @abi
+      parent = self
 
       class_methods = Class.new do
 
@@ -59,20 +66,7 @@ module Ethereum
         end
 
         define_method :deploy do |*params|
-          formatter = Ethereum::Formatter.new
-          deploy_code = binary
-          deploy_arguments = ""
-          if constructor_inputs.present?
-            raise "Missing constructor parameter" and return if params.length != constructor_inputs.length
-            constructor_inputs.each_index do |i|
-              args = [constructor_inputs[i]["type"], params[i]]
-              deploy_arguments << formatter.to_payload(args)
-            end
-          end
-          deploy_payload = deploy_code + deploy_arguments
-          deploytx = connection.eth_send_transaction({from: self.sender, data: "0x" + deploy_payload})["result"]
-          raise "Failed to deploy, did you unlock #{self.sender} account? Transaction hash: #{deploytx}" if deploytx.nil? || deploytx == "0x0000000000000000000000000000000000000000000000000000000000000000"
-          instance_variable_set("@deployment", Ethereum::Deployment.new(deploytx, connection))
+          instance_variable_set("@deployment", parent.deploy(connection, *params))
         end
 
         define_method :estimate do |*params|

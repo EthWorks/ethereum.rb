@@ -123,6 +123,10 @@ module Ethereum
       self.bytes_to_payload(bytes)
     end
 
+    def construtor_params_to_payload(abi, params)
+      abi.map.with_index { |var, i| to_payload([var["type"], params[i]]) }.join
+    end
+
     def get_base_type(typename)
       typename.gsub(/\d+/,'')
     end
