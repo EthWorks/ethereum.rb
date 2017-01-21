@@ -36,7 +36,7 @@ To be able to compile [solidity](https://github.com/ethereum/solidity) contracts
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ethereum'
+gem 'ethereum.rb'
 ```
 
 And then execute:
@@ -45,7 +45,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install ethereum
+    $ gem install ethereum.eb
 
 ## Basic Usage
 
