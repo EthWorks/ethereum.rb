@@ -103,6 +103,10 @@ module Ethereum
       (hexstring.gsub(/^0x/,'')[0..1] == "ff") ? (hexstring.hex - (2 ** 256)) : hexstring.hex
     end
 
+    def bool_to_payload(bool)
+      int_to_payload(bool ? 1 : 0)
+    end
+
     def address_to_payload(address)
       from_address(address)
     end
