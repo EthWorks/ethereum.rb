@@ -4,8 +4,12 @@ module Ethereum
 
     def encode(type, value)
       core, subtype = Abi::parse_type(type)
-      method_name = "encode_#{core}".to_sym
-      self.send(method_name, value)
+      if core == "bytes" and subtype.nil?
+        encode_dynamic_bytes(value)
+      else
+        method_name = "encode_#{core}".to_sym
+        self.send(method_name, value)
+      end
     end
 
     def encode_int(value)
@@ -34,9 +38,13 @@ module Ethereum
     end
 
     def encode_bytes(value)
+      value.each_char.map {|x| x.ord.to_s(16)}.join("").ljust(64, '0')
+    end
+
+    def encode_dynamic_bytes(value)
       location = encode_uint(32)
       size = encode_uint(value.size)
-      content = value.each_char.map {|x| x.ord.to_s(16)}.join("").ljust(64, '0')
+      content = encode_bytes(value)
       location + size + content
     end
 

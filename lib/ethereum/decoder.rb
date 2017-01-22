@@ -5,7 +5,9 @@ module Ethereum
       value = value.gsub(/^0x/,'')
       core, subtype = Abi::parse_type(type)
       method_name = "decode_#{core}".to_sym
-      if core == "string" or core == "bytes"
+      if "bytes" == core and subtype.nil?
+        decode_dynamic_bytes(value, start)
+      elsif "string" == core
         self.send(method_name, value, start)
       else
         self.send(method_name, value[start..start+63])
@@ -32,14 +34,18 @@ module Ethereum
       value
     end
 
-    def decode_bytes(value, start = 0)
+    def decode_bytes(value)
+      value.scan(/.{2}/).collect {|x| x.hex}.pack('C*').strip
+    end
+
+    def decode_dynamic_bytes(value, start = 0)
       location = decode_uint(value[start..(start+63)]) * 2
       size = decode_uint(value[location..location+63]) * 2
       value[location+64..location+63+size].scan(/.{2}/).collect {|x| x.hex}.pack('C*')
     end
 
     def decode_string(value, start = 0)
-      decode_bytes(value, start).force_encoding('utf-8')
+      decode_dynamic_bytes(value, start).force_encoding('utf-8')
     end
 
     def decode_arguments(arguments, data)

@@ -213,8 +213,9 @@ module Ethereum
             end
             raw_result = connection.eth_call({to: self.address, from: self.sender, data: "0x" + payload.join()})
             raw_result = raw_result["result"]
-            formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
-            output = formatted_result.collect {|x| formatter.from_payload(x) }
+            # formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
+            # output = formatted_result.collect {|x| formatter.from_payload(x) }
+            output = Ethereum::Decoder.new.decode_arguments(fun.outputs, raw_result)
             return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
           end
 

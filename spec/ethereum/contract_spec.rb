@@ -15,7 +15,7 @@ describe Ethereum::Contract do
     expect(client).to receive(:send_single).at_least(1).with(eth_accounts_request).and_return(eth_accounts_result)
   end
 
-  shared_examples "communicate with node" do
+  shared_examples "communicate with node" do |expected|
     it "communicate with node" do
       contract.at(address)
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
@@ -59,13 +59,15 @@ describe Ethereum::Contract do
 
   context "call" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_call","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"},"latest"],"id":1}' }
-    subject { contract.call_greet }
+    let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003616c610000000000000000000000000000000000000000000000000000000000", "id": 1}' }
+    subject { expect(contract.call_greet).to eq "ala" }
     it_behaves_like "communicate with node"
   end
 
   context "call_raw" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_call","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"},"latest"],"id":1}' }
-    subject { contract.call_raw_greet }
+    let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003616c610000000000000000000000000000000000000000000000000000000000", "id": 1}' }
+    subject { expect(contract.call_raw_greet[:formatted]).to eq ["ala"] }
     it_behaves_like "communicate with node"
   end
 

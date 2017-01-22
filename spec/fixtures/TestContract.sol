@@ -1,4 +1,4 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.4.8;
 
 contract Works {
 
@@ -15,8 +15,8 @@ contract Works {
       signatures[id] = sig;
     }
 
-    function get(bytes32 id) constant returns (bytes32) {
-        return signatures[id];
+    function get(bytes32 id) constant returns (bytes32, string) {
+        return (signatures[id], "żółć");
     }
 
     function unset(bytes32 id) {
