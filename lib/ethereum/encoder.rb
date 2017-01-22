@@ -40,6 +40,13 @@ module Ethereum
       location + size + content
     end
 
+    def encode_string(value)
+      location = encode_uint(32)
+      size = encode_uint(value.bytes.size)
+      content = value.bytes.map {|x| x.to_s(16)}.join("").ljust(64, '0')
+      location + size + content
+    end
+
     def encode_address(value)
       value = value.gsub(/^0x/,'')
       raise ArgumentError if value.size != 40

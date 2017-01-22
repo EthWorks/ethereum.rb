@@ -9,9 +9,10 @@ module Ethereum
     end
 
     def self.parse_type(type)
+      raise NotImplementedError if type.ends_with?("]")
       match = /(\D+)(\d.+)?/.match(type)
       [match[1], match[2]]
     end
-    
+
   end
 end

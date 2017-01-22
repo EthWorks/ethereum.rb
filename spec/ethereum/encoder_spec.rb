@@ -56,4 +56,23 @@ describe Ethereum::Encoder do
     specify { expect("bytes").to encode_and_decode("dave").to(expected) }
   end
 
+  context "string" do
+    let (:hex1) { "000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000046461766500000000000000000000000000000000000000000000000000000000" }
+    let (:hex2) { "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c6d69c5826f62c499647a6b610000000000000000000000000000000000000000" }
+    specify { expect("string").to encode_and_decode("dave").to(hex1) }
+    specify { expect("string").to encode_and_decode("miłobędzka").to(hex2) }
+  end
+
+  context "long string" do
+    let (:message) { "a" * 1000 }
+    it { expect(decoder.decode("string", encoder.encode("string", message))).to eq message }
+  end
+
+  context "decode function outputs" do
+    let(:abi) { {"outputs" => [{"type" => "int"}, {"type" => "string", "name" => ""}], "inputs" => [] } }
+    let(:function) { Ethereum::Function.new(abi) }
+    let (:data) { "0x00000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000c6d69c5826f62c499647a6b610000000000000000000000000000000000000000" }
+    it { expect(decoder.decode_arguments(function.outputs, data)).to eq [20, "miłobędzka"] }
+  end
+
 end
