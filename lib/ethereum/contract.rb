@@ -1,10 +1,6 @@
 module Ethereum
   class Contract
 
-    DEFAULT_GAS_PRICE = 60000000000
-
-    DEFAULT_GAS = 3000000
-
     attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address, :deployment
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
@@ -73,6 +69,20 @@ module Ethereum
       return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
     end
 
+    def estimate(*params)
+      deploy_arguments = ""
+      if @constructor_inputs.present?
+        raise "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
+        @constructor_inputs.each_index do |i|
+          args = [@constructor_inputs[i]["type"], params[i]]
+          deploy_arguments << @formatter.to_payload(args)
+        end
+      end
+      deploy_payload = @code + deploy_arguments
+      result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})
+      Decoder.new.decode_int(result["result"])
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
@@ -93,23 +103,11 @@ module Ethereum
         end
 
         define_method :deploy do |*params|
-          # instance_variable_set("@deployment", )
           parent.deploy(*params)
         end
 
         define_method :estimate do |*params|
-          formatter = Ethereum::Formatter.new
-          deploy_code = binary
-          deploy_arguments = ""
-          if constructor_inputs.present?
-            raise "Missing constructor parameter" and return if params.length != constructor_inputs.length
-            constructor_inputs.each_index do |i|
-              args = [constructor_inputs[i]["type"], params[i]]
-              deploy_arguments << formatter.to_payload(args)
-            end
-          end
-          deploy_payload = deploy_code + deploy_arguments
-          connection.eth_estimate_gas({from: self.sender, data: "0x" + deploy_payload})["result"]
+          parent.estimate(*params)
         end
 
         define_method :events do
@@ -146,22 +144,6 @@ module Ethereum
 
         define_method :sender do
           instance_variable_get("@sender") || connection.default_account
-        end
-
-        define_method :set_gas_price do |gp|
-          instance_variable_set("@gas_price", gp)
-        end
-
-        define_method :gas_price do
-          instance_variable_get("@gas_price") || DEFAULT_GAS_PRICE
-        end
-
-        define_method :set_gas do |gas|
-          instance_variable_set("@gas", gas)
-        end
-
-        define_method :gas do 
-          instance_variable_get("@gas") || DEFAULT_GAS
         end
 
         events.each do |evt|
