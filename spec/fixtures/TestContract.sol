@@ -1,10 +1,10 @@
 pragma solidity ^0.4.8;
 
-contract Works {
+contract TestContract {
 
     address public owner;
 
-    function Works() { owner = msg.sender; }
+    function TestContract() { owner = msg.sender; }
 
     function kill() { if (msg.sender == owner) selfdestruct(owner); }
 

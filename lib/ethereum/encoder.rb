@@ -25,15 +25,11 @@ module Ethereum
       (value ? "1" : "0").rjust(64, '0')
     end
 
-    def encode_fixed(value)
+    def encode_fixed(_value)
       raise NotImplementedError
     end
 
-    def encode_ufixed(value)
-      raise NotImplementedError
-    end
-
-    def encode_string(value)
+    def encode_ufixed(_value)
       raise NotImplementedError
     end
 

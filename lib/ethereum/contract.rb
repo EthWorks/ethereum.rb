@@ -5,7 +5,7 @@ module Ethereum
 
     DEFAULT_GAS = 3000000
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
@@ -39,16 +39,30 @@ module Ethereum
       contract_instance
     end
 
-    def deploy(client, *params)
+    def deploy(*params)
       if @constructor_inputs.present?
         raise "Missing constructor parameter" and return if params.length != @constructor_inputs.length
       end
       deploy_arguments = @formatter.construtor_params_to_payload(@constructor_inputs, params)
       payload = "0x" + @code + deploy_arguments
-      tx = client.eth_send_transaction({from: sender, data: payload})["result"]
+      tx = @client.eth_send_transaction({from: sender, data: payload})["result"]
       raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
-      Ethereum::Deployment.new(tx, client)
+      Ethereum::Deployment.new(tx, @client)
     end
+
+    def call_raw(fun, *args)
+      arg_types = fun.inputs.collect(&:type)
+      return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
+      payload = [fun.signature]
+      arg_types.zip(args).each do |arg|
+        payload << @formatter.to_payload(arg)
+      end
+      raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload.join()})
+      raw_result = raw_result["result"]
+      output = Ethereum::Decoder.new.decode_arguments(fun.outputs, raw_result)
+      return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
+    end
+
 
     def build(connection)
       class_name = @name.camelize
@@ -61,12 +75,16 @@ module Ethereum
 
       class_methods = Class.new do
 
+        define_method :parent do
+          parent
+        end
+
         define_method "connection".to_sym do
           connection
         end
 
         define_method :deploy do |*params|
-          instance_variable_set("@deployment", parent.deploy(connection, *params))
+          instance_variable_set("@deployment", parent.deploy(*params))
         end
 
         define_method :estimate do |*params|
@@ -104,11 +122,11 @@ module Ethereum
             event.set_address(self.deployment.contract_address)
             event.set_client(connection)
           end
-          self.deployment.contract_address
+          parent.address = self.deployment.contract_address
         end
 
         define_method :at do |addr|
-          instance_variable_set("@address", addr) 
+          parent.address = addr
           self.events.each do |event|
             event.set_address(addr)
             event.set_client(connection)
@@ -116,7 +134,7 @@ module Ethereum
         end
 
         define_method :address do
-          instance_variable_get("@address")
+          parent.address
         end
 
         define_method :as do |addr|
@@ -202,21 +220,7 @@ module Ethereum
           transact_and_wait_function_name_alias = "tw_#{derived_function_name}".to_sym
 
           define_method call_raw_function_name do |*args|
-            formatter = Ethereum::Formatter.new
-            arg_types = fun.inputs.collect(&:type)
-            connection = self.connection
-            return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-            payload = []
-            payload << fun.signature
-            arg_types.zip(args).each do |arg|
-              payload << formatter.to_payload(arg)
-            end
-            raw_result = connection.eth_call({to: self.address, from: self.sender, data: "0x" + payload.join()})
-            raw_result = raw_result["result"]
-            # formatted_result = fun.outputs.collect {|x| x.type }.zip(raw_result.gsub(/^0x/,'').scan(/.{64}/))
-            # output = formatted_result.collect {|x| formatter.from_payload(x) }
-            output = Ethereum::Decoder.new.decode_arguments(fun.outputs, raw_result)
-            return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
+            parent.call_raw(fun, *args)
           end
 
           define_method call_function_name do |*args|
@@ -239,7 +243,7 @@ module Ethereum
             arg_types.zip(args).each do |arg|
               payload << formatter.to_payload(arg)
             end
-            txid = connection.eth_send_transaction({to: self.address, from: self.sender, data: "0x" + payload.join()})["result"]
+            txid = connection.eth_send_transaction({to: parent.address, from: self.sender, data: "0x" + payload.join()})["result"]
             return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
           end
 
