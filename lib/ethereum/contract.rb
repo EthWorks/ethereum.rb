@@ -78,6 +78,24 @@ module Ethereum
       end
     end
 
+    def transact(fun, *args)
+      arg_types = fun.inputs.collect(&:type)
+      return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
+      payload = []
+      payload << fun.signature
+      arg_types.zip(args).each do |arg|
+        payload << @formatter.to_payload(arg)
+      end
+      txid = @client.eth_send_transaction({to: @address, from: @sender, data: "0x" + payload.join()})["result"]
+      return Ethereum::Transaction.new(txid, @client, payload.join(), args)
+    end
+
+    def transact_and_wait(fun, *args)
+      tx = transact(fun, *args)
+      tx.wait_for_miner
+      return tx
+    end
+
     def estimate(*params)
       deploy_arguments = ""
       if @constructor_inputs.present?
@@ -194,24 +212,11 @@ module Ethereum
           end
 
           define_method transact_function_name do |*args|
-            formatter = Ethereum::Formatter.new
-            arg_types = fun.inputs.collect(&:type)
-            connection = self.connection
-            return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-            payload = []
-            payload << fun.signature
-            arg_types.zip(args).each do |arg|
-              payload << formatter.to_payload(arg)
-            end
-            txid = connection.eth_send_transaction({to: parent.address, from: self.sender, data: "0x" + payload.join()})["result"]
-            return Ethereum::Transaction.new(txid, self.connection, payload.join(), args)
+            parent.transact(fun, *args)
           end
 
           define_method transact_and_wait_function_name do |*args|
-            function_name = "transact_#{derived_function_name}".to_sym
-            tx = self.send(function_name, *args)
-            tx.wait_for_miner
-            return tx
+            parent.transact_and_wait(fun, *args)
           end
 
           alias_method call_function_name_alias, call_function_name
