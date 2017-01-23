@@ -5,7 +5,7 @@ module Ethereum
 
     DEFAULT_GAS = 3000000
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address, :deployment
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
@@ -47,7 +47,17 @@ module Ethereum
       payload = "0x" + @code + deploy_arguments
       tx = @client.eth_send_transaction({from: sender, data: payload})["result"]
       raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
-      Ethereum::Deployment.new(tx, @client)
+      @deployment = Ethereum::Deployment.new(tx, @client)
+    end
+
+    def deploy_and_wait(*params, **args, &block)
+      deploy(*params)
+      @deployment.wait_for_deployment(**args, &block)
+      self.events.each do |event|
+        event.set_address(@address)
+        event.set_client(client)
+      end
+      @address = @deployment.contract_address
     end
 
     def call_raw(fun, *args)
@@ -62,7 +72,6 @@ module Ethereum
       output = Ethereum::Decoder.new.decode_arguments(fun.outputs, raw_result)
       return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
     end
-
 
     def build(connection)
       class_name = @name.camelize
@@ -84,7 +93,8 @@ module Ethereum
         end
 
         define_method :deploy do |*params|
-          instance_variable_set("@deployment", parent.deploy(*params))
+          # instance_variable_set("@deployment", )
+          parent.deploy(*params)
         end
 
         define_method :estimate do |*params|
@@ -111,18 +121,11 @@ module Ethereum
         end
 
         define_method :deployment do
-          instance_variable_get("@deployment")
+          parent.deployment
         end
 
         define_method :deploy_and_wait do |*params, **args, &block|
-          self.deploy(*params)
-          self.deployment.wait_for_deployment(**args, &block)
-          instance_variable_set("@address", self.deployment.contract_address)
-          self.events.each do |event|
-            event.set_address(self.deployment.contract_address)
-            event.set_client(connection)
-          end
-          parent.address = self.deployment.contract_address
+          parent.deploy_and_wait(*params, **args, &block)
         end
 
         define_method :at do |addr|
