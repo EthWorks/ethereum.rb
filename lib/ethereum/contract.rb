@@ -114,7 +114,6 @@ module Ethereum
       class_name = @name.camelize
       functions = @functions
       events = @events
-      abi = @abi
       parent = self
 
       class_methods = Class.new do
