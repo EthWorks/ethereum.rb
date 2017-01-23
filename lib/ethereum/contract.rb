@@ -69,6 +69,15 @@ module Ethereum
       return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
     end
 
+    def call(fun, *args)
+      output = call_raw(fun, *args)[:formatted]
+      if output.length == 1
+        return output[0]
+      else
+        return output
+      end
+    end
+
     def estimate(*params)
       deploy_arguments = ""
       if @constructor_inputs.present?
@@ -86,13 +95,17 @@ module Ethereum
     def build(connection)
       class_name = @name.camelize
       functions = @functions
-      constructor_inputs = @constructor_inputs
-      binary = @code
       events = @events
       abi = @abi
       parent = self
 
       class_methods = Class.new do
+
+        extend Forwardable
+
+        def_delegators :parent, :abi, :deployment
+        def_delegators :parent, :estimate, :deploy, :deploy_and_wait
+        def_delegators :parent, :address, :address=, :sender, :sender=
 
         define_method :parent do
           parent
@@ -102,28 +115,8 @@ module Ethereum
           connection
         end
 
-        define_method :deploy do |*params|
-          parent.deploy(*params)
-        end
-
-        define_method :estimate do |*params|
-          parent.estimate(*params)
-        end
-
         define_method :events do
           return events
-        end
-
-        define_method :abi do
-          return abi
-        end
-
-        define_method :deployment do
-          parent.deployment
-        end
-
-        define_method :deploy_and_wait do |*params, **args, &block|
-          parent.deploy_and_wait(*params, **args, &block)
         end
 
         define_method :at do |addr|
@@ -132,18 +125,6 @@ module Ethereum
             event.set_address(addr)
             event.set_client(connection)
           end
-        end
-
-        define_method :address do
-          parent.address
-        end
-
-        define_method :as do |addr|
-          instance_variable_set("@sender", addr)
-        end
-
-        define_method :sender do
-          instance_variable_get("@sender") || connection.default_account
         end
 
         events.each do |evt|
@@ -209,13 +190,7 @@ module Ethereum
           end
 
           define_method call_function_name do |*args|
-            data = self.send(call_raw_function_name, *args)
-            output = data[:formatted]
-            if output.length == 1 
-              return output[0]
-            else 
-              return output
-            end
+            parent.call(fun, *args)
           end
 
           define_method transact_function_name do |*args|
