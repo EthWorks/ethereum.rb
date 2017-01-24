@@ -1,7 +1,7 @@
 module Ethereum
   class Contract
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address, :deployment
+    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address, :deployment, :client
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
@@ -110,6 +110,16 @@ module Ethereum
       Decoder.new.decode_int(result["result"])
     end
 
+    def create_filter(evt, **params)
+      params[:to_block] ||= "latest"
+      params[:from_block] ||= "0x0"
+      params[:address] ||=  @address
+      params[:topics] = "0x" + evt.signature
+      payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: "0x" + params[:address]}
+      filter_id = @client.eth_new_filter(payload)
+      return Decoder.new.decode_int(filter_id["result"])
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
@@ -146,18 +156,12 @@ module Ethereum
 
         events.each do |evt|
           define_method "nf_#{evt.name.underscore}".to_sym do |params = {}|
-            params[:to_block] ||= "latest"
-            params[:from_block] ||= "0x0"
-            params[:address] ||=  instance_variable_get("@address")
-            params[:topics] = evt.signature
-            payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: params[:address]}
-            filter_id = connection.new_filter(payload)
-            return filter_id["result"]
+            parent.create_filter(evt, **params)
           end
 
           define_method "gfl_#{evt.name.underscore}".to_sym do |filter_id|
             formatter = Ethereum::Formatter.new
-            logs = connection.get_filter_logs(filter_id)
+            logs = parent.client.eth_get_filter_logs(filter_id)
             collection = []
             logs["result"].each do |result|
               inputs = evt.input_types
@@ -173,7 +177,7 @@ module Ethereum
 
           define_method "gfc_#{evt.name.underscore}".to_sym do |filter_id|
             formatter = Ethereum::Formatter.new
-            logs = connection.get_filter_changes(filter_id)
+            logs = parent.client.eth_get_filter_changes(filter_id)
             collection = []
             logs["result"].each do |result|
               inputs = evt.input_types

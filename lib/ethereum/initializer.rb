@@ -13,7 +13,7 @@ module Ethereum
         abi = JSON.parse(sol_output[contract]["abi"] )
         name = contract
         code = sol_output[contract]["bin"]
-        @contracts << Contract.new(name, code, abi)
+        @contracts << Contract.new(name, code, abi, @client)
       end
     end
 

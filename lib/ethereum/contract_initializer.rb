@@ -40,7 +40,7 @@ module Ethereum
     end
 
     def build(connection)
-      @contract = Ethereum::Contract.new(@name, @binary, @abi) 
+      @contract = Ethereum::Contract.new(@name, @binary, @abi, client)
       @contract.build(connection)
     end
 
