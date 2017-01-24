@@ -51,7 +51,7 @@ module Ethereum
       @deployment.wait_for_deployment(**args, &block)
       self.events.each do |event|
         event.set_address(@address)
-        event.set_client(client)
+        event.set_client(@client)
       end
       @address = @deployment.contract_address
     end
