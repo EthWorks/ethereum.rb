@@ -18,7 +18,7 @@ describe Ethereum::Contract do
     let(:contract) { Ethereum::Contract.from_file(path, client) }
     it "succeed" do
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
-      expect(contract.nf_changed address: "70783C3CFaf354F425D85c1E8a5EfE4586C64b5D").to eq 2 
+      expect(contract.new_filter.changed address: "70783C3CFaf354F425D85c1E8a5EfE4586C64b5D").to eq 2 
     end
   end
 
@@ -29,7 +29,7 @@ describe Ethereum::Contract do
     let(:contract) { Ethereum::Contract.from_file(path, client) }
     it "succeed" do
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
-      expect(contract.gfl_changed(7)[0]).to include expected
+      expect(contract.get_filter_logs.changed(7)[0]).to include expected
     end
   end
 
@@ -40,7 +40,7 @@ describe Ethereum::Contract do
     let(:contract) { Ethereum::Contract.from_file(path, client) }
     it "succeed" do
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
-      expect(contract.gfc_changed(7)[0]).to include expected
+      expect(contract.get_filter_changes.changed(7)[0]).to include expected
     end
   end
 end

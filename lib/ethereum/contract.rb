@@ -5,6 +5,7 @@ module Ethereum
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
     attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
+    attr_accessor :new_filter_proxy, :get_filter_logs_proxy, :get_filter_change_proxy
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
@@ -69,6 +70,20 @@ module Ethereum
       @address = @deployment.contract_address
     end
 
+    def estimate(*params)
+      deploy_arguments = ""
+      if @constructor_inputs.present?
+        raise "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
+        @constructor_inputs.each_index do |i|
+          args = [@constructor_inputs[i]["type"], params[i]]
+          deploy_arguments << @formatter.to_payload(args)
+        end
+      end
+      deploy_payload = @code + deploy_arguments
+      result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})
+      @decoder.decode_int(result["result"])
+    end
+
     def call_raw(fun, *args)
       arg_types = fun.inputs.collect(&:type)
       return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
@@ -107,20 +122,6 @@ module Ethereum
       tx = transact(fun, *args)
       tx.wait_for_miner
       return tx
-    end
-
-    def estimate(*params)
-      deploy_arguments = ""
-      if @constructor_inputs.present?
-        raise "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
-        @constructor_inputs.each_index do |i|
-          args = [@constructor_inputs[i]["type"], params[i]]
-          deploy_arguments << @formatter.to_payload(args)
-        end
-      end
-      deploy_payload = @code + deploy_arguments
-      result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})
-      @decoder.decode_int(result["result"])
     end
 
     def create_filter(evt, **params)
@@ -162,63 +163,56 @@ module Ethereum
       name.to_sym
     end
 
-    def create_function_proxies
-      parent = self
-      call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new
-      @functions.each do |fun|
-        call_raw_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call_raw(fun, *args) }
-        call_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call(fun, *args) }
-        transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
-        transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
-      end
-      @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
-    end
-
     def build(connection)
       class_name = @name.camelize
       functions = @functions
       events = @events
       parent = self
-      call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = create_function_proxies
-
+      create_function_proxies
+      create_event_proxies
       class_methods = Class.new do
-
         extend Forwardable
-
         def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
-
         def_delegator :parent, :call_raw_proxy, :call_raw
         def_delegator :parent, :call_proxy, :call
         def_delegator :parent, :transact_proxy, :transact
         def_delegator :parent, :transact_and_wait_proxy, :transact_and_wait
-
+        def_delegator :parent, :new_filter_proxy, :new_filter
+        def_delegator :parent, :get_filter_logs_proxy, :get_filter_logs
+        def_delegator :parent, :get_filter_change_proxy, :get_filter_changes
         define_method :parent do
           parent
         end
-
-        events.each do |evt|
-          define_method "nf_#{evt.name.underscore}".to_sym do |params = {}|
-            parent.create_filter(evt, **params)
-          end
-
-          define_method "gfl_#{evt.name.underscore}".to_sym do |filter_id|
-            parent.get_filter_logs(evt, filter_id)
-          end
-
-          define_method "gfc_#{evt.name.underscore}".to_sym do |filter_id|
-            parent.get_filter_changes(evt, filter_id)
-          end
-
-        end
       end
-      if Object.const_defined?(class_name)
-        Object.send(:remove_const, class_name)
-      end
+      Object.send(:remove_const, class_name) if Object.const_defined?(class_name)
       Object.const_set(class_name, class_methods)
       @class_object = class_methods
     end
 
+    private
+      def create_function_proxies
+        parent = self
+        call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new
+        @functions.each do |fun|
+          call_raw_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call_raw(fun, *args) }
+          call_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call(fun, *args) }
+          transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
+          transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
+        end
+        @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
+      end
+
+      def create_event_proxies
+        parent = self
+        new_filter_proxy, get_filter_logs_proxy, get_filter_change_proxy = Class.new, Class.new, Class.new
+        events.each do |evt|
+          new_filter_proxy.send(:define_method, evt.name.underscore) { |*args| parent.create_filter(evt, *args) }
+          get_filter_logs_proxy.send(:define_method, evt.name.underscore) { |*args| parent.get_filter_logs(evt, *args) }
+          get_filter_change_proxy.send(:define_method, evt.name.underscore) { |*args| parent.get_filter_changes(evt, *args) }
+        end
+        @new_filter_proxy, @get_filter_logs_proxy, @get_filter_change_proxy = new_filter_proxy.new, get_filter_logs_proxy.new, get_filter_change_proxy.new
+      end
   end
 end
