@@ -19,7 +19,7 @@ module Ethereum
 
     def build_all
       @contracts.each do |contract|
-        contract.build(@client)
+        contract.build
       end
     end
 

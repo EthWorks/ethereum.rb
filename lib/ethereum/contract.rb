@@ -28,14 +28,14 @@ module Ethereum
 
     def self.from_code(name, code, abi_string, client = Ethereum::Singleton.instance)
       contract = Ethereum::Contract.new(name, code, JSON.parse(abi_string), client)
-      contract.build(client)
+      contract.build
       contract_instance = contract.class_object.new
       contract_instance
     end
 
     def self.from_blockchain(name, address, abi, client = Ethereum::Singleton.instance)
       contract = Ethereum::Contract.new(name, nil, abi)
-      contract.build(client)
+      contract.build
       contract_instance = contract.class_object.new
       contract_instance.address = address
       contract_instance
@@ -163,10 +163,8 @@ module Ethereum
       name.to_sym
     end
 
-    def build(connection)
+    def build
       class_name = @name.camelize
-      functions = @functions
-      events = @events
       parent = self
       create_function_proxies
       create_event_proxies
