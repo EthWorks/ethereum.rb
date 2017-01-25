@@ -107,9 +107,9 @@ Note that you need to specify contract name, that will be used to define new cla
 Solidity functions are exposed using the following conventions: 
 
 ```
-transact_[function_name](params) 
-transact_and_wait_[function_name](params)  
-call_[function_name](params)
+transact.[function_name](params) 
+transact_and_wait.[function_name](params)  
+call.[function_name](params)
 ```
 
 **Example Contract in Solidity**
@@ -128,22 +128,17 @@ contract SimpleNameRegistry {
 ```
 
 ```ruby
-simple_name_registry_instance.transact_and_wait_register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
-simple_name_registry_instance.transact_register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
-simple_name_registry_instance.call_get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
-simple_name_registry_instance.call_my_mapping("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
+simple_name_registry_instance.transact_and_wait.register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
+simple_name_registry_instance.transact.register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
+simple_name_registry_instance.call.get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
+simple_name_registry_instance.call.my_mapping("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
 ```
 
 ### Run contracts using a different address
 
+To point contract instance to a previously deployed contract use address property:
 ```ruby
-simple_name_registry_instance.as("0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1")
-```
-
-### Point contract instance to a previously deployed contract
-
-```ruby
-simple_name_registry_instance.at("0x734533083b5fc0cd14b7cb8c8eb6ed0c9bd184d3")
+simple_name_registry_instance.address = "0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1"
 ```
 
 ## Utils rake tasks
@@ -160,7 +155,7 @@ rake ethereum:transaction:send[address,amount]  # Send [amount of] ether to an a
 ```
 
 ## Debbuging
-Logs from communication with node are available under following path:
+Logs from communication between ruby app and node are available under following path:
 ```
 /tmp/ethereum_ruby_http.log
 ```
@@ -173,11 +168,9 @@ Then, run `rake spec` to run the tests. You can also run `bin/console` for an in
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-## Ethereum ruby
+## Acknowledgements and license
 
 This library has been forked from [ethereum-ruby](https://github.com/DigixGlobal/ethereum-ruby) by DigixGlobal Pte Ltd (https://dgx.io).
-
-## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
