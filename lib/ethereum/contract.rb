@@ -114,8 +114,9 @@ module Ethereum
       params[:to_block] ||= "latest"
       params[:from_block] ||= "0x0"
       params[:address] ||=  @address
-      params[:topics] = "0x" + evt.signature
-      payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: "0x" + params[:address]}
+      params[:topics] = evt.signature
+      params[:topics] = "0x" + params[:topics] unless params[:topics].start_with?("0x")
+      payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: params[:address]}
       filter_id = @client.eth_new_filter(payload)
       return Decoder.new.decode_int(filter_id["result"])
     end
