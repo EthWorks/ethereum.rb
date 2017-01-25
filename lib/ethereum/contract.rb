@@ -122,6 +122,29 @@ module Ethereum
       return @decoder.decode_int(filter_id["result"])
     end
 
+    def parse_filter_data(evt, logs)
+      formatter = Ethereum::Formatter.new
+      collection = []
+      logs["result"].each do |result|
+        inputs = evt.input_types
+        outputs = inputs.zip(result["topics"][1..-1])
+        data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
+        outputs.each do |output|
+          data[:topics] << formatter.from_payload(output)
+        end
+        collection << data 
+      end
+      return collection
+    end
+
+    def get_filter_logs(evt, filter_id)
+      parse_filter_data evt, @client.eth_get_filter_logs(filter_id)
+    end
+
+    def get_filter_changes(evt, filter_id)
+      parse_filter_data evt, @client.eth_get_filter_changes(filter_id)
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
@@ -162,35 +185,11 @@ module Ethereum
           end
 
           define_method "gfl_#{evt.name.underscore}".to_sym do |filter_id|
-            formatter = Ethereum::Formatter.new
-            logs = parent.client.eth_get_filter_logs(filter_id)
-            collection = []
-            logs["result"].each do |result|
-              inputs = evt.input_types
-              outputs = inputs.zip(result["topics"][1..-1])
-              data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
-              outputs.each do |output|
-                data[:topics] << formatter.from_payload(output)
-              end
-              collection << data 
-            end
-            return collection
+            parent.get_filter_logs(evt, filter_id)
           end
 
           define_method "gfc_#{evt.name.underscore}".to_sym do |filter_id|
-            formatter = Ethereum::Formatter.new
-            logs = parent.client.eth_get_filter_changes(filter_id)
-            collection = []
-            logs["result"].each do |result|
-              inputs = evt.input_types
-              outputs = inputs.zip(result["topics"][1..-1])
-              data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
-              outputs.each do |output|
-                data[:topics] << formatter.from_payload(output)
-              end
-              collection << data 
-            end
-            return collection
+            parent.get_filter_changes(evt, filter_id)
           end
 
         end
