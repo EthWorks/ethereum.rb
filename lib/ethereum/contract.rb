@@ -11,6 +11,8 @@ module Ethereum
       @formatter = Ethereum::Formatter.new
       @client = client
       @sender = client.default_account
+      @encoder = Encoder.new
+      @decoder = Decoder.new
     end
 
     def self.from_file(path, client = Ethereum::Singleton.instance)
@@ -65,7 +67,7 @@ module Ethereum
       end
       raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload.join()})
       raw_result = raw_result["result"]
-      output = Ethereum::Decoder.new.decode_arguments(fun.outputs, raw_result)
+      output = @decoder.decode_arguments(fun.outputs, raw_result)
       return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
     end
 
@@ -107,18 +109,17 @@ module Ethereum
       end
       deploy_payload = @code + deploy_arguments
       result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})
-      Decoder.new.decode_int(result["result"])
+      @decoder.decode_int(result["result"])
     end
 
     def create_filter(evt, **params)
       params[:to_block] ||= "latest"
       params[:from_block] ||= "0x0"
-      params[:address] ||=  @address
-      params[:topics] = evt.signature
-      params[:topics] = "0x" + params[:topics] unless params[:topics].start_with?("0x")
-      payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: params[:address]}
+      params[:address] ||= @address
+      params[:topics] = @encoder.ensure_prefix(evt.signature)
+      payload = {topics: [params[:topics]], fromBlock: params[:from_block], toBlock: params[:to_block], address: @encoder.ensure_prefix(params[:address])}
       filter_id = @client.eth_new_filter(payload)
-      return Decoder.new.decode_int(filter_id["result"])
+      return @decoder.decode_int(filter_id["result"])
     end
 
     def build(connection)

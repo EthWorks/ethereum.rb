@@ -57,6 +57,10 @@ module Ethereum
       value
     end
 
+    def ensure_prefix(value)
+      value.start_with?("0x") ? value : ("0x" + value)
+    end
+
     private
       def to_twos_complement(number)
         (number & ((1 << 256) - 1))
