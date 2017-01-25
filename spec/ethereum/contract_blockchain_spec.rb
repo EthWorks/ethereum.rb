@@ -5,7 +5,7 @@ describe Ethereum do
   let(:client) { Ethereum::IpcClient.new }
   let(:path) { "#{Dir.pwd}/spec/fixtures/TestContract.sol" }
 
-  it "should build, deploy, call methods, receive events and kill contract", slow: true do
+  it "should build, deploy, call methods, receive events and kill contract", blockchain: true do
     @works = Ethereum::Contract.from_file(path, client)
     expect(@works.estimate).to be > 100
     contract_address = @works.deploy_and_wait

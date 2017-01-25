@@ -17,8 +17,7 @@ before_script:
   - bundle exec rake ethereum:node:waitforsync
   - bundle exec rake ethereum:test:setup
 script:
-  - bundle exec rspec --tag ~slow
-  - bundle exec rspec --tag slow
+  - bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
 before_cache:
   - killall parity
   - sleep 3
