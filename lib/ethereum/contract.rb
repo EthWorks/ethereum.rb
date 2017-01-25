@@ -1,7 +1,10 @@
 module Ethereum
   class Contract
 
-    attr_accessor :code, :name, :functions, :abi, :constructor_inputs, :events, :class_object, :sender, :address, :deployment, :client
+    attr_reader :address
+    attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
+    attr_accessor :events, :functions, :constructor_inputs
+    attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
       @name = name
@@ -33,8 +36,16 @@ module Ethereum
       contract = Ethereum::Contract.new(name, nil, abi)
       contract.build(client)
       contract_instance = contract.class_object.new
-      contract_instance.at address
+      contract_instance.address = address
       contract_instance
+    end
+
+    def address=(addr)
+      @address = addr
+      @events.each do |event|
+        event.set_address(addr)
+        event.set_client(@client)
+      end
     end
 
     def deploy(*params)
@@ -152,19 +163,15 @@ module Ethereum
     end
 
     def create_function_proxies
-      functions = @functions
       parent = self
-      call_raw_proxy = Class.new
-      call_proxy = Class.new
-      transact_proxy = Class.new
-      transact_and_wait_proxy = Class.new
-      functions.each do |fun|
+      call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new
+      @functions.each do |fun|
         call_raw_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call_raw(fun, *args) }
         call_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call(fun, *args) }
         transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
         transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
       end
-      [call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new]
+      @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
     end
 
     def build(connection)
@@ -178,44 +185,17 @@ module Ethereum
 
         extend Forwardable
 
-        def_delegators :parent, :abi, :deployment
+        def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
 
-        define_method :call_raw do
-          call_raw_proxy
-        end
-
-        define_method :call do
-          call_proxy
-        end
-
-        define_method :transact do
-          transact_proxy
-        end
-
-        define_method :transact_and_wait do
-          transact_and_wait_proxy
-        end
+        def_delegator :parent, :call_raw_proxy, :call_raw
+        def_delegator :parent, :call_proxy, :call
+        def_delegator :parent, :transact_proxy, :transact
+        def_delegator :parent, :transact_and_wait_proxy, :transact_and_wait
 
         define_method :parent do
           parent
-        end
-
-        define_method "connection".to_sym do
-          connection
-        end
-
-        define_method :events do
-          return events
-        end
-
-        define_method :at do |addr|
-          parent.address = addr
-          self.events.each do |event|
-            event.set_address(addr)
-            event.set_client(connection)
-          end
         end
 
         events.each do |evt|
