@@ -51,7 +51,7 @@ describe Ethereum::Contract do
   context "transact" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"}],"id":1}' }
     let(:eth_send_result) { '{"jsonrpc":"2.0","result":"0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623","id":1}' }
-    subject { expect(contract.transact_greet.id).to eq '0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623' }
+    subject { expect(contract.transact.greet.id).to eq '0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623' }
     it_behaves_like "communicate with node"
   end
 
@@ -63,21 +63,21 @@ describe Ethereum::Contract do
       contract.at(address)
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
       expect(client).to receive(:send_single).once.with(eth_get_transaction_request).and_return(eth_get_transaction_result)
-      contract.transact_and_wait_greet
+      contract.transact_and_wait.greet
     end
   end
 
   context "call" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_call","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"},"latest"],"id":1}' }
     let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003616c610000000000000000000000000000000000000000000000000000000000", "id": 1}' }
-    subject { expect(contract.call_greet).to eq "ala" }
+    subject { expect(contract.call.greet).to eq "ala" }
     it_behaves_like "communicate with node"
   end
 
   context "call_raw" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_call","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"},"latest"],"id":1}' }
     let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003616c610000000000000000000000000000000000000000000000000000000000", "id": 1}' }
-    subject { expect(contract.call_raw_greet[:formatted]).to eq ["ala"] }
+    subject { expect(contract.call_raw.greet[:formatted]).to eq ["ala"] }
     it_behaves_like "communicate with node"
   end
 

@@ -145,11 +145,34 @@ module Ethereum
       parse_filter_data evt, @client.eth_get_filter_changes(filter_id)
     end
 
+    def function_name(fun)
+      count = functions.select {|x| x.name == fun.name }.count
+      name = (count == 1) ? "#{fun.name.underscore}" : "#{fun.name.underscore}__#{fun.inputs.collect {|x| x.type}.join("__")}"
+      name.to_sym
+    end
+
+    def create_function_proxies
+      functions = @functions
+      parent = self
+      call_raw_proxy = Class.new
+      call_proxy = Class.new
+      transact_proxy = Class.new
+      transact_and_wait_proxy = Class.new
+      functions.each do |fun|
+        call_raw_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call_raw(fun, *args) }
+        call_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call(fun, *args) }
+        transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
+        transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
+      end
+      [call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new]
+    end
+
     def build(connection)
       class_name = @name.camelize
       functions = @functions
       events = @events
       parent = self
+      call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = create_function_proxies
 
       class_methods = Class.new do
 
@@ -158,6 +181,22 @@ module Ethereum
         def_delegators :parent, :abi, :deployment
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
+
+        define_method :call_raw do
+          call_raw_proxy
+        end
+
+        define_method :call do
+          call_proxy
+        end
+
+        define_method :transact do
+          transact_proxy
+        end
+
+        define_method :transact_and_wait do
+          transact_and_wait_proxy
+        end
 
         define_method :parent do
           parent
@@ -191,42 +230,6 @@ module Ethereum
           define_method "gfc_#{evt.name.underscore}".to_sym do |filter_id|
             parent.get_filter_changes(evt, filter_id)
           end
-
-        end
-
-        functions.each do |fun|
-
-          fun_count = functions.select {|x| x.name == fun.name }.count
-          derived_function_name = (fun_count == 1) ? "#{fun.name.underscore}" : "#{fun.name.underscore}__#{fun.inputs.collect {|x| x.type}.join("__")}"
-          call_function_name = "call_#{derived_function_name}".to_sym
-          call_function_name_alias = "c_#{derived_function_name}".to_sym
-          call_raw_function_name = "call_raw_#{derived_function_name}".to_sym
-          call_raw_function_name_alias = "cr_#{derived_function_name}".to_sym
-          transact_function_name = "transact_#{derived_function_name}".to_sym
-          transact_function_name_alias = "t_#{derived_function_name}".to_sym
-          transact_and_wait_function_name = "transact_and_wait_#{derived_function_name}".to_sym
-          transact_and_wait_function_name_alias = "tw_#{derived_function_name}".to_sym
-
-          define_method call_raw_function_name do |*args|
-            parent.call_raw(fun, *args)
-          end
-
-          define_method call_function_name do |*args|
-            parent.call(fun, *args)
-          end
-
-          define_method transact_function_name do |*args|
-            parent.transact(fun, *args)
-          end
-
-          define_method transact_and_wait_function_name do |*args|
-            parent.transact_and_wait(fun, *args)
-          end
-
-          alias_method call_function_name_alias, call_function_name
-          alias_method call_raw_function_name_alias, call_raw_function_name
-          alias_method transact_function_name_alias, transact_function_name
-          alias_method transact_and_wait_function_name_alias, transact_and_wait_function_name
 
         end
       end
