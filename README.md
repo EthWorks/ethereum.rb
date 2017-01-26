@@ -77,16 +77,13 @@ address = contract.deploy_and_wait
 ```
 
 Deployment may take up to couple minutes.
-Or with more complex syntax (might be useful if you want to complie multiple contracts at once):
+If you want to complie multiple contracts at once, you can create new instances using newly declared clasess:
 
 ```ruby
-init = Ethereum::Initializer.new("mycontract.sol", client)
-init.build_all
+Ethereum::Contract.create("mycontract.sol", client: client)
 contract = MyContract.new
-contract_instance = contract.deploy_and_wait(60)
+contract = contract.deploy_and_wait
 ```
-
-Note that contract variable holds the reference to contract code, while contract_instance holds refernce to contract deployed to the blockchain. You can call contract functions on contract_instance as described in sections "Transacting and Calling Solidity Functions".
 
 All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
 If class of given name exist it will be undefined first to avoid name collision. 
@@ -94,22 +91,28 @@ If class of given name exist it will be undefined first to avoid name collision.
 ### Get contract from blockchain
 
 The other way to obtain contract instance is get one form the blockchain. To do so you need a contract name, contract address and ABI definition.
+`client` parameter is optional.
 
 ```ruby
-contract_instance = Ethereum::Contract.from_blockchain("MyContract", "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi, client)
-
+contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi, client: client)
 ```
 
 Note that you need to specify contract name, that will be used to define new class in ruby, as it is not a part of ABI definition.
 
+If you want to create new contract, that is not yet deployed from ABI definition you need to supply binary code too:
+
+```ruby
+contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi, code: "...")
+```
+
 ### Transacting and Calling Solidity Functions
 
-Solidity functions are exposed using the following conventions: 
+Functions defined in a contract are exposed using the following conventions: 
 
 ```
-transact.[function_name](params) 
-transact_and_wait.[function_name](params)  
-call.[function_name](params)
+contract.transact.[function_name](params) 
+contract.transact_and_wait.[function_name](params)  
+contract.call.[function_name](params)
 ```
 
 **Example Contract in Solidity**
@@ -127,21 +130,22 @@ contract SimpleNameRegistry {
 }
 ```
 
+And here is how to access it's methods:
+
 ```ruby
-simple_name_registry_instance.transact_and_wait.register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
-simple_name_registry_instance.transact.register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
-simple_name_registry_instance.call.get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
-simple_name_registry_instance.call.my_mapping("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
+contract.transact_and_wait.register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
+contract.transact.register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
+contract.call.get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
 ```
 
-### Run contracts using a different address
+Note that as `register` method will change contract state, so you need to use `transact` family of methods (or `transact_and_wait` for synchronous version) to call it.
 
-To point contract instance to a previously deployed contract use address property:
-```ruby
-simple_name_registry_instance.address = "0x0c0d99d3608a2d1d38bb1b28025e970d3910b1e1"
-```
+For method like `getSomeValue`, that does not affect state of the contract (and don't need to propagate change to blockchain therefore) you can use call method. It will retrive value from local copy of the blockchain.
+
 
 ## Utils rake tasks
+
+There is plenty of useful rake tasks for interacting with blockchain:
 
 ```ruby
 rake ethereum:contract:compile[path]            # Compile a contract / Compile and deploy contract
@@ -165,6 +169,8 @@ Logs from communication between ruby app and node are available under following 
 After checking out the repo, run `bin/setup` to install dependencies. 
 Make sure `rake ethereum:test:setup` passes before running tests.
 Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+You need ethereum node up and running for tests to pass and it needs to be working on testnet (Ropsten).
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
