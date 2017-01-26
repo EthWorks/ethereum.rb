@@ -72,8 +72,8 @@ By default logging is on and logs are saved in "/tmp/ethereum_ruby_http.log".
 You can create contract from solidity source and deploy it to the blockchain.
 
 ```ruby
-contract = Ethereum::Contract.from_file("mycontract.sol", client)
-contract_instance = contract.deploy_and_wait
+contract = Ethereum::Contract.create("mycontract.sol", client: client)
+address = contract.deploy_and_wait
 ```
 
 Deployment may take up to couple minutes.

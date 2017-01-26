@@ -19,27 +19,22 @@ module Ethereum
       @decoder = Decoder.new
     end
 
-    def self.from_file(path, client = Ethereum::Singleton.instance)
-      @init = Ethereum::Initializer.new(path, client)
-      contracts = @init.build_all
-      raise "No contracts complied" if contracts.empty?
-      contracts.first.class_object.new
+    def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil)
+      contract = nil
+      if file.present?
+        contracts = Ethereum::Initializer.new(file, client).build_all
+        raise "No contracts complied" if contracts.empty?
+        contract = contracts.first.class_object.new
+      else
+        abi = JSON.parse(abi) if abi.is_a? String
+        contract = Ethereum::Contract.new(name, code, abi, client)
+        contract.build
+        contract = contract.class_object.new
+      end
+      contract.address = address
+      contract
     end
 
-    def self.from_code(name, code, abi_string, client = Ethereum::Singleton.instance)
-      contract = Ethereum::Contract.new(name, code, JSON.parse(abi_string), client)
-      contract.build
-      contract_instance = contract.class_object.new
-      contract_instance
-    end
-
-    def self.from_blockchain(name, address, abi, client = Ethereum::Singleton.instance)
-      contract = Ethereum::Contract.new(name, nil, abi)
-      contract.build
-      contract_instance = contract.class_object.new
-      contract_instance.address = address
-      contract_instance
-    end
 
     def address=(addr)
       @address = addr
