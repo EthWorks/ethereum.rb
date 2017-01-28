@@ -3,8 +3,11 @@ language: ruby
 rvm:
   - 2.3.1
 env:
-  - PARITY_PATH="http://d1h4xl4cr1h0mo.cloudfront.net/v1.4.8/x86_64-unknown-linux-gnu/parity_1.4.8_amd64.deb"
-  - PARITY_PATH="http://d1h4xl4cr1h0mo.cloudfront.net/v1.5.0/x86_64-unknown-linux-gnu/parity_1.5.0_amd64.deb"
+  - PARITY="1.4.8"
+  - PARITY="1.5.0"
+matrix:
+  allow_failures:
+  - env: PARITY="1.5.0"
 cache:
   bundler: true
   directories:
