@@ -6,7 +6,7 @@ sudo apt-get update
 sudo apt-get install solc
 echo "Solc version"
 solc --version
-wget http://d1h4xl4cr1h0mo.cloudfront.net/v1.4.8/x86_64-unknown-linux-gnu/parity_1.4.8_amd64.deb
+wget $PARITY_PATH
 sudo dpkg -i parity_1.4.8_amd64.deb
 
 echo "Setuping parity..."
