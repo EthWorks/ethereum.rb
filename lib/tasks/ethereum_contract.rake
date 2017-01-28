@@ -17,7 +17,7 @@ namespace :ethereum do
     desc "Compile and deploy contract"
     task :deploy, [:path] do |_, args|
       puts "Deploing contract #{args[:path]}"
-      @works = Ethereum::Contract.from_file(args[:path])
+      @works = Ethereum::Contract.create(file: args[:path])
       @works.deploy_and_wait { puts "." }
       address = @works.deployment.contract_address
       puts "Contract deployed under address: #{address}"
