@@ -4,6 +4,7 @@ describe Ethereum::Encoder do
 
   let (:encoder) { Ethereum::Encoder.new }
   let (:decoder) { Ethereum::Decoder.new }
+  let(:function) { Ethereum::Function.new(abi) }
 
   it "parse type" do
     expect(Ethereum::Abi::parse_type("bool")).to eq ["bool", nil]
@@ -58,26 +59,46 @@ describe Ethereum::Encoder do
     let (:size) { '0000000000000000000000000000000000000000000000000000000000000004' }
     let (:content) { '6461766500000000000000000000000000000000000000000000000000000000' }
     let (:expected) { location + size + content }
-    specify { expect("bytes").to encode_and_decode("dave").to(expected) }
+    it { expect(encoder.encode("bytes", "dave").join).to eq expected }
+    it { expect(decoder.decode("bytes", expected)).to eq "dave" }
   end
 
   context "string" do
     let (:hex1) { "000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000046461766500000000000000000000000000000000000000000000000000000000" }
     let (:hex2) { "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c6d69c5826f62c499647a6b610000000000000000000000000000000000000000" }
-    specify { expect("string").to encode_and_decode("dave").to(hex1) }
-    specify { expect("string").to encode_and_decode("miłobędzka").to(hex2) }
+    it { expect(encoder.encode("string", "dave").join).to eq hex1 }
+    it { expect(decoder.decode("string", hex1)).to eq "dave" }
+    it { expect(encoder.encode("string", "miłobędzka").join).to eq hex2 }
+    it { expect(decoder.decode("string", hex2)).to eq "miłobędzka" }
   end
 
   context "long string" do
     let (:message) { "a" * 1000 }
-    it { expect(decoder.decode("string", encoder.encode("string", message))).to eq message }
+    it { expect(decoder.decode("string", encoder.encode("string", message).join(""))).to eq message }
   end
 
   context "decode function outputs" do
     let(:abi) { {"outputs" => [{"type" => "int"}, {"type" => "string", "name" => ""}], "inputs" => [] } }
-    let(:function) { Ethereum::Function.new(abi) }
     let (:data) { "0x00000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000c6d69c5826f62c499647a6b610000000000000000000000000000000000000000" }
     it { expect(decoder.decode_arguments(function.outputs, data)).to eq [20, "miłobędzka"] }
+  end
+
+  context "encode simple function input" do
+    let(:abi) { {"inputs" => [{"type" => "uint32"}, {"type" => "bool", "name" => ""}], "outputs" => [] } }
+    let (:data) { "00000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001" }
+    it { expect(encoder.encode_arguments(function.inputs, [69, true])).to eq data }
+  end
+
+  context "encode bytes function input" do
+    let(:abi) { {"inputs" => [{"type" => "bytes"}, {"type" => "bool", "name" => ""}], "outputs" => [] } }
+    let (:data) { "0000000000000000000000000000000000000000000000000000000000000040" + "0000000000000000000000000000000000000000000000000000000000000001" + "0000000000000000000000000000000000000000000000000000000000000004" + "6461766500000000000000000000000000000000000000000000000000000000"}
+    it { expect(encoder.encode_arguments(function.inputs, ["dave", true])).to eq data }
+  end
+
+  context "encode string function" do
+    let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
+    let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
+    it { expect(encoder.encode_arguments(function.inputs, ["żółć", true])).to eq data }
   end
 
 end

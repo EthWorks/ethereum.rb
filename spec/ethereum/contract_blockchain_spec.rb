@@ -5,10 +5,10 @@ describe Ethereum do
   let(:client) { Ethereum::IpcClient.new }
   let(:path) { "#{Dir.pwd}/spec/fixtures/TestContract.sol" }
 
-  it "should build, deploy, call methods, receive events and kill contract", blockchain: true do
+  it "builds, deploys, call methods, receives events and kills contract", blockchain: true do
     @works = Ethereum::Contract.create(file: path, client: client)
-    expect(@works.estimate).to be > 100
-    contract_address = @works.deploy_and_wait
+    expect(@works.estimate("The title")).to be > 100
+    contract_address = @works.deploy_and_wait("The title")
 
     filter_id = @works.new_filter.changed address: contract_address, topics: []
     tx_address = @works.transact_and_wait.set("some4key", "somethevalue").address

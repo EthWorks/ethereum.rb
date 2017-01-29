@@ -38,17 +38,17 @@ module Ethereum
     end
 
     def encode_dynamic_bytes(value)
-      location = encode_uint(32)
+      location = encode_uint(@inputs ? @inputs.size * 32 : 32)
       size = encode_uint(value.size)
       content = encode_bytes(value)
-      location + size + content
+      [location, size + content]
     end
 
     def encode_string(value)
-      location = encode_uint(32)
+      location = encode_uint(@inputs ? @inputs.size * 32 : 32)
       size = encode_uint(value.bytes.size)
       content = value.bytes.map {|x| x.to_s(16)}.join("").ljust(64, '0')
-      location + size + content
+      [location, size + content]
     end
 
     def encode_address(value)
@@ -59,6 +59,22 @@ module Ethereum
 
     def ensure_prefix(value)
       value.start_with?("0x") ? value : ("0x" + value)
+    end
+
+    def encode_arguments(inputs, args)
+      @head = ""
+      @tail = ""
+      @inputs = inputs
+      inputs.each.with_index do |input, index|
+        encoded = encode(input.type, args[index])
+        if encoded.is_a? Array
+          @head << encoded[0]
+          @tail << encoded[1]
+        else
+          @head << encoded
+        end
+      end
+      @head + @tail
     end
 
     private

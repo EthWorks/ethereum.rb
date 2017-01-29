@@ -48,7 +48,7 @@ module Ethereum
       if @constructor_inputs.present?
         raise "Missing constructor parameter" and return if params.length != @constructor_inputs.length
       end
-      deploy_arguments = @formatter.construtor_params_to_payload(@constructor_inputs, params)
+      deploy_arguments = @encoder.encode_arguments(@constructor_inputs, params)
       payload = "0x" + @code + deploy_arguments
       tx = @client.eth_send_transaction({from: sender, data: payload})["result"]
       raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
@@ -69,10 +69,7 @@ module Ethereum
       deploy_arguments = ""
       if @constructor_inputs.present?
         raise "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
-        @constructor_inputs.each_index do |i|
-          args = [@constructor_inputs[i]["type"], params[i]]
-          deploy_arguments << @formatter.to_payload(args)
-        end
+        deploy_arguments = @encoder.encode_arguments(@constructor_inputs, params)
       end
       deploy_payload = @code + deploy_arguments
       result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})

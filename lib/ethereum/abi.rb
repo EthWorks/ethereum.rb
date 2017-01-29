@@ -2,7 +2,12 @@ module Ethereum
   class Abi
 
     def self.parse_abi(abi)
-      constructor_inputs = abi.detect {|x| x["type"] == "constructor"}["inputs"] rescue nil
+      constructor = abi.detect {|x| x["type"] == "constructor"}
+      if constructor.present?
+        constructor_inputs = constructor["inputs"].map { |input| Ethereum::FunctionInput.new(input) }
+      else
+        constructor_inputs = []
+      end
       functions = abi.select {|x| x["type"] == "function" }.map { |fun| Ethereum::Function.new(fun) }
       events = abi.select {|x| x["type"] == "event" }.map { |evt| Ethereum::ContractEvent.new(evt) }
       [constructor_inputs, functions, events]

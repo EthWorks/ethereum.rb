@@ -4,7 +4,9 @@ contract TestContract {
 
     address public owner;
 
-    function TestContract() { owner = msg.sender; }
+    function TestContract(string title) {
+        owner = msg.sender;
+    }
 
     function kill() {
         if (msg.sender == owner) {

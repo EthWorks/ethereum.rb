@@ -6,7 +6,7 @@ module Ethereum
     def initialize(data)
       @name = data["name"]
       @constant = data["constant"]
-      @inputs = data["inputs"].collect do |input|
+      @inputs = data["inputs"].map do |input|
         Ethereum::FunctionInput.new(input)
       end
       @outputs = data["outputs"].collect do |output|
