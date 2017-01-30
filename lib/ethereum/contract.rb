@@ -77,16 +77,12 @@ module Ethereum
     end
 
     def call_raw(fun, *args)
-      arg_types = fun.inputs.collect(&:type)
-      return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-      payload = [fun.signature]
-      arg_types.zip(args).each do |arg|
-        payload << @formatter.to_payload(arg)
-      end
-      raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload.join()})
+      return {result: :error, message: "missing parameters for #{fun.function_string}" } if fun.inputs.length != args.length
+      payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
+      raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload})
       raw_result = raw_result["result"]
       output = @decoder.decode_arguments(fun.outputs, raw_result)
-      return {data: "0x" + payload.join(), raw: raw_result, formatted: output}
+      return {data: "0x" + payload, raw: raw_result, formatted: output}
     end
 
     def call(fun, *args)
