@@ -103,41 +103,8 @@ module Ethereum
       (hexstring.gsub(/^0x/,'')[0..1] == "ff") ? (hexstring.hex - (2 ** 256)) : hexstring.hex
     end
 
-    def bool_to_payload(bool)
-      int_to_payload(bool ? 1 : 0)
-    end
-
-    def address_to_payload(address)
-      from_address(address)
-    end
-
-    def uint_to_payload(uint)
-      self.to_twos_complement(uint).rjust(64, '0')
-    end
-
-    def int_to_payload(int)
-      self.to_twos_complement(int).rjust(64, '0')
-    end
-
-    def bytes_to_payload(bytes)
-      self.from_utf8(bytes).ljust(64, '0')
-    end
-
-    def string_to_payload(bytes)
-      self.bytes_to_payload(bytes)
-    end
-
-    def construtor_params_to_payload(abi, params)
-      abi.map.with_index { |var, i| to_payload([var["type"], params[i]]) }.join
-    end
-
     def get_base_type(typename)
       typename.gsub(/\d+/,'')
-    end
-
-    def to_payload(args)
-      converter = "#{self.get_base_type(args[0])}_to_payload".to_sym
-      self.send(converter, args[1]) 
     end
 
     def from_payload(args)
