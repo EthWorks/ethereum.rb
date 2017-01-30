@@ -98,7 +98,19 @@ describe Ethereum::Encoder do
   context "encode string function" do
     let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
     let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
-    it { expect(encoder.encode_arguments(function.inputs, ["żółć", true])).to eq data }
+    it { expect(encoder.encode_arguments(function.inputs, ["żółć"])).to eq data }
+  end
+
+  context "raise exception if too much args" do
+    let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
+    let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
+    it { expect { encoder.encode_arguments(function.inputs, ["żółć", 2]) }.to  raise_error }
+  end
+
+  context "raise exception if not enough args" do
+    let(:abi) { {"inputs" => [{"type" => "string"}, {"type" => "bool"}], "outputs" => [] } }
+    let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
+    it { expect { encoder.encode_arguments(function.inputs, ["żółć"]) }.to  raise_error }
   end
 
 end

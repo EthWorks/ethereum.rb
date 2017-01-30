@@ -77,7 +77,6 @@ module Ethereum
     end
 
     def call_raw(fun, *args)
-      return {result: :error, message: "missing parameters for #{fun.function_string}" } if fun.inputs.length != args.length
       payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
       raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload})
       raw_result = raw_result["result"]
@@ -95,15 +94,9 @@ module Ethereum
     end
 
     def transact(fun, *args)
-      arg_types = fun.inputs.collect(&:type)
-      return {result: :error, message: "missing parameters for #{fun.function_string}" } if arg_types.length != args.length
-      payload = []
-      payload << fun.signature
-      arg_types.zip(args).each do |arg|
-        payload << @formatter.to_payload(arg)
-      end
-      txid = @client.eth_send_transaction({to: @address, from: @sender, data: "0x" + payload.join()})["result"]
-      return Ethereum::Transaction.new(txid, @client, payload.join(), args)
+      payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
+      txid = @client.eth_send_transaction({to: @address, from: @sender, data: "0x" + payload})["result"]
+      return Ethereum::Transaction.new(txid, @client, payload, args)
     end
 
     def transact_and_wait(fun, *args)
