@@ -9,18 +9,25 @@ module Ethereum
         decode_dynamic_bytes(value, start)
       elsif "string" == core
         self.send(method_name, value, start)
+      elsif "int" == core
+        size = subtype.present? ? subtype.to_i : 256
+        self.send(method_name, value[start+63-(size/4-1)..start+63], size)
       else
         self.send(method_name, value[start..start+63])
       end
+    end
+
+    def decode_fixed(value, n = 128)
+      decode_int(value).to_f / 2**n
     end
 
     def decode_uint(value)
       value.hex
     end
 
-    def decode_int(value)
+    def decode_int(value, size = 256)
       raise ArgumentError if value.nil?
-      (value[0..1] == "ff") ? (value.hex - (2 ** 256)) : value.hex
+      (value[0..1] == "ff") ? (value.hex - (2 ** size)) : value.hex
     end
 
     def decode_bool(value)

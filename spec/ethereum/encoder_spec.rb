@@ -28,11 +28,11 @@ describe Ethereum::Encoder do
   end
 
   context "int" do
-    specify { expect("uint").to encode_and_decode(20).to("0000000000000000000000000000000000000000000000000000000000000014") }
-    specify { expect("uint32").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
-    specify { expect("uint1").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
-    specify { expect("uint256").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
-    specify { expect("int").to encode_and_decode(-20).to("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec") }
+    specify { expect("int").to encode_and_decode(20).to("0000000000000000000000000000000000000000000000000000000000000014") }
+    specify { expect("int32").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    specify { expect("int1").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    specify { expect("int256").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    specify { expect("int256").to encode_and_decode(-20).to("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec") }
     specify { expect("int32").to encode_and_decode(-1).to("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff") }
   end
 
@@ -52,6 +52,11 @@ describe Ethereum::Encoder do
   context "bytes32" do
     let (:expected) { '6461766500000000000000000000000000000000000000000000000000000000' }
     specify { expect("bytes32").to encode_and_decode("dave").to(expected) }
+  end
+
+  context "fixed" do
+    specify { expect("fixed").to encode_and_decode(2.125).to("0000000000000000000000000000000220000000000000000000000000000000") }
+    specify { expect("fixed").to encode_and_decode(8.5).to("0000000000000000000000000000000880000000000000000000000000000000") }
   end
 
   context "bytes" do
