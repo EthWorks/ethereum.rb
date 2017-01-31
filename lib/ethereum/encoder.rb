@@ -4,54 +4,59 @@ module Ethereum
 
     def encode(type, value)
       core, subtype = Abi::parse_type(type)
-      if core == "bytes" and subtype.nil?
-        encode_dynamic_bytes(value)
-      else
-        method_name = "encode_#{core}".to_sym
-        self.send(method_name, value)
-      end
+      method_name = "encode_#{core}".to_sym
+      self.send(method_name, value, subtype)
     end
 
-    def encode_int(value)
+    def encode_int(value, _ = nil)
       to_twos_complement(value).to_s(16).rjust(64, '0')
     end
 
-    def encode_uint(value)
+    def encode_uint(value, _ = nil)
       raise ArgumentError if value < 0
       encode_int(value)
     end
 
-    def encode_bool(value)
+    def encode_bool(value, _)
       (value ? "1" : "0").rjust(64, '0')
     end
 
-    def encode_fixed(value, n = 128)
+    def encode_fixed(value, subtype)
+      n = subtype.nil? ? 128 : /(\d+)x(\d+)/.match(subtype)[2].to_i
+      do_encode_fixed(value, n)
+    end
+
+    def do_encode_fixed(value, n)
       encode_uint((value * 2**n).to_i)
     end
 
-    def encode_ufixed(_value)
+    def encode_ufixed(_value, _)
       raise NotImplementedError
     end
 
-    def encode_bytes(value)
+    def encode_bytes(value, subtype)
+      subtype.nil? ? encode_dynamic_bytes(value) : encode_static_bytes(value)
+    end
+    
+    def encode_static_bytes(value)
       value.each_char.map {|x| x.ord.to_s(16)}.join("").ljust(64, '0')
     end
 
     def encode_dynamic_bytes(value)
       location = encode_uint(@inputs ? @inputs.size * 32 : 32)
       size = encode_uint(value.size)
-      content = encode_bytes(value)
+      content = encode_static_bytes(value)
       [location, size + content]
     end
 
-    def encode_string(value)
+    def encode_string(value, _)
       location = encode_uint(@inputs ? @inputs.size * 32 : 32)
       size = encode_uint(value.bytes.size)
       content = value.bytes.map {|x| x.to_s(16)}.join("").ljust(64, '0')
       [location, size + content]
     end
 
-    def encode_address(value)
+    def encode_address(value, _)
       value = value.gsub(/^0x/,'')
       raise ArgumentError if value.size != 40
       value

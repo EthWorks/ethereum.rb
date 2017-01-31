@@ -57,6 +57,8 @@ describe Ethereum::Encoder do
   context "fixed" do
     specify { expect("fixed").to encode_and_decode(2.125).to("0000000000000000000000000000000220000000000000000000000000000000") }
     specify { expect("fixed").to encode_and_decode(8.5).to("0000000000000000000000000000000880000000000000000000000000000000") }
+    it { expect(encoder.encode("fixed128x128", 8.5)).to eq "0000000000000000000000000000000880000000000000000000000000000000" }
+    it { expect(encoder.encode("fixed252x4", 8.5)).to eq "0000000000000000000000000000000000000000000000000000000000000088" }
   end
 
   context "bytes" do
@@ -109,13 +111,13 @@ describe Ethereum::Encoder do
   context "raise exception if too much args" do
     let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
     let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
-    it { expect { encoder.encode_arguments(function.inputs, ["żółć", 2]) }.to  raise_error }
+    it { expect { encoder.encode_arguments(function.inputs, ["żółć", 2]) }.to raise_error "Wrong number of arguments" }
   end
 
   context "raise exception if not enough args" do
     let(:abi) { {"inputs" => [{"type" => "string"}, {"type" => "bool"}], "outputs" => [] } }
     let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
-    it { expect { encoder.encode_arguments(function.inputs, ["żółć"]) }.to  raise_error }
+    it { expect { encoder.encode_arguments(function.inputs, ["żółć"]) }.to raise_error "Wrong number of arguments" }
   end
 
 end
