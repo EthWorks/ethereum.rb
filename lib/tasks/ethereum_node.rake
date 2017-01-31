@@ -5,10 +5,10 @@ namespace :ethereum do
 
     desc "Run testnet node "
     task :test do
-      _, out, _ = Open3.capture3("parity --chain ~/.parity/ropsten.json account list")
+      args = "--chain testnet -d ~/.parity"
+      out, _, _ = Open3.capture3("parity #{args} account list")
       account = out.split(/[\[,\]]/)[1]
-      cmd = "parity --chain ~/.parity/ropsten.json --password ~/.parity/pass --unlock #{account} --author #{account}"
-      puts cmd
+      cmd = "parity #{args} --password ~/.parity/pass --unlock #{account} --author #{account}"
       system cmd
     end
 
