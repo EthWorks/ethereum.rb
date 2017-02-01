@@ -14,8 +14,8 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 
 ## Compatibility and requirements
 
-* Tested with parity 1.4.8, might work with geth
-* Tested with solc 0.4.8
+* Tested with parity 1.5.0, might work with geth (but was not tested)
+* Tested with solc 0.4.9
 * Ruby 2.x
 * UNIX/Linux or OS X environment
 
