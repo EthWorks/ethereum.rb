@@ -10,38 +10,32 @@ module Ethereum
 
   class Solidity
 
+    OUTPUT_REGEXP = /======= (\S*):(\S*) =======\s*Binary:\s*(\S*)\sContract JSON ABI\s(\S*)/
+
     def initialize(bin_path = "solc")
       @bin_path = bin_path
-      @args = "--bin --abi --userdoc --devdoc --add-std --optimize -o"      
+      @args = "--bin --abi --add-std --optimize"
     end
 
     def compile(filename)
-      {}.tap do |result|
-        Dir.mktmpdir do |dir|
-          execute_solc(dir, filename)
-          Dir.foreach(dir) do |file|
-            process_file(dir, file, result)
-          end
-        end
+      result = {}
+      execute_solc(nil, filename).scan(OUTPUT_REGEXP).each do |match|
+        file, name, bin, abi = match
+        result[name] = {}
+        result[name]["abi"] = abi
+        result[name]["bin"] = bin
       end
+      result
     end
-    
+
     private    
-      def process_file(dir, file, result)
-        extension = File.extname(file)
-        path = "#{dir}/#{file}"
-        basename = File.basename(path, extension)
-        unless File.directory?(path)
-          result[basename] ||= {}
-          result[basename][extension[1..-1]] = File.read(path) 
-        end
-      end
-      
       def execute_solc(dir, filename)
-        cmd = "#{@bin_path} #{@args} '#{dir}' '#{filename}'"
-        _, stderr, status = Open3.capture3(cmd)
+        cmd = "#{@bin_path} #{@args} '#{filename}'"
+        puts "cmd: #{cmd}"
+        out, stderr, status = Open3.capture3(cmd)
         raise SystemCallError, "Unanable to run solc compliers" if status.exitstatus == 127
         raise CompilationError, stderr unless status.exitstatus == 0
+        out
       end    
   end 
 end
