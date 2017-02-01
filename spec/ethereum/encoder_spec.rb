@@ -23,17 +23,19 @@ describe Ethereum::Encoder do
   context "uint" do
     specify { expect("uint").to encode_and_decode(20).to("0000000000000000000000000000000000000000000000000000000000000014") }
     specify { expect("uint32").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
-    specify { expect("uint1").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    specify { expect("uint4").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
     specify { expect("uint256").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    it { expect(decoder.decode("uint8", "00000000000000000000000000000000000000000000000000000000000003330000000000000000000000000000000000000000000000000000000000000110", 64)).to eq 16 }
   end
 
   context "int" do
     specify { expect("int").to encode_and_decode(20).to("0000000000000000000000000000000000000000000000000000000000000014") }
     specify { expect("int32").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
-    specify { expect("int1").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
+    specify { expect("int8").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
     specify { expect("int256").to encode_and_decode(5).to("0000000000000000000000000000000000000000000000000000000000000005") }
     specify { expect("int256").to encode_and_decode(-20).to("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec") }
     specify { expect("int32").to encode_and_decode(-1).to("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff") }
+    it { expect(decoder.decode("int8", "00000000000000000000000000000000000000000000000000000000000003330000000000000000000000000000000000000000000000000000000000000110", 64)).to eq 16 }
   end
 
   context "bool" do
@@ -59,6 +61,8 @@ describe Ethereum::Encoder do
     specify { expect("fixed").to encode_and_decode(8.5).to("0000000000000000000000000000000880000000000000000000000000000000") }
     it { expect(encoder.encode("fixed128x128", 8.5)).to eq "0000000000000000000000000000000880000000000000000000000000000000" }
     it { expect(encoder.encode("fixed252x4", 8.5)).to eq "0000000000000000000000000000000000000000000000000000000000000088" }
+    it { expect(decoder.decode("fixed4x4", "0000000000000000000000000000000000000000000000000000000000008888")).to eq 8.5 }
+    it { expect(decoder.decode("fixed4x4", "X0000000000000000000000000000000000000000000000000000000000008888", 1)).to eq 8.5 }
   end
 
   context "bytes" do
@@ -108,7 +112,7 @@ describe Ethereum::Encoder do
     it { expect(encoder.encode_arguments(function.inputs, ["żółć"])).to eq data }
   end
 
-  context "raise exception if too much args" do
+  context "raise exception if too many args" do
     let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
     let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
     it { expect { encoder.encode_arguments(function.inputs, ["żółć", 2]) }.to raise_error "Wrong number of arguments" }
