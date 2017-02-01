@@ -31,7 +31,6 @@ module Ethereum
     private    
       def execute_solc(dir, filename)
         cmd = "#{@bin_path} #{@args} '#{filename}'"
-        puts "cmd: #{cmd}"
         out, stderr, status = Open3.capture3(cmd)
         raise SystemCallError, "Unanable to run solc compliers" if status.exitstatus == 127
         raise CompilationError, stderr unless status.exitstatus == 0
