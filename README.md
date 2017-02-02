@@ -194,13 +194,14 @@ Logs from communication between ruby app and node are available under following 
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. 
-Make sure `rake ethereum:test:setup` passes before running tests.
-Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Make sure `rake ethereum:test:setup` passes before running tests. 
+
+You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Then, run `rake spec` to run the tests. Test that do send transactions to blockchain are marked with `blockchain` tag. To run first fast tests that use no ether and slow test that do spend ether run the following line:
+
+    $ sudo bin/install_parity
 
 You need ethereum node up and running for tests to pass and it needs to be working on testnet (Ropsten).
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Acknowledgements and license
 
