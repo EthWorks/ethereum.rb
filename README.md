@@ -25,11 +25,22 @@ Ethereum.rb requires installation of ethereum node and solidity compiler.
 
 ### Ethereum node
 
-Currently the lib supports only [parity](https://ethcore.io/parity.html). It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. Library assumes that you have at least one wallet configured.
+Currently the lib supports only [parity](https://ethcore.io/parity.html). To install parity on mac simply:
+
+    $ brew install parity --beta
+    
+To install parity on linux download latest package from [parity github](https://github.com/ethcore/parity/releases) and install on your computer.
+
+It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. Library assumes that you have at least one wallet configured. 
 
 ### Solidity complier
 
 To be able to compile [solidity](https://github.com/ethereum/solidity) contracts you need to install solc compiler. Installation instructions are available [here](http://solidity.readthedocs.io/en/latest/installing-solidity.html).
+To install on mac simply:
+
+    $ brew install solidity --beta
+
+In general get used to working on beta versions as ethereum ecosystem evolves quite fast.
 
 ## Installation
 
@@ -48,6 +59,18 @@ Or install it yourself as:
     $ gem install ethereum.eb
 
 ## Basic Usage
+
+### Running a node
+
+Right after parity installation you will have one default account. There is a rake task to run test node, that you can run from your application directory:
+
+    $ rake ethereum:node:test
+    
+It will run parity node, unlock the first account on the account list, but you need to supply it with password. To do that adding create file containing password accessable from the following path:
+
+`~/.parity/pass`
+
+To run operations modifiying blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).
 
 ### IPC Client Connection
 
