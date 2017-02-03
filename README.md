@@ -161,8 +161,9 @@ Logs from communication between ruby app and node are available under following 
 
 ## Roadmap
 
-* Support for signing transactions 
-* Support for arrays serialization 
+* Dynamic arrays serialization 
+* Signing transactions 
+
 
 ## Development
 
@@ -170,7 +171,9 @@ Make sure `rake ethereum:test:setup` passes before running tests.
 
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-Then, run `rake spec` to run the tests. Test that do send transactions to blockchain are marked with `blockchain` tag. Good practice is to run first fast tests that use no ether and oly if they pass then run slow tests that do spend ether. To do that  use the following line:
+Then, run `rake spec` to run the tests. 
+
+Test that do send transactions to blockchain are marked with `blockchain` tag. Good practice is to run first fast tests that use no ether and only if they pass, run slow tests that do spend ether. To do that  use the following line:
 
     $ bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
 
