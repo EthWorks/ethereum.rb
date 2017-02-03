@@ -2,10 +2,27 @@ module Ethereum
   class Decoder
 
     def decode(type, value, start = 0)
-      value = value.gsub(/^0x/,'')
-      core, subtype = Abi::parse_type(type)
-      method_name = "decode_#{core}".to_sym
-      self.send(method_name, value, subtype, start)
+      is_array, arity, array_subtype = Abi::parse_array_type(type)
+      if is_array && arity
+        decode_static_array(arity, array_subtype, value, start)
+      elsif is_array
+        decode_dynamic_array()
+      else
+        value = value.gsub(/^0x/,'')
+        core, subtype = Abi::parse_type(type)
+        method_name = "decode_#{core}".to_sym
+        self.send(method_name, value, subtype, start)
+      end
+    end
+
+    def decode_static_array(arity, array_subtype, value, start)
+      (1..arity).map.with_index do |e, i|
+        decode(array_subtype, value, start + i * 64)
+      end
+    end
+
+    def decode_dynamic_array()
+      raise NotImplementedError
     end
 
     def decode_fixed(value, subtype = "128x128", start = 0)

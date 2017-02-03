@@ -25,4 +25,13 @@ describe Ethereum::Abi do
     expect(Ethereum::Abi::parse_type("fixed128x128")).to eq ["fixed", "128x128"]
   end
 
+  it "parse array type" do
+    expect(Ethereum::Abi::parse_array_type("int")).to eq [false, nil, nil]
+    expect(Ethereum::Abi::parse_array_type("int[2]")).to eq [true, 2, "int"]
+    expect(Ethereum::Abi::parse_array_type("int[]")).to eq [true, nil, "int"]
+    expect(Ethereum::Abi::parse_array_type("int[2][]")).to eq [true, nil, "int[2]"]
+    expect(Ethereum::Abi::parse_array_type("int[2][3]")).to eq [true, 3, "int[2]"]
+  end
+
+
 end

@@ -3,10 +3,26 @@ module Ethereum
   class Encoder
 
     def encode(type, value)
-      core, subtype = Abi::parse_type(type)
-      method_name = "encode_#{core}".to_sym
-      self.send(method_name, value, subtype)
+      is_array, arity, array_subtype = Abi::parse_array_type(type)
+      if is_array && arity
+        encode_static_array(arity, array_subtype, value)
+      elsif is_array
+        encode_dynamic_array()
+      else
+        core, subtype = Abi::parse_type(type)
+        method_name = "encode_#{core}".to_sym
+        self.send(method_name, value, subtype)
+      end
     end
+
+    def encode_static_array(arity, array_subtype, array)
+      (1..arity).map.with_index { |e, i| encode(array_subtype, array[i]) }.join
+    end
+
+    def encode_dynamic_array()
+      raise NotImplementedError
+    end
+
 
     def encode_int(value, _ = nil)
       to_twos_complement(value).to_s(16).rjust(64, '0')
@@ -50,7 +66,7 @@ module Ethereum
     end
 
     def encode_string(value, _)
-      location = encode_uint(@inputs ? @inputs.size * 32 : 32)
+      location = encode_uint(@inputs ? size_of_inputs(@inputs) + @tail.size/2 : 32)
       size = encode_uint(value.bytes.size)
       content = value.bytes.map {|x| x.to_s(16)}.join("").ljust(64, '0')
       [location, size + content]
@@ -88,6 +104,12 @@ module Ethereum
         (number & ((1 << 256) - 1))
       end
 
+      def size_of_inputs(inputs)
+        inputs.map do |input|
+          _, arity, _ = Abi::parse_array_type(input.type)
+          arity.nil? ? 32 : arity * 32
+        end.inject(:+)
+      end
   end
 
 end

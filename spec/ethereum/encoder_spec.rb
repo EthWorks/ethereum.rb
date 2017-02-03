@@ -106,10 +106,39 @@ describe Ethereum::Encoder do
     it { expect(encoder.encode_arguments(function.inputs, ["dave", true])).to eq data }
   end
 
-  context "encode string function" do
+  context "encode and decode string argument" do
     let(:abi) { {"inputs" => [{"type" => "string"}], "outputs" => [] } }
     let (:data) { "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
     it { expect(encoder.encode_arguments(function.inputs, ["żółć"])).to eq data }
+    it { expect(decoder.decode_arguments(function.inputs, data)).to eq ["żółć"] }
+  end
+
+  context "encode and decode 2 string arguments" do
+    let(:abi) { {"inputs" => [{"type" => "string"}, {"type" => "string"}], "outputs" => [] } }
+    let (:data) { "000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c4870000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
+    it { expect( encoder.encode_arguments(function.inputs, ["żółć", "żółć"])).to eq data }
+    it { expect( decoder.decode_arguments(function.inputs, data)).to eq ["żółć", "żółć"] }
+  end
+
+  context "encode static array of ints" do
+    let(:abi) { {"inputs" => [{"type" => "int[2]"}], "outputs" => [] } }
+    let (:data) { "00000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000014" }
+    it { expect( encoder.encode_arguments(function.inputs, [[5, 20]])).to eq data }
+    it { expect( decoder.decode_arguments(function.inputs, data)).to eq [[5, 20]] }
+  end
+
+  context "encode static array of ints with int before in arg list" do
+    let(:abi) { {"inputs" => [{"type" => "int"}, {"type" => "int[2]"}], "outputs" => [] } }
+    let (:data) { "000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000014" }
+    it { expect( encoder.encode_arguments(function.inputs, [2, [5, 20]])).to eq data }
+    it { expect( decoder.decode_arguments(function.inputs, data)).to eq [2, [5, 20]] }
+  end
+
+  context "encode string and static array of ints" do
+    let(:abi) { {"inputs" => [{"type" => "string"}, {"type" => "int[2]"}], "outputs" => [] } }
+    let (:data) { "0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000008c5bcc3b3c582c487000000000000000000000000000000000000000000000000" }
+    it { expect( encoder.encode_arguments(function.inputs, ["żółć", [5, 20]])).to eq data }
+    it { expect( decoder.decode_arguments(function.inputs, data)).to eq ["żółć", [5, 20]] }
   end
 
   context "raise exception if too many args" do

@@ -19,5 +19,14 @@ module Ethereum
       [match[1], match[2]]
     end
 
+    def self.parse_array_type(type)
+      match = /(.+)\[(\d*)\]\z/.match(type)
+      if match
+        [true, match[2].present? ? match[2].to_i : nil, match[1]]
+      else
+        [false, nil, nil]
+      end
+    end
+
   end
 end
