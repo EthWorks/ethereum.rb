@@ -6,9 +6,9 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 
 ## Highlights
 
-* Compile Solidity contracts with solc compiler
 * Deploy and interact with contracts on the blockchain
-* Recieve contract events
+* Compile Solidity contracts with solc compiler from ruby
+* Receive events from contract 
 * Run json rpc calls from ruby
 * Connect to node via IPC or HTTP
 * Helpful rake tasks for common actions
