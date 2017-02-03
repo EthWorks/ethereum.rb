@@ -6,15 +6,16 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 
 ## Highlights
 
-* Pure Ruby implementation
-* IPC & HTTP Client with batch calls support
 * Compile Solidity contracts with solc compiler
-* Deploy and interact with contracts
-* Support for contract events
+* Deploy and interact with contracts on the blockchain
+* Recieve contract events
+* Run json rpc calls from ruby
+* Connect to node via IPC or HTTP
+* Helpful rake tasks for common actions
 
 ## Installation
 
-Before installing gem make sure to go through [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md) section.
+Before installing gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md).
 
 To install gem simply add this line to your application's Gemfile:
 
