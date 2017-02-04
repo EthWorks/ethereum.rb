@@ -14,13 +14,14 @@ describe Ethereum do
     tx_address = @works.transact_and_wait.set("some4key", "somethevalue").address
     sleep 15
 
-    expect(@works.get_filter_changes.changed(filter_id)[0][:transactionHash]).to eq tx_address
-    expect(@works.get_filter_logs.changed(filter_id)[0][:transactionHash]).to eq tx_address
     expect(Ethereum::Transaction.from_blockchain(tx_address).mined?).to be true
 
     @works_reloaded = Ethereum::Contract.create(name: "WorksReloaded", address: contract_address, abi: @works.abi, client: client)
     expect(@works_reloaded.call.get("some4key")).to eq ["somethevalue", "żółć"]
     expect(@works.transact_and_wait.kill.mined?).to be true
+
+    expect(@works.get_filter_changes.changed(filter_id)[0][:transactionHash]).to eq tx_address
+    expect(@works.get_filter_logs.changed(filter_id)[0][:transactionHash]).to eq tx_address
   end
 
 end
