@@ -7,7 +7,7 @@ module Ethereum
       if is_array && arity
         encode_static_array(arity, array_subtype, value)
       elsif is_array
-        encode_dynamic_array()
+        encode_dynamic_array(array_subtype, value)
       else
         core, subtype = Abi::parse_type(type)
         method_name = "encode_#{core}".to_sym
@@ -19,10 +19,12 @@ module Ethereum
       (1..arity).map.with_index { |e, i| encode(array_subtype, array[i]) }.join
     end
 
-    def encode_dynamic_array()
-      raise NotImplementedError
+    def encode_dynamic_array(array_subtype, array)
+      location = encode_uint(@inputs ? size_of_inputs(@inputs) + @tail.size/2 : 32)
+      size = encode_uint(array.size)
+      data = (1..array.size).map.with_index { |e, i| encode(array_subtype, array[i]) }.join
+      [location, size + data]
     end
-
 
     def encode_int(value, _ = nil)
       to_twos_complement(value).to_s(16).rjust(64, '0')

@@ -33,5 +33,4 @@ describe Ethereum::Abi do
     expect(Ethereum::Abi::parse_array_type("int[2][3]")).to eq [true, 3, "int[2]"]
   end
 
-
 end
