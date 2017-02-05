@@ -16,13 +16,14 @@ module Ethereum
     end
 
     def encode_static_array(arity, array_subtype, array)
-      (1..arity).map.with_index { |e, i| encode(array_subtype, array[i]) }.join
+      raise "Wrong number of arguments" if arity != array.size
+      array.inject("") { |a, e| a << encode(array_subtype, e) }
     end
 
     def encode_dynamic_array(array_subtype, array)
       location = encode_uint(@inputs ? size_of_inputs(@inputs) + @tail.size/2 : 32)
       size = encode_uint(array.size)
-      data = (1..array.size).map.with_index { |e, i| encode(array_subtype, array[i]) }.join
+      data = array.inject("") { |a, e| a << encode(array_subtype, e) }
       [location, size + data]
     end
 

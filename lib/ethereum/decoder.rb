@@ -16,13 +16,13 @@ module Ethereum
     end
 
     def decode_static_array(arity, array_subtype, value, start)
-      (1..arity).map.with_index { |e, i| decode(array_subtype, value, start + i * 64) }
+      (0..arity-1).map { |i| decode(array_subtype, value, start + i * 64) }
     end
 
     def decode_dynamic_array(array_subtype, value, start)
       location = decode_uint(value[start..(start+63)]) * 2
       size = decode_uint(value[location..location+63])
-      (1..size).map.with_index { |e, i| decode(array_subtype, value, location + (i+1) * 64) }
+      (0..size-1).map { |i| decode(array_subtype, value, location + (i+1) * 64) }
     end
 
     def decode_fixed(value, subtype = "128x128", start = 0)
@@ -85,7 +85,7 @@ module Ethereum
         subtype.present? ? subtype.to_i : default
       end
 
-      def fixed_bitsize(subtype = nil, default = 256)
+      def fixed_bitsize(subtype = nil)
         subtype ||= "128x128"
         _, x, n = /(\d+)x(\d+)/.match(subtype).to_a
         x.to_i + n.to_i

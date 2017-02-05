@@ -19,8 +19,8 @@ module Ethereum
 
     def compile(filename)
       result = {}
-      execute_solc(nil, filename).scan(OUTPUT_REGEXP).each do |match|
-        file, name, bin, abi = match
+      execute_solc(filename).scan(OUTPUT_REGEXP).each do |match|
+        _file, name, bin, abi = match
         result[name] = {}
         result[name]["abi"] = abi
         result[name]["bin"] = bin
@@ -29,7 +29,7 @@ module Ethereum
     end
 
     private    
-      def execute_solc(dir, filename)
+      def execute_solc(filename)
         cmd = "#{@bin_path} #{@args} '#{filename}'"
         out, stderr, status = Open3.capture3(cmd)
         raise SystemCallError, "Unanable to run solc compliers" if status.exitstatus == 127
