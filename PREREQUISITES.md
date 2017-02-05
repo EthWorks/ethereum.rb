@@ -55,7 +55,7 @@ Or install it yourself as:
 
 ### Running a node
 
-There is a rake task to run test node, that you can run from your application directory:
+There is a rake task to run node on testnet network, that you can run from your application directory:
 
     $ rake ethereum:node:test
 
@@ -64,8 +64,8 @@ To do that adding create file containing password accessable from your parity fo
  * `/Users/You/AppData/Roaming/Parity/Ethereum` on Windows
  * `/Users/you/Library/Application Support/io.parity.ethereum` on MacOS
  * `/home/you/.local/share/parity` on Linux/Unix
- * `/home/you/.parity on Linux and MacOS for Parity versions older then 1.5.0
+ * `/home/you/.parity` on Linux and MacOS for Parity versions older then 1.5.0
 
 Warnning: Running a parity node with unlock wallet is a considerable security risk and should be avoided on production servers. Especially avoid running node with unlocked wallet and enabled json rpc server in http mode.
 
-To run operations modifiying blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).
+To send transaction on a testnet blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).
