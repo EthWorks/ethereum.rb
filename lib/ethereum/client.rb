@@ -48,46 +48,38 @@ module Ethereum
       @default_account || eth_accounts["result"][0]
     end
 
-    def int_to_hex(n)
-      return "0x#{n.to_s(16)}"
+    def int_to_hex(p)
+      p.is_a?(Integer) ? "0x#{p.to_s(16)}" : p 
     end
 
-    # https://github.com/ethereum/wiki/wiki/JSON-RPC#output-hex-values
     def encode_params(params)
-      return params.map do |p|
-        if p.is_a?(Integer)
-          int_to_hex(p)
-        else
-          p
-        end
+      params.map(&method(:int_to_hex))
+    end
+
+    def send_command(command,args)
+      if ["eth_getBalance", "eth_call"].include?(command)
+        args << "latest"
+      end
+
+      payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
+
+      @logger.info("Sending #{payload.to_json}") if @log
+
+      if @batch
+        @batch << payload
+        return true
+      else
+        output = JSON.parse(send_single(payload.to_json))
+        @logger.info("Received #{output.to_json}") if @log
+        reset_id
+        return output
       end
     end
 
     (RPC_COMMANDS + RPC_MANAGEMENT_COMMANDS).each do |rpc_command|
       method_name = rpc_command.underscore
       define_method method_name do |*args|
-        command = rpc_command
-        if ["eth_getBalance", "eth_call"].include?(command)
-          args << "latest"
-        end
-        payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
-
-        if @log == true
-          @logger.info("Sending #{payload.to_json}")
-        end
-
-        if @batch
-          @batch << payload
-          return true
-        else
-          read = send_single(payload.to_json)
-          output = JSON.parse(read)
-          if @log == true
-            @logger.info("Received #{output.to_json}")
-          end
-          reset_id
-          return output
-        end
+        send_command(rpc_command, args)
       end
     end
 
