@@ -2,29 +2,36 @@
 
 ## Compatibility and requirements
 
-* Tested with parity 1.5.0, might work with geth (but was not tested)
+* Tested with parity 1.5.0, might work with geth and older parity, but was not tested.
 * Tested with solc 0.4.9
 * Ruby 2.x
 * UNIX/Linux or OS X environment
 
-## Prerequisites
-
-Ethereum.rb requires installation of ethereum node and solidity compiler.
+## Installing prerequisites
 
 ### Ethereum node
 
-Currently the lib supports only [parity](https://ethcore.io/parity.html). To install parity on mac simply:
+Currently the only node supported by ethereum.rb is [parity](https://ethcore.io/parity.html). To install parity on mac simply:
 
     $ brew install parity --beta
 
 To install parity on linux download latest package from [parity github](https://github.com/ethcore/parity/releases) and install on your computer.
 
-It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. Library assumes that you have at least one wallet configured.
+It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. 
+
+To work correctly ethereum.rb needs parity to have at least one wallet configured. Parity should automatically create one for you during installation. 
+You can see the list of wallets by calling:
+
+    $ parity account list
+
+And create one with following command:
+
+    $ parity account new
 
 ### Solidity complier
 
 To be able to compile [solidity](https://github.com/ethereum/solidity) contracts you need to install solc compiler. Installation instructions are available [here](http://solidity.readthedocs.io/en/latest/installing-solidity.html).
-To install on mac simply:
+To install on mac type:
 
     $ brew install solidity --beta
 
@@ -45,3 +52,20 @@ And then execute:
 Or install it yourself as:
 
     $ gem install ethereum.eb
+
+### Running a node
+
+There is a rake task to run test node, that you can run from your application directory:
+
+    $ rake ethereum:node:test
+
+It will run parity node, unlock the first account on the account list, but you need to supply it with password. 
+To do that adding create file containing password accessable from your parity folder, which should be one of the following:
+ * `/Users/You/AppData/Roaming/Parity/Ethereum` on Windows
+ * `/Users/you/Library/Application Support/io.parity.ethereum` on MacOS
+ * `/home/you/.local/share/parity` on Linux/Unix
+ * `/home/you/.parity on Linux and MacOS for Parity versions older then 1.5.0
+
+Warnning: Running a parity node with unlock wallet is a considerable security risk and should be avoided on production servers. Especially avoid running node with unlocked wallet and enabled json rpc server in http mode.
+
+To run operations modifiying blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).

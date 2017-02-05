@@ -8,14 +8,19 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 
 * Deploy and interact with contracts on the blockchain
 * Compile Solidity contracts with solc compiler from ruby
-* Receive events from contract 
-* Run json rpc calls from ruby
+* Receive events from contract
+* Make json rpc calls to node from ruby application
 * Connect to node via IPC or HTTP
 * Helpful rake tasks for common actions
 
 ## Installation
 
-Before installing gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md).
+Before installing gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md), especially that you have:
+* compatible ethereum node installed
+* compatible solidity compiler installed
+* wallet with some ethereum on it 
+
+Before you run a program check that the node is running and accounts you want to spend from are unlocked.
 
 To install gem simply add this line to your application's Gemfile:
 
@@ -33,21 +38,116 @@ Or install it yourself as:
 
 ## Basic Usage
 
-### Running a node
+You can create contract from solidity source and deploy it to the blockchain, with following code:
 
-Right after parity installation you will have one default account. There is a rake task to run test node, that you can run from your application directory:
+```ruby
+contract = Ethereum::Contract.create(file: "greeter.sol")
+address = contract.deploy_and_wait("Hello from ethereum.rb!")
+```
 
-    $ rake ethereum:node:test
-    
-It will run parity node, unlock the first account on the account list, but you need to supply it with password. To do that adding create file containing password accessable from the following path:
+Deployment may take up to couple of minutes. Once deployed you can start interacting with contract, e.g. calling it's methods:
 
-`~/.parity/pass`
+```ruby
+contract.call.greet # => "Hello from ethereum.rb!"
+```
 
-To run operations modifiying blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).
+You can see example contract [greeter here](https://github.com/marekkirejczyk/ruby_ethereum_example/blob/master/contracts/greeter.sol).
+
+## Creating contract
+
+### Compile multiple contracts at once
+
+If you want to complie multiple contracts at once, you can create new instances using newly declared ruby clasess:
+
+```ruby
+Ethereum::Contract.create(file: "mycontracts.sol", client: client)
+contract = MyContract1.new
+contract = contract.deploy_and_wait
+contract2 = MyContract2.new
+contract2 = contract.deploy_and_wait
+```
+
+All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
+
+Note: If class of given name exist it will be undefined first to avoid name collision. 
+
+### Get contract from blockchain
+
+The other way to obtain contract instance is get one that already exist in the blockchain. To do so you need a contract name, contract address and ABI definition.
+
+```ruby
+contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi)
+```
+
+Note that you need to specify contract name, that will be used to define new class in ruby, as it is not a part of ABI definition.
+
+Alternatively you can obtain abi definition and name from contract source file:
+
+```ruby
+contract = Ethereum::Contract.create(file: "MyContract.sol", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ")
+```
+
+If you want to create new contract, that is not yet deployed from ABI definition you will need also to supply binary code:
+
+```ruby
+contract = Ethereum::Contract.create(name: "MyContract", abi: abi, code: "...")
+```
+
+### Interacting with contract
+
+Functions defined in a contract are exposed using the following conventions: 
+
+```
+contract.transact.[function_name](params) 
+contract.transact_and_wait.[function_name](params)  
+contract.call.[function_name](params)
+```
+
+**Example Contract in Solidity**
+```
+contract SimpleRegistry {
+
+  mapping (bytes32 => string) public registry;
+
+  function register(bytes32 key, string value) {
+    registry[key] = value;
+  }
+
+  function get(bytes32 key) public constant returns(string) {
+    return registry[key];
+  }
+
+}```
+
+For contract above here is how to access it's methods:
+
+```ruby
+contract.transact_and_wait.register("performer", "Beastie Boys")
+```
+
+Will send transaction to the blockchain and wait for it to be mined.
+
+```ruby
+contract.transact.register("performer", "Black Eyed Peas")
+```
+
+Will send transaction to the blockchain return instantly.
+
+```ruby
+contract.call.get("performer") # => "Black Eyed Peas"
+```
+
+Will call method of the contract and return result. 
+Note that no transaction need to be send to the network as method is read-only. 
+On the other hand `register` method will change contract state, so you need to use `transact` or `transact_and_wait` to call it.
+
 
 ### IPC Client Connection
 
-To create client instance simply create Ethereum::IpcClient:
+By default methods interacting with contracts will use default Json RPC Client that will handle connection to ethereum node.
+Default client communicate via IPC. If you want to create custom client or use multiple clients you can create them yourself.
+
+To create IPC client instance of simply create Ethereum::IpcClient:
 
 ```ruby
 client = Ethereum::IpcClient.new
@@ -60,98 +160,49 @@ client = Ethereum::IpcClient.new("~/.parity/mycustom.ipc", false)
 ```
 
 If no ipc file path given, IpcClient looks for ipc file in default locations for parity and geth.
+The second argument is optional. If it is true then logging is on.
+
 By default logging is on and logs are saved in "/tmp/ethereum_ruby_http.log".
 
-
-### Solidity contract compilation and deployment
-
-You can create contract from solidity source and deploy it to the blockchain.
+To create Http client use following:
 
 ```ruby
-contract = Ethereum::Contract.create(file: "mycontract.sol", client: client)
-address = contract.deploy_and_wait
+client = Ethereum::HttpClient.new('http://localhost:8545')
 ```
 
-Deployment may take up to couple minutes.
-If you want to complie multiple contracts at once, you can create new instances using newly declared clasess:
+You can supply client when creating a contract:
 
 ```ruby
-Ethereum::Contract.create(file: "mycontract.sol", client: client)
-contract = MyContract.new
-contract = contract.deploy_and_wait
+contract = Ethereum::Contract.create(client: client, ...)
 ```
 
-All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
-If class of given name exist it will be undefined first to avoid name collision. 
-
-### Get contract from blockchain
-
-The other way to obtain contract instance is get one form the blockchain. To do so you need a contract name, contract address and ABI definition.
-`client` parameter is optional.
+You can also obtain default client:
 
 ```ruby
-contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi, client: client)
+client = Ethereum::Singleton.instance
 ```
 
-Note that you need to specify contract name, that will be used to define new class in ruby, as it is not a part of ABI definition.
+### Calling json rpc methods
 
-If you want to create new contract, that is not yet deployed from ABI definition you need to supply binary code too:
+Ethereum.rb allows you to interact directly with Ethereum node using json rpc api calls.
+Api calls translates directly to client methods. E.g. to call `eth_gasPrice` method:
 
 ```ruby
-contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi, code: "...")
+client.eth_gas_price # => {"jsonrpc"=>"2.0", "result"=>"0x4a817c800", "id"=>1}
 ```
 
-### Transacting and Calling Solidity Functions
+Note: methods are transated to underscore notation.
 
-Functions defined in a contract are exposed using the following conventions: 
-
-```
-contract.transact.[function_name](params) 
-contract.transact_and_wait.[function_name](params)  
-contract.call.[function_name](params)
-```
-
-**Example Contract in Solidity**
-```
-contract SimpleNameRegistry {
-
-  mapping (address => bool) public myMapping;
-
-  function register(address _a, bytes32 _b) {
-  }
-
-  function getSomeValue(address _x) public constant returns(bool b, address b) {
-  }
-
-}
-```
-
-And here is how to access it's methods:
-
-```ruby
-contract.transact_and_wait.register("0x5b6cb65d40b0e27fab87a2180abcab22174a2d45", "minter.contract.dgx")
-contract.transact.register("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055", "anthony@eufemio.dgx")
-contract.call.get_some_value("0x385acafdb80b71ae001f1dbd0d65e62ec2fff055")
-```
-
-Note that as `register` method will change contract state, so you need to use `transact` family of methods (or `transact_and_wait` for synchronous version) to call it.
-
-For method like `getSomeValue`, that does not affect state of the contract (and don't need to propagate change to blockchain therefore) you can use call method. It will retrive value from local copy of the blockchain.
-
+Full list of json rpc methods is available [here](https://github.com/ethereum/wiki/wiki/JSON-RPC#user-content-json-rpc-methods)
 
 ## Utils rake tasks
 
-There is plenty of useful rake tasks for interacting with blockchain:
+There are couple of rake tasks to help in wallet maintenance, i.e.:
 
 ```ruby
 rake ethereum:contract:compile[path]            # Compile a contract / Compile and deploy contract
-rake ethereum:node:mine                         # Mine ethereum testing environment for ethereum node
-rake ethereum:node:run                          # Run morden (production) node
-rake ethereum:node:test                         # Run testnet node
-rake ethereum:test:setup                        # Setup testing environment for ethereum node
 rake ethereum:transaction:byhash[id]            # Get info about transaction
 rake ethereum:transaction:send[address,amount]  # Send [amount of] ether to an account
-
 ```
 
 ## Debbuging
@@ -162,17 +213,16 @@ Logs from communication between ruby app and node are available under following 
 
 ## Roadmap
 
-* Dynamic arrays serialization 
-* Signing transactions 
-
+* Rubydoc documentation
+* Signing transactions
 
 ## Development
 
-Make sure `rake ethereum:test:setup` passes before running tests. 
+Run `bin/console` for an interactive prompt that will allow you to experiment.
 
-You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Make sure `rake ethereum:test:setup` passes before running tests.
 
-Then, run `rake spec` to run the tests. 
+Then, run `rake spec` to run the tests.
 
 Test that do send transactions to blockchain are marked with `blockchain` tag. Good practice is to run first fast tests that use no ether and only if they pass, run slow tests that do spend ether. To do that  use the following line:
 
