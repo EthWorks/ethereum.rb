@@ -13,6 +13,7 @@
 
 Currently the only node supported by ethereum.rb is [parity](https://ethcore.io/parity.html). To install parity on mac simply:
 
+    $ brew tap ethcore/ethcore
     $ brew install parity --beta
 
 To install parity on linux download latest package from [parity github](https://github.com/ethcore/parity/releases) and install on your computer.
