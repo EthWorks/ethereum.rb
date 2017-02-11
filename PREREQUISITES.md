@@ -2,7 +2,7 @@
 
 ## Compatibility and requirements
 
-* Tested with parity 1.5.0, might work with geth and older parity, but was not tested.
+* Tested with parity 1.5, might work with geth and older parity, but was not tested.
 * Tested with solc 0.4.9
 * Ruby 2.x
 * UNIX/Linux or OS X environment
