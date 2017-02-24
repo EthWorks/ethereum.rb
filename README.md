@@ -20,7 +20,7 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 Before installing gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md), especially that you have:
 * compatible ethereum node installed
 * compatible solidity compiler installed
-* wallet with some ethereum on it 
+* wallet with some ethereum on it
 
 Before you run a program check that the node is running and accounts you want to spend from are unlocked.
 
@@ -71,7 +71,7 @@ contract2 = contract.deploy_and_wait
 
 All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
 
-Note: If class of given name exist it will be undefined first to avoid name collision. 
+Note: If class of given name exist it will be undefined first to avoid name collision.
 
 ### Get contract from blockchain
 
@@ -97,10 +97,10 @@ contract = Ethereum::Contract.create(name: "MyContract", abi: abi, code: "...")
 
 ### Interacting with contract
 
-Functions defined in a contract are exposed using the following conventions: 
+Functions defined in a contract are exposed using the following conventions:
 
 ```
-contract.transact.[function_name](params) 
+contract.transact.[function_name](params)
 contract.transact_and_wait.[function_name](params)  
 contract.call.[function_name](params)
 ```
@@ -119,7 +119,8 @@ contract SimpleRegistry {
     return registry[key];
   }
 
-}```
+}
+```
 
 For contract above here is how to access it's methods:
 
@@ -139,8 +140,8 @@ Will send transaction to the blockchain return instantly.
 contract.call.get("performer") # => "Black Eyed Peas"
 ```
 
-Will call method of the contract and return result. 
-Note that no transaction need to be send to the network as method is read-only. 
+Will call method of the contract and return result.
+Note that no transaction need to be send to the network as method is read-only.
 On the other hand `register` method will change contract state, so you need to use `transact` or `transact_and_wait` to call it.
 
 
@@ -237,4 +238,3 @@ You need ethereum node up and running for tests to pass and it needs to be worki
 This library has been forked from [ethereum-ruby](https://github.com/DigixGlobal/ethereum-ruby) by DigixGlobal Pte Ltd (https://dgx.io).
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
