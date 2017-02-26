@@ -4,6 +4,8 @@
 
 The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as easy as possible (but not easier).
 
+Announcement: The Ropsten network is currently being spammed, therefore CI is down and you might have issues to start working with testnet. Use mainnet instead.
+
 ## Highlights
 
 * Simple syntax, programmer friendly
