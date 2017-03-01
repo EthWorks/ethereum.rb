@@ -4,7 +4,7 @@
 
 The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as easy as possible (but not easier).
 
-Announcement: The Ropsten network is currently being spammed, therefore CI is down and you might have issues to start working with testnet. Use mainnet instead.
+Note: The Ropsten testnet network is currently being spammed. CI builds might fail beacause of that. If you have issues working with testnet, you might want to use mainnet instead. Using parity --warp mode is helpful thou.
 
 ## Highlights
 
