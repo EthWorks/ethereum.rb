@@ -205,7 +205,8 @@ Full list of json rpc methods is available [here](https://github.com/ethereum/wi
 There are couple of rake tasks to help in wallet maintenance, i.e.:
 
 ```ruby
-rake ethereum:contract:compile[path]            # Compile a contract / Compile and deploy contract
+rake ethereum:contract:deploy[path]             # Compile and deploy contract
+rake ethereum:contract:compile[path]            # Compile a contract
 rake ethereum:transaction:byhash[id]            # Get info about transaction
 rake ethereum:transaction:send[address,amount]  # Send [amount of] ether to an account
 ```
