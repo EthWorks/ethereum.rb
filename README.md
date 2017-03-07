@@ -4,6 +4,8 @@
 
 The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as easy as possible (but not easier).
 
+Note: The Ropsten testnet network is currently being spammed. CI builds might fail beacause of that. If you have issues working with testnet, you might want to use mainnet instead. Using parity --warp mode is helpful thou.
+
 ## Highlights
 
 * Simple syntax, programmer friendly
@@ -203,7 +205,8 @@ Full list of json rpc methods is available [here](https://github.com/ethereum/wi
 There are couple of rake tasks to help in wallet maintenance, i.e.:
 
 ```ruby
-rake ethereum:contract:compile[path]            # Compile a contract / Compile and deploy contract
+rake ethereum:contract:deploy[path]             # Compile and deploy contract
+rake ethereum:contract:compile[path]            # Compile a contract
 rake ethereum:transaction:byhash[id]            # Get info about transaction
 rake ethereum:transaction:send[address,amount]  # Send [amount of] ether to an account
 ```
