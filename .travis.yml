@@ -19,7 +19,6 @@ before_script:
   - parity --chain testnet account list
   - cat ~/.parity.log
   - bundle exec rake ethereum:node:waitforsync
-  - bundle exec rake ethereum:test:setup
 script:
   - bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
 before_cache:
