@@ -55,6 +55,27 @@ describe Ethereum::Contract do
     it_behaves_like "communicate with node"
   end
 
+  context "transact with custom gas" do
+    let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217","gas":"0xabe0"}],"id":1}' }
+    let(:eth_send_result) { '{"jsonrpc":"2.0","result":"0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623","id":1}' }
+    it "communicate with node" do
+      expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
+      contract.gas = 44000
+      expect(contract.transact.greet.id).to eq '0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623'
+    end
+  end
+
+  context "transact with custom gasprice" do
+    let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217","gasPrice":"0xabe0"}],"id":1}' }
+    let(:eth_send_result) { '{"jsonrpc":"2.0","result":"0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623","id":1}' }
+    it "communicate with node" do
+      expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
+      contract.gas_price = 44000
+      expect(contract.transact.greet.id).to eq '0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623'
+    end
+  end
+
+
   context "transact_and_wait" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"}],"id":1}' }
     let(:eth_get_transaction_request) { '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":[""],"id":1}' }

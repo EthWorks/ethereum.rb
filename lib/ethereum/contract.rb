@@ -2,6 +2,7 @@ module Ethereum
   class Contract
 
     attr_reader :address
+    attr_accessor :gas, :gas_price
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
     attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
@@ -34,7 +35,6 @@ module Ethereum
       contract.address = address
       contract
     end
-
 
     def address=(addr)
       @address = addr
@@ -93,9 +93,16 @@ module Ethereum
       end
     end
 
+    def add_gas_options_args(args)
+      args[:gas] = @client.int_to_hex(@gas) if @gas.present?
+      args[:gasPrice] = @client.int_to_hex(@gas_price) if @gas_price.present?
+      args
+    end
+
     def transact(fun, *args)
       payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
-      txid = @client.eth_send_transaction({to: @address, from: @sender, data: "0x" + payload})["result"]
+      args = {to: @address, from: @sender, data: "0x" + payload}
+      txid = @client.eth_send_transaction(add_gas_options_args(args))["result"]
       return Ethereum::Transaction.new(txid, @client, payload, args)
     end
 
@@ -151,6 +158,7 @@ module Ethereum
       create_event_proxies
       class_methods = Class.new do
         extend Forwardable
+        def_delegators :parent, :gas, :gas_price, :gas=, :gas_price=
         def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
