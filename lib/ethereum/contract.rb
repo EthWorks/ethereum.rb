@@ -50,7 +50,8 @@ module Ethereum
       end
       deploy_arguments = @encoder.encode_arguments(@constructor_inputs, params)
       payload = "0x" + @code + deploy_arguments
-      tx = @client.eth_send_transaction({from: sender, data: payload})["result"]
+      args = add_gas_options_args({from: sender, data: payload})
+      tx = @client.eth_send_transaction(args)["result"]
       raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
       @deployment = Ethereum::Deployment.new(tx, @client)
     end
@@ -91,12 +92,6 @@ module Ethereum
       else
         return output
       end
-    end
-
-    def add_gas_options_args(args)
-      args[:gas] = @client.int_to_hex(@gas) if @gas.present?
-      args[:gasPrice] = @client.int_to_hex(@gas_price) if @gas_price.present?
-      args
     end
 
     def transact(fun, *args)
@@ -179,6 +174,12 @@ module Ethereum
     end
 
     private
+      def add_gas_options_args(args)
+        args[:gas] = @client.int_to_hex(@gas) if @gas.present?
+        args[:gasPrice] = @client.int_to_hex(@gas_price) if @gas_price.present?
+        args
+      end
+
       def create_function_proxies
         parent = self
         call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new
