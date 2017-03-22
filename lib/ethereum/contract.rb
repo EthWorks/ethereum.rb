@@ -52,7 +52,7 @@ module Ethereum
       payload = "0x" + @code + deploy_arguments
       args = add_gas_options_args({from: sender, data: payload})
       tx = @client.eth_send_transaction(args)["result"]
-      raise "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{deploytx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
+      raise IOError, "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{tx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
       @deployment = Ethereum::Deployment.new(tx, @client)
     end
 
