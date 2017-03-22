@@ -63,7 +63,6 @@ module Ethereum
 
       payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
       @logger.info("Sending #{payload.to_json}") if @log
-
       if @batch
         @batch << payload
         return true
@@ -71,6 +70,7 @@ module Ethereum
         output = JSON.parse(send_single(payload.to_json))
         @logger.info("Received #{output.to_json}") if @log
         reset_id
+        raise IOError, output["error"]["message"] if output["error"]
         return output
       end
     end

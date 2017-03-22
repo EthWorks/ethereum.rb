@@ -7,12 +7,10 @@ describe Ethereum::Contract do
   let(:abi) { '[{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"greet","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[{"name":"_greeting","type":"string"}],"payable":false,"type":"constructor"}]' }
   let(:code) { '606060405234610000576040516102c13803806102c1833981016040528051015b5b60008054600160a060020a03191633600160a060020a03161790555b8060019080519060200190828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061008957805160ff19168380011785556100b6565b828001600101855582156100b6579182015b828111156100b657825182559160200191906001019061009b565b5b506100d79291505b808211156100d357600081556001016100bf565b5090565b50505b505b6101d6806100eb6000396000f300606060405263ffffffff60e060020a60003504166341c0e1b5811461002f578063cfae32171461003e575b610000565b346100005761003c6100cb565b005b346100005761004b61010d565b604080516020808252835181830152835191928392908301918501908083838215610091575b80518252602083111561009157601f199092019160209182019101610071565b505050905090810190601f1680156100bd5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6000543373ffffffffffffffffffffffffffffffffffffffff9081169116141561010a5760005473ffffffffffffffffffffffffffffffffffffffff16ff5b5b565b604080516020808201835260008252600180548451600282841615610100026000190190921691909104601f81018490048402820184019095528481529293909183018282801561019f5780601f106101745761010080835404028352916020019161019f565b820191906000526020600020905b81548152906001019060200180831161018257829003601f168201915b505050505090505b905600a165627a7a72305820293955f201e1545746c248227c00553ddded3cab3195c1f640197fc52fb562600029' }
   let(:contract) { Ethereum::Contract.create(name: "Greeter", code: code, abi: abi, client: client, address: address) }
-  let(:eth_accounts_request) { '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}' }
-  let(:eth_accounts_result) { '{"jsonrpc":"2.0","result":["0x27dcb234fab8190e53e2d949d7b2c37411efb72e"],"id":1}' }
   let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "", "id": 1}' }
 
   before (:each) do
-    expect(client).to receive(:send_single).at_least(1).with(eth_accounts_request).and_return(eth_accounts_result)
+    client.default_account = "0x27dcb234fab8190e53e2d949d7b2c37411efb72e"
   end
 
   shared_examples "communicate with node" do |expected|
@@ -65,7 +63,7 @@ describe Ethereum::Contract do
     end
   end
 
-  context "transact with custom gasprice" do
+  context "transact with custom gas price" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217","gasPrice":"0xabe0"}],"id":1}' }
     let(:eth_send_result) { '{"jsonrpc":"2.0","result":"0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623","id":1}' }
     it "communicate with node" do
@@ -75,6 +73,14 @@ describe Ethereum::Contract do
     end
   end
 
+  context "transact with insufficient funds" do
+    let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"}],"id":1}' }
+    let(:eth_send_result) { '{"jsonrpc":"2.0","error":{"code":-32010,"message":"Insufficient funds. The account you tried to send transaction from does not have enough funds.","data":null},"id":1}' }
+    it "communicate with node" do
+      expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
+      expect{ contract.transact.greet }.to raise_error(IOError, "Insufficient funds. The account you tried to send transaction from does not have enough funds.")
+    end
+  end
 
   context "transact_and_wait" do
     let(:eth_send_request) { '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"to":"0xaf83b6f1162062aa6711de633821f3e66b6fb3a5","from":"0x27dcb234fab8190e53e2d949d7b2c37411efb72e","data":"0xcfae3217"}],"id":1}' }
