@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/marekkirejczyk/ethereum.rb.svg?branch=master)](https://travis-ci.org/marekkirejczyk/ethereum.rb) [![security](https://hakiri.io/github/NullVoxPopuli/MetaHash/master.svg)](https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb) [![Code Climate](https://codeclimate.com/github/marekkirejczyk/ethereum.rb/badges/gpa.svg)](https://codeclimate.com/github/marekkirejczyk/ethereum.rb)
 
-The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as easy as possible (but not easier).
-
-Note: The Ropsten testnet network is currently being spammed. CI builds might fail beacause of that. If you have issues working with testnet, you might want to use mainnet instead. Using parity --warp mode is helpful thou.
+The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as fast and easy as possible (but not easier!).
 
 ## Highlights
 
