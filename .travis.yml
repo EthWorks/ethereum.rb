@@ -4,7 +4,7 @@ rvm:
   - 2.3.1
 env:
   - PARITY="1.5.0"
-  - PARITY="1.5.7"
+  - PARITY="1.6.4"
 cache:
   bundler: true
   directories:
@@ -13,7 +13,7 @@ before_install:
   - sudo bin/install_parity
   - gem install bundler -v 1.11.2
 before_script:
-  - parity --warp --chain testnet -d ~/.parity --password ~/.parity/pass --unlock 3089630d06fD90Ef48a0c43f000971587c1F3247 --author 3089630d06fD90Ef48a0c43f000971587c1F3247 daemon ~/.parity.pid --log-file ~/.parity.log
+  - parity --warp --chain kovan -d ~/.parity --password ~/.parity/pass --unlock 3089630d06fD90Ef48a0c43f000971587c1F3247 --author 3089630d06fD90Ef48a0c43f000971587c1F3247 daemon ~/.parity.pid --log-file ~/.parity.log
   - cat ~/.parity.log
   - sleep 5
   - parity --chain testnet account list
