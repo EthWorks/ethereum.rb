@@ -12,6 +12,7 @@ module Ethereum
   require 'ethereum/solidity'
   require 'ethereum/initializer'
   require 'ethereum/contract'
+  require 'ethereum/explorer_url_helper'
   require 'ethereum/function'
   require 'ethereum/function_input'
   require 'ethereum/function_output'
