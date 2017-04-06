@@ -28,6 +28,11 @@ describe Ethereum::Contract do
       expect(client).to receive(:send_single).once.with(create_contract_request).and_return(create_contract_response)
       expect(contract.estimate("Hello")).to eq 254528
     end
+
+    it "rises if wrong number of args for constructor" do
+      expect{ contract.estimate("arg", "extra arg") }.to raise_error(ArgumentError, "Wrong number of arguments in a constructor")
+    end
+
   end
 
   context "deploy" do
@@ -71,6 +76,11 @@ describe Ethereum::Contract do
       expect(client).to receive(:send_single).once.with(transaction_receipt_request).and_return(transaction_receipt_response)
       expect(contract.deploy_and_wait("Hello", step: 0)).to eq "0xb208cc15cb01ec6ac37eeeadb7847eacee706c47"
     end
+
+    it "rises if wrong number of args for constructor" do
+      expect{ contract.deploy("arg", "extra arg") }.to raise_error(ArgumentError, "Wrong number of arguments in a constructor")
+    end
+
   end
 
   context "transact" do

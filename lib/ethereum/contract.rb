@@ -2,6 +2,7 @@ module Ethereum
   class Contract
 
     attr_reader :address
+    attr_accessor :key
     attr_accessor :gas, :gas_price
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
@@ -44,15 +45,32 @@ module Ethereum
       end
     end
 
-    def deploy(*params)
+    def deploy_payload(params)
       if @constructor_inputs.present?
-        raise "Missing constructor parameter" and return if params.length != @constructor_inputs.length
+        raise ArgumentError, "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
       end
       deploy_arguments = @encoder.encode_arguments(@constructor_inputs, params)
-      payload = "0x" + @code + deploy_arguments
-      args = add_gas_options_args({from: sender, data: payload})
-      tx = @client.eth_send_transaction(args)["result"]
-      raise IOError, "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{tx}" if tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
+      "0x" + @code + deploy_arguments
+    end
+
+    def deploy_args(params)
+      add_gas_options_args({from: sender, data: deploy_payload(params)})
+    end
+
+    def send_transaction(tx_args)
+      if key
+        Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
+        tx = Eth::Tx.new({ from: key.address, to: main_address, value: value, data: data, nonce: 0, gas_limit: 1_000_000, gas_price: gas_price})
+        tx.sign key
+      else
+        @client.eth_send_transaction(tx_args)["result"]
+      end
+    end
+
+    def deploy(*params)
+      tx = send_transaction(deploy_args(params))
+      tx_failed = tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
+      raise IOError, "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{tx}" if tx_failed
       @deployment = Ethereum::Deployment.new(tx, @client)
     end
 
@@ -67,22 +85,22 @@ module Ethereum
     end
 
     def estimate(*params)
-      deploy_arguments = ""
-      if @constructor_inputs.present?
-        raise "Wrong number of arguments in a constructor" and return if params.length != @constructor_inputs.length
-        deploy_arguments = @encoder.encode_arguments(@constructor_inputs, params)
-      end
-      deploy_payload = @code + deploy_arguments
-      result = @client.eth_estimate_gas({from: @sender, data: "0x" + deploy_payload})
+      result = @client.eth_estimate_gas(deploy_args(params))
       @decoder.decode_int(result["result"])
+    end
+    
+    def call_payload(fun, args)
+      "0x" + fun.signature + @encoder.encode_arguments(fun.inputs, args)
+    end
+
+    def call_args(fun, args)
+      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
     end
 
     def call_raw(fun, *args)
-      payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
-      raw_result = @client.eth_call({to: @address, from: @sender, data: "0x" + payload})
-      raw_result = raw_result["result"]
+      raw_result = @client.eth_call(call_args(fun, args))["result"]
       output = @decoder.decode_arguments(fun.outputs, raw_result)
-      return {data: "0x" + payload, raw: raw_result, formatted: output}
+      return {data: call_payload(fun, args), raw: raw_result, formatted: output}
     end
 
     def call(fun, *args)
@@ -95,10 +113,8 @@ module Ethereum
     end
 
     def transact(fun, *args)
-      payload = fun.signature + @encoder.encode_arguments(fun.inputs, args)
-      args = {to: @address, from: @sender, data: "0x" + payload}
-      txid = @client.eth_send_transaction(add_gas_options_args(args))["result"]
-      return Ethereum::Transaction.new(txid, @client, payload, args)
+      tx = send_transaction(call_args(fun, args))
+      return Ethereum::Transaction.new(tx, @client, call_payload(fun, args), args)
     end
 
     def transact_and_wait(fun, *args)
