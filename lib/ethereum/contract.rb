@@ -88,7 +88,7 @@ module Ethereum
       result = @client.eth_estimate_gas(deploy_args(params))
       @decoder.decode_int(result["result"])
     end
-    
+
     def call_payload(fun, args)
       "0x" + fun.signature + @encoder.encode_arguments(fun.inputs, args)
     end
