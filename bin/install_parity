@@ -11,11 +11,11 @@ wget http://d1h4xl4cr1h0mo.cloudfront.net/v$PARITY\/x86_64-unknown-linux-gnu/par
 sudo dpkg -i parity_$PARITY\_amd64.deb
 
 echo "Setuping parity..."
-mkdir -p ~/.parity
-wget https://raw.githubusercontent.com/ethcore/parity/master/ethcore/res/ethereum/ropsten.json --output-document ~/.parity/ropsten.json
-echo $pass > ~/.parity/pass
-mkdir -p ~/.parity/keys
-echo $wallet > ~/.parity/keys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
-chown -R travis:travis ~/.parity
+echo $pass > ~/.pass
+mkdir -p ~/.local/share/io.parity.ethereum/keys
+chown -R travis:travis ~/.local/share/io.parity.ethereum
+echo $wallet > ~/.local/share/io.parity.ethereum/keys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
 
-ls -la ~/.parity
+
+
+# ls -la ~/.local/share/io.parity.ethereum/keys

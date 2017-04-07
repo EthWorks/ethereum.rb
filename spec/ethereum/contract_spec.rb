@@ -5,6 +5,8 @@ describe Ethereum::Contract do
 
   class MockClient < Ethereum::Client
     def default_account() "0x27dcb234fab8190e53e2d949d7b2c37411efb72e" end
+    def gas_price() nil end
+    def gas_limit() nil end
   end
 
   let(:client) { MockClient.new }
@@ -66,7 +68,7 @@ describe Ethereum::Contract do
 
     it "async with custom gas limit" do
       expect(client).to receive(:send_single).once.with(create_contract_request_with_gas_limit).and_return(create_contract_response)
-      contract.gas = 44000
+      contract.gas_limit = 44000
       expect(contract.deploy("Hello").id).to eq "0x8f27c18ef7c9070884e6a0953be7611b2ab5958e7043398200dc6a6707a2bd4a"
     end
 
@@ -96,7 +98,7 @@ describe Ethereum::Contract do
     let(:eth_send_result) { '{"jsonrpc":"2.0","result":"0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623","id":1}' }
     it "communicate with node" do
       expect(client).to receive(:send_single).once.with(eth_send_request).and_return(eth_send_result)
-      contract.gas = 44000
+      contract.gas_limit = 44000
       expect(contract.transact.greet.id).to eq '0x2736d20b6e8698225c298fba56a90c0c6e95699f95e9c0b13909a730ea438623'
     end
   end

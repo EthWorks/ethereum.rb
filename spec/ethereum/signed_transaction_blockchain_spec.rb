@@ -12,7 +12,7 @@ describe Ethereum do
   it "deploys with key set value and checks value", blockchain: true do
     contract = Ethereum::Contract.create(file: path)
     contract.key = key
-    contract.deploy_and_wait("Aloha!")  
+    contract.deploy_and_wait("Aloha!")
     contract.transact_and_wait.set("greeting", "Aloha!")
     expect(contract.call.get("greeting")).to eq ["Aloha!", "żółć"]
   end
