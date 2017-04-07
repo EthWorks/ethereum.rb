@@ -67,6 +67,29 @@ module Ethereum
     def get_nonce(address)
       eth_get_transaction_count(address)["result"].to_i(16)
     end
+    
+    def transfer(key, address, amount)
+      Eth.configure { |c| c.chain_id = get_chain }
+      args = { 
+        from: key.address,
+        to: address,
+        value: amount,
+        data: "",
+        nonce: get_nonce(key.address),
+        gas_limit: 4_000_000,
+        gas_price: 20_000_000_000
+      }
+      tx = Eth::Tx.new(args)
+      tx.sign key
+      eth_send_raw_transaction(tx.hex)["result"]
+    end
+    
+    def transfer_and_wait(key, address, amount)
+      tx = transfer(key, address, amount)
+      transaction = Ethereum::Transaction.new(tx, self, "", [])
+      transaction.wait_for_miner
+      return transaction
+    end
 
     def send_command(command,args)
       if ["eth_getBalance", "eth_call"].include?(command)
