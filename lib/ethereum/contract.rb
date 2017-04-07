@@ -3,7 +3,7 @@ module Ethereum
 
     attr_reader :address
     attr_accessor :key
-    attr_accessor :gas, :gas_price
+    attr_accessor :gas_limit, :gas_price
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
     attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
@@ -19,6 +19,8 @@ module Ethereum
       @sender = client.default_account
       @encoder = Encoder.new
       @decoder = Decoder.new
+      @gas_limit = @client.gas_limit
+      @gas_price = @client.gas_price
     end
 
     def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil)
@@ -68,8 +70,8 @@ module Ethereum
         value: 0,
         data: payload,
         nonce: @client.get_nonce(key.address),
-        gas_limit: 4_000_000,
-        gas_price: 20_000_000_000
+        gas_limit: gas_limit,
+        gas_price: gas_price
       }
       args[:to] = to if to
       tx = Eth::Tx.new(args)
@@ -189,7 +191,7 @@ module Ethereum
         extend Forwardable
         def_delegators :parent, :deploy_payload, :deploy_args, :call_payload, :call_args
         def_delegators :parent, :signed_deploy, :key, :key=
-        def_delegators :parent, :gas, :gas_price, :gas=, :gas_price=
+        def_delegators :parent, :gas_limit, :gas_price, :gas_limit=, :gas_price=
         def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
@@ -211,8 +213,8 @@ module Ethereum
 
     private
       def add_gas_options_args(args)
-        args[:gas] = @client.int_to_hex(@gas) if @gas.present?
-        args[:gasPrice] = @client.int_to_hex(@gas_price) if @gas_price.present?
+        args[:gas] = @client.int_to_hex(gas_limit) if gas_limit.present?
+        args[:gasPrice] = @client.int_to_hex(gas_price) if gas_price.present?
         args
       end
 
