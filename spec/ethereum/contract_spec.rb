@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'eth'
 
 describe Ethereum::Contract do
 

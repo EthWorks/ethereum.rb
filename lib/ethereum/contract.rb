@@ -58,17 +58,31 @@ module Ethereum
     end
 
     def send_transaction(tx_args)
-      if key
-        Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
-        tx = Eth::Tx.new({ from: key.address, to: main_address, value: value, data: data, nonce: 0, gas_limit: 1_000_000, gas_price: gas_price})
-        tx.sign key
-      else
         @client.eth_send_transaction(tx_args)["result"]
-      end
+    end
+
+    def send_raw_transaction(payload, to = nil)
+      Eth.configure { |c| c.chain_id = @client.get_chain }
+      args = { 
+        from: key.address,
+        value: 0,
+        data: payload,
+        nonce: @client.get_nonce(key.address),
+        gas_limit: 4_000_000,
+        gas_price: 20_000_000_000
+      }
+      args[:to] = to if to
+      tx = Eth::Tx.new(args)
+      tx.sign key
+      @client.eth_send_raw_transaction(tx.hex)["result"]
     end
 
     def deploy(*params)
-      tx = send_transaction(deploy_args(params))
+      if key
+        tx = send_raw_transaction(deploy_payload(params))
+      else
+        tx = send_transaction(deploy_args(params))
+      end
       tx_failed = tx.nil? || tx == "0x0000000000000000000000000000000000000000000000000000000000000000"
       raise IOError, "Failed to deploy, did you unlock #{sender} account? Transaction hash: #{tx}" if tx_failed
       @deployment = Ethereum::Deployment.new(tx, @client)
@@ -113,7 +127,11 @@ module Ethereum
     end
 
     def transact(fun, *args)
-      tx = send_transaction(call_args(fun, args))
+      if key
+        tx = send_raw_transaction(call_payload(fun, args), address)
+      else
+        tx = send_transaction(call_args(fun, args))
+      end
       return Ethereum::Transaction.new(tx, @client, call_payload(fun, args), args)
     end
 
@@ -170,6 +188,7 @@ module Ethereum
       class_methods = Class.new do
         extend Forwardable
         def_delegators :parent, :deploy_payload, :deploy_args, :call_payload, :call_args
+        def_delegators :parent, :signed_deploy, :key, :key=
         def_delegators :parent, :gas, :gas_price, :gas=, :gas_price=
         def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait

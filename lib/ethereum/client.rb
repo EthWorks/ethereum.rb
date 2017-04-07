@@ -11,7 +11,7 @@ module Ethereum
       @id = 0
       @log = log
       @batch = nil
-
+      @formatter = Ethereum::Formatter.new
       if @log == true
         @logger = Logger.new("/tmp/ethereum_ruby_http.log")
       end
@@ -54,6 +54,18 @@ module Ethereum
 
     def encode_params(params)
       params.map(&method(:int_to_hex))
+    end
+
+    def get_balance(address)
+      eth_get_balance(address)["result"].to_i(16)
+    end
+
+    def get_chain
+      net_version["result"].to_i(16)
+    end
+
+    def get_nonce(address)
+      eth_get_transaction_count(address)["result"].to_i(16)
     end
 
     def send_command(command,args)

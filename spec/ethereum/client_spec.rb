@@ -49,4 +49,30 @@ describe Ethereum::Client do
       it_behaves_like "json rpc method", {"jsonrpc":"2.0","method":"eth_getBalance","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "latest"],"id":1}
     end
 
+    describe ".get_balance" do
+      let (:response) { '{"jsonrpc":"2.0","result":"0xd30beea08891180","id":1}' }
+      it "returns account balance as integer" do
+        expect(client).to receive(:send_single).and_return(response)
+        expect(client.get_balance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")). to eq 950469433750000000
+      end
+    end
+
+    describe ".get_chain" do
+      let (:request) { {"jsonrpc":"2.0","method":"net_version","params":[],"id":1} }
+      let (:response) { '{"jsonrpc":"2.0","result":"0xd30beea08891180","id":1}' }
+      it "returns chain no" do
+        expect(client).to receive(:send_single).once.with(request.to_json).and_return(response)
+        expect(client.get_chain). to eq 950469433750000000
+      end
+    end
+
+    describe ".get_nonce" do
+      let (:request) { {"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1"],"id":1} }
+      let (:response) { '{"jsonrpc":"2.0","result":"0xd30beea08891180","id":1}' }
+      it "returns chain no" do
+        expect(client).to receive(:send_single).once.with(request.to_json).and_return(response)
+        expect(client.get_nonce("0x407d73d8a49eeb85d32cf465507dd71d507100c1")). to eq 950469433750000000
+      end
+    end
+
 end
