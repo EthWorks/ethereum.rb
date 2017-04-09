@@ -13,9 +13,8 @@ sudo dpkg -i parity_$PARITY\_amd64.deb
 echo "Setuping parity..."
 mkdir -p ~/.parity
 wget https://raw.githubusercontent.com/ethcore/parity/master/ethcore/res/ethereum/ropsten.json --output-document ~/.parity/ropsten.json
-echo $pass > ~/.parity/pass
-mkdir -p ~/.parity/keys
-echo $wallet > ~/.parity/keys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
+echo $pass > ~/.pass
+echo $wallet > ~/Library/Application Support/io.parity.ethereumkeys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
 chown -R travis:travis ~/.parity
 
 ls -la ~/.parity
