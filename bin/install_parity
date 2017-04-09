@@ -12,9 +12,9 @@ sudo dpkg -i parity_$PARITY\_amd64.deb
 
 echo "Setuping parity..."
 echo $pass > ~/.pass
-mkdir -p ~/Library/Application\ Support/io.parity.ethereum/keys
-echo $wallet > ~/Library/Application\ Support/io.parity.ethereum/keys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
+mkdir -p ~/.local/share/io.parity.ethereum/keys
+echo $wallet > ~/.local/share/io.parity.ethereum/keys/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
 
-chown -R travis:travis ~/Library/Application\ Support/io.parity.ethereum/keys
+chown -R travis:travis ~/.local/share/io.parity.ethereum/keys
 
-ls -la ~/Library/Application\ Support/io.parity.ethereum/keys
+ls -la ~/.local/share/io.parity.ethereum/keys
