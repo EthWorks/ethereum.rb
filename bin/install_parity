@@ -17,4 +17,4 @@ echo $wallet > ~/Library/Application\ Support/io.parity.ethereum/keys/UTC--2017-
 
 chown -R travis:travis ~/Library/Application\ Support/io.parity.ethereum/keys
 
-ls -la ~/Library/Application Support/io.parity.ethereum/keys
+ls -la ~/Library/Application\ Support/io.parity.ethereum/keys
