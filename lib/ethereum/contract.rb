@@ -110,7 +110,9 @@ module Ethereum
     end
 
     def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+      params = {to: @address, data: call_payload(fun, args)}
+      params[:from] = @sender if @sender
+      add_gas_options_args(params)
     end
 
     def call_raw(fun, *args)
