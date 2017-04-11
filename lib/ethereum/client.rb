@@ -53,7 +53,7 @@ module Ethereum
     end
 
     def default_account
-      @default_account || eth_accounts["result"][0]
+      @default_account || eth_accounts["result"].try(:[], 0)
     end
 
     def int_to_hex(p)
