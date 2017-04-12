@@ -8,7 +8,8 @@ The goal of ethereum.rb is to make interacting with ethereum blockchain from rub
 
 * Simple syntax, programmer friendly
 * Deploy and interact with contracts on the blockchain
-* Contract - ruby object mapping
+* Contract - ruby object mapping to solidity contract
+* Signing transactions with [ruby-eth](https://github.com/se3000/ruby-eth) gem.
 * Compile Solidity contracts with solc compiler from ruby
 * Receive events from contract
 * Make direct json rpc calls to node from ruby application
@@ -55,7 +56,7 @@ contract.call.greet # => "Hello from ethereum.rb!"
 
 You can see example contract [greeter here](https://github.com/marekkirejczyk/ruby_ethereum_example/blob/master/contracts/greeter.sol).
 
-## Creating contract
+## Smart contracts
 
 ### Compile multiple contracts at once
 
@@ -198,7 +199,63 @@ Note: methods are transated to underscore notation.
 
 Full list of json rpc methods is available [here](https://github.com/ethereum/wiki/wiki/JSON-RPC#user-content-json-rpc-methods)
 
-## Utils rake tasks
+### Signed transactions
+
+Ethereum.rb supports signing transactions with key using [ruby-eth gem](https://github.com/se3000/ruby-eth).
+
+To create a new key simply do the following:
+
+```ruby
+key = Eth::Key.new
+```
+
+Then you can use the key to deploy contracts and send transactions, i.e.:
+
+```ruby
+contract = Ethereum::Contract.create(file: "...")
+contract.key = key
+contract.deploy_and_wait("Allo Allo!")
+contract.transact_and_wait.set("greeting", "Aloha!")
+```
+
+You can also transfer ether transfer using custom keys:
+
+```ruby
+client.transfer(key, "0x342bcf27DCB234FAb8190e53E2d949d7b2C37411", amount)
+client.transfer_and_wait(key, "0x949d7b2C37411eFB763fcDCB234FAb8190e53E2d", amount)
+```
+
+### Custom gas price and gas limit
+
+You can change gas price or gas limit in the client:
+
+```ruby
+client.gas_limit = 2_000_000_
+client.gas_price = 24_000_000_000
+```
+
+or per contract:
+```ruby
+contract.gas_limit = 2_000_000_
+contract.gas_price = 24_000_000_000
+```
+
+## Utils
+
+### Url helpers for rails applciations
+
+Often in the application you want to link to blockchain explorer. This can be problematic if you want links to work with different networks (ropsten, mainnet, kovan) depending on environment you're working on.
+Following helpers will generate link according to network connected:
+
+```ruby
+link_to_tx("See the transaction", "0x3a4e53b01274b0ca9087750d96d8ba7f5b6b27bf93ac65f3174f48174469846d")
+link_to_address("See the wallet", "0xE08cdFD4a1b2Ef5c0FC193877EC6A2Bb8f8Eb373")
+```
+They use [etherscan.io](http://etherscan.io/) as a blockexplorer.
+
+Note: Helpers work in rails environment only.
+
+### Utils rake tasks
 
 There are couple of rake tasks to help in wallet maintenance, i.e.:
 
@@ -218,7 +275,6 @@ Logs from communication between ruby app and node are available under following 
 ## Roadmap
 
 * Rubydoc documentation
-* Signing transactions
 
 ## Development
 
