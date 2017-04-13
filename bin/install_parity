@@ -10,7 +10,7 @@ solc --version
 sudo apt-get install nodejs
 node -v
 sudo chown -R whoami /usr/local/lib/node_modules
-npm install -g ethereumjs-testrpc
+sudo npm install -g ethereumjs-testrpc
 
 
 # echo "Setuping parity..."
