@@ -13,7 +13,7 @@ sudo apt-get install -y nodejs
 echo "Node version"
 node -v
 sudo chown -R `whoami` /usr/local/lib/node_modules
-npm install -g ethereumjs-testrpc
+npm install -g ethereumjs-testrpc@3.0.3
 
 
 # echo "Setuping parity..."
