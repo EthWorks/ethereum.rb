@@ -7,7 +7,8 @@ sudo apt-get install solc
 sudo apt-get -y install libssl-dev
 echo "Solc version"
 solc --version
-sudo apt-get install nodejs
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs
 echo "Node version"
 node -v
 sudo chown -R `whoami` /usr/local/lib/node_modules
