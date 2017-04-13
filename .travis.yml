@@ -12,7 +12,7 @@ before_install:
   - sudo bin/install_parity
   - gem install bundler -v 1.11.2
 before_script:
-  - testrpc --varsion
+  - testrpc --version
 script:
   - bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
 before_cache:
