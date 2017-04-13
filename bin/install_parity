@@ -9,6 +9,7 @@ echo "Solc version"
 solc --version
 sudo apt-get install nodejs
 node -v
+sudo chown -R whoami /usr/local/lib/node_modules
 npm install -g ethereumjs-testrpc
 
 
