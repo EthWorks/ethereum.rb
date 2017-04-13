@@ -8,6 +8,7 @@ sudo apt-get -y install libssl-dev
 echo "Solc version"
 solc --version
 sudo apt-get install nodejs
+echo "Node version"
 node -v
 sudo chown -R `whoami` /usr/local/lib/node_modules
 npm install -g ethereumjs-testrpc
