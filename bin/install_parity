@@ -1,17 +1,19 @@
 #!/bin/bash
 
-echo "Installing parity..."
+echo "Installing testrpc..."
 sudo add-apt-repository ppa:ethereum/ethereum -y
 sudo apt-get update
 sudo apt-get install solc
 sudo apt-get -y install libssl-dev
 echo "Solc version"
 solc --version
-wget http://d1h4xl4cr1h0mo.cloudfront.net/v$PARITY\/x86_64-unknown-linux-gnu/parity_$PARITY\_amd64.deb
-sudo dpkg -i parity_$PARITY\_amd64.deb
+sudo apt-get install nodejs
+node -v
+npm install -g ethereumjs-testrpc
 
-echo "Setuping parity..."
-echo $pass > ~/.pass
-mkdir -p ~/.local/share/io.parity.ethereum/keys/test
-chown -R travis:travis ~/.local/share/io.parity.ethereum
-echo $wallet > ~/.local/share/io.parity.ethereum/keys/test/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
+
+# echo "Setuping parity..."
+# echo $pass > ~/.pass
+# mkdir -p ~/.local/share/io.parity.ethereum/keys/test
+# chown -R travis:travis ~/.local/share/io.parity.ethereum
+# echo $wallet > ~/.local/share/io.parity.ethereum/keys/test/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
