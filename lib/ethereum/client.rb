@@ -76,6 +76,16 @@ module Ethereum
       eth_get_transaction_count(address)["result"].to_i(16)
     end
     
+
+    def transfer_to(address, amount)
+      eth_send_transaction({to: address, value: int_to_hex(amount)})
+    end
+
+    def transfer_to_and_wait(address, amount)
+      wait_for(transfer_to(address, amount)["result"])
+    end
+
+
     def transfer(key, address, amount)
       Eth.configure { |c| c.chain_id = get_chain }
       args = { 
@@ -93,7 +103,10 @@ module Ethereum
     end
     
     def transfer_and_wait(key, address, amount)
-      tx = transfer(key, address, amount)
+      return wait_for(transfer(key, address, amount))
+    end
+    
+    def wait_for(tx)
       transaction = Ethereum::Transaction.new(tx, self, "", [])
       transaction.wait_for_miner
       return transaction
