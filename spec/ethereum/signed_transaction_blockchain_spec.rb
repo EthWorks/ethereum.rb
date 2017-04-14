@@ -10,6 +10,7 @@ describe Ethereum do
   let(:amount) { 1000_000_000_000_000 }
 
   it "deploys with key set value and checks value", blockchain: true do
+    client.transfer_to_and_wait(key.address, 1000_000_000_000_000_000)
     contract = Ethereum::Contract.create(file: path)
     contract.key = key
     contract.deploy_and_wait("Aloha!")
@@ -18,6 +19,7 @@ describe Ethereum do
   end
 
   it "transfers ether", blockchain: true do
+    client.transfer_to_and_wait(key.address, 1000_000_000_000_000_000)
     balance_before = client.get_balance(key.address)
     client.transfer_and_wait(key, "0x27DCB234FAb8190e53E2d949d7b2C37411eFB72e", amount)
     balance_after = client.get_balance(key.address)
