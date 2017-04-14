@@ -14,10 +14,3 @@ echo "Node version"
 node -v
 sudo chown -R `whoami` /usr/lib/node_modules/
 npm install -g ethereumjs-testrpc
-
-
-# echo "Setuping parity..."
-# echo $pass > ~/.pass
-# mkdir -p ~/.local/share/io.parity.ethereum/keys/test
-# chown -R travis:travis ~/.local/share/io.parity.ethereum
-# echo $wallet > ~/.local/share/io.parity.ethereum/keys/test/UTC--2017-01-08T21-02-29.039669388Z--3089630d06fd90ef48a0c43f000971587c1f3247
