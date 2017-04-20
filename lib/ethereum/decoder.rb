@@ -47,9 +47,9 @@ module Ethereum
       raise ArgumentError
     end
 
-    def decode_address(value, _ = nil, _)
-      raise ArgumentError if value.size != 64
-      value[24..64]
+    def decode_address(value, _ = nil, start)
+      raise ArgumentError if value.size-start < 64
+      value[start+24..start+63]
     end
 
     def decode_bytes(value, subtype, start)
