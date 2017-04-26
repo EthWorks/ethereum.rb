@@ -53,7 +53,7 @@ module Ethereum
     end
 
     def default_account
-      @default_account || eth_accounts["result"][0]
+      @default_account ||= eth_accounts["result"][0]
     end
 
     def int_to_hex(p)
@@ -69,7 +69,7 @@ module Ethereum
     end
 
     def get_chain
-      net_version["result"].to_i(16)
+      @net_version ||= net_version["result"].to_i(16)
     end
 
     def get_nonce(address)
