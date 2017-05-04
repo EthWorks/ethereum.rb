@@ -87,7 +87,7 @@ module Ethereum
 
 
     def transfer(key, address, amount)
-      Eth.configure { |c| c.chain_id = get_chain }
+      Eth.configure { |c| c.chain_id = net_version["result"].to_i }
       args = { 
         from: key.address,
         to: address,
