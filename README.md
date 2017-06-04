@@ -1,6 +1,6 @@
 # Ethereum Ruby library - Ethereum.rb
 
-[![Build Status](https://travis-ci.org/EthWorks/ethereum.rb.svg?branch=master)](https://travis-ci.org/EthWorks/ethereum.rb)(https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb) [![Code Climate](https://codeclimate.com/github/marekkirejczyk/ethereum.rb/badges/gpa.svg)](https://codeclimate.com/github/marekkirejczyk/ethereum.rb)
+[![Build Status](https://travis-ci.org/EthWorks/ethereum.rb.svg?branch=master)](https://travis-ci.org/EthWorks/ethereum.rb)[![security] (https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb) [![Code Climate](https://codeclimate.com/github/marekkirejczyk/ethereum.rb/badges/gpa.svg)](https://codeclimate.com/github/marekkirejczyk/ethereum.rb)
 
 The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as fast and easy as possible (but not easier!).
 
