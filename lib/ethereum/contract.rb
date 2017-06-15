@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Ethereum
   class Contract
 
