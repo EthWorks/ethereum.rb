@@ -133,6 +133,21 @@ module Ethereum
       end
     end
 
+    def send_raw_command(command,args)
+      payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
+      @logger.info("Sending #{payload.to_json}") if @log
+      if @batch
+        @batch << payload
+        return true
+      else
+        output = JSON.parse(send_single(payload.to_json))
+        @logger.info("Received #{output.to_json}") if @log
+        reset_id
+        raise IOError, output["error"]["message"] if output["error"]
+        return output
+      end
+    end
+
     (RPC_COMMANDS + RPC_MANAGEMENT_COMMANDS).each do |rpc_command|
       method_name = rpc_command.underscore
       define_method method_name do |*args|
