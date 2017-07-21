@@ -10,7 +10,9 @@ module Ethereum
       "#{ENV['HOME']}/Library/Application\ Support/io.parity.ethereum/jsonrpc.ipc",
       "#{ENV['HOME']}/.local/share/parity/jsonrpc.ipc",
       "#{ENV['HOME']}/.local/share/io.parity.ethereum/jsonrpc.ipc",
-      "#{ENV['HOME']}/AppData/Roaming/Parity/Ethereum/jsonrpc.ipc"
+      "#{ENV['HOME']}/AppData/Roaming/Parity/Ethereum/jsonrpc.ipc",
+      "#{ENV['HOME']}/.ethereum/geth.ipc",
+      "#{ENV['HOME']}/.ethereum/testnet/geth.ipc"
     ]
 
     def initialize(ipcpath = nil, log = true)
