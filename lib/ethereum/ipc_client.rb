@@ -20,7 +20,8 @@ module Ethereum
     end
 
     def self.default_path(paths = IPC_PATHS)
-      paths.select { |path| File.exist?(path) }.first || ""
+      path = paths.select { |path| File.exist?(path) }.first
+      path || raise("Ipc file not found. Please pass in the file path explicitly to IpcClient initializer")
     end
 
     def send_single(payload)
