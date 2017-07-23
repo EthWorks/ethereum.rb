@@ -242,7 +242,7 @@ contract.gas_price = 24_000_000_000
 
 ## Utils
 
-### Url helpers for rails applciations
+### Url helpers for rails applications
 
 Often in the application you want to link to blockchain explorer. This can be problematic if you want links to work with different networks (ropsten, mainnet, kovan) depending on environment you're working on.
 Following helpers will generate link according to network connected:
@@ -253,7 +253,7 @@ link_to_address("See the wallet", "0xE08cdFD4a1b2Ef5c0FC193877EC6A2Bb8f8Eb373")
 ```
 They use [etherscan.io](http://etherscan.io/) as a blockexplorer.
 
-Note: Helpers work in rails environment only.
+Note: Helpers work in rails environment only, works with rails 5.0+.
 
 ### Utils rake tasks
 
