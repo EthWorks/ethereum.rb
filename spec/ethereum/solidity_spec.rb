@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe Ethereum::Solidity do
-
-  let (:greeter_bin) { '6060604052341561000c57fe5b604051610' }
-  let (:mortal_bin) { '6060604052341561000c57fe5b5b6000805' }
+  let (:greeter_bin) { '6060604052341561000f57600080fd5b604' }
+  let (:mortal_bin) { '6060604052341561000f57600080fd5b5b6' }
   let (:mortal_abi) { '[{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]' }
   let (:greeter_abi) { '[{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"greet","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[{"name":"_greeting","type":"string"}],"payable":false,"type":"constructor"}]' }
   let (:contract_path) { "#{Dir.pwd}/spec/fixtures/greeter.sol" }
@@ -26,5 +25,4 @@ describe Ethereum::Solidity do
     let (:compiler_instance) { Ethereum::Solidity.new("no solc") }
     it { expect{ subject }.to raise_error(SystemCallError) }
   end
-
 end
