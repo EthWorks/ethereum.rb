@@ -69,7 +69,7 @@ module Ethereum
     end
 
     def get_chain
-      @net_version ||= net_version["result"].to_i(16)
+      @net_version ||= net_version["result"].to_i
     end
 
     def get_nonce(address)
