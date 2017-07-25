@@ -2,8 +2,8 @@ module Ethereum
   module ExplorerUrlHelper
 
     CHAIN_PREFIX = {
-      23 => "no-explorer-for-devmode.",
-      66 => "kovan.",
+      17 => "no-explorer-for-devmode.",
+      42 => "kovan.",
       3 => "ropsten."
     }
 

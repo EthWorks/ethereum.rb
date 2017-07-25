@@ -2,7 +2,7 @@ require 'tmpdir'
 require 'open3'
 
 module Ethereum
-  class CompilationError < StandardError; 
+  class CompilationError < StandardError;
     def initialize(msg)
       super
     end
@@ -10,7 +10,7 @@ module Ethereum
 
   class Solidity
 
-    OUTPUT_REGEXP = /======= (\S*):(\S*) =======\s*Binary:\s*(\S*)\sContract JSON ABI\s(\S*)/
+    OUTPUT_REGEXP = /======= (\S*):(\S*) =======\s*Binary:\s*(\S*)\s*Contract JSON ABI\s*(\S*)/
 
     def initialize(bin_path = "solc")
       @bin_path = bin_path
@@ -28,13 +28,13 @@ module Ethereum
       result
     end
 
-    private    
+    private
       def execute_solc(filename)
         cmd = "#{@bin_path} #{@args} '#{filename}'"
         out, stderr, status = Open3.capture3(cmd)
         raise SystemCallError, "Unanable to run solc compliers" if status.exitstatus == 127
         raise CompilationError, stderr unless status.exitstatus == 0
         out
-      end    
-  end 
+      end
+  end
 end
