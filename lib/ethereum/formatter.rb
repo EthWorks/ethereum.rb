@@ -50,7 +50,7 @@ module Ethereum
       return nil if hexstring.nil?
       hexstring.gsub(/^0x/,'').scan(/.{2}/).collect {|x| x.hex}.pack("c*")
     end
-    
+
     def to_utf8(hexstring)
       return nil if hexstring.nil?
       hexstring.gsub(/^0x/,'').scan(/.{2}/).collect {|x| x.hex}.pack("U*").delete("\u0000")
@@ -63,7 +63,7 @@ module Ethereum
 
     def from_utf8(utf8_string)
       return nil if utf8_string.nil?
-      utf8_string.force_encoding('UTF-8').split("").collect {|x| x.ord.to_s(16)}.join("")
+      utf8_string.force_encoding('UTF-8').split("").collect {|x| x.ord.to_s(16).rjust(2, '0')}.join("")
     end
 
     def to_address(hexstring)
@@ -144,4 +144,3 @@ module Ethereum
   end
 
 end
-

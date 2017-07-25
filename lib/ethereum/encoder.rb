@@ -56,9 +56,9 @@ module Ethereum
     def encode_bytes(value, subtype)
       subtype.nil? ? encode_dynamic_bytes(value) : encode_static_bytes(value)
     end
-    
+
     def encode_static_bytes(value)
-      value.each_char.map {|x| x.ord.to_s(16)}.join("").ljust(64, '0')
+      value.bytes.map {|x| x.to_s(16).rjust(2, '0')}.join("").ljust(64, '0')
     end
 
     def encode_dynamic_bytes(value)
@@ -71,7 +71,7 @@ module Ethereum
     def encode_string(value, _)
       location = encode_uint(@inputs ? size_of_inputs(@inputs) + @tail.size/2 : 32)
       size = encode_uint(value.bytes.size)
-      content = value.bytes.map {|x| x.to_s(16)}.join("").ljust(64, '0')
+      content = value.bytes.map {|x| x.to_s(16).rjust(2, '0')}.join("").ljust(64, '0')
       [location, size + content]
     end
 
