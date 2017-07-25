@@ -59,7 +59,7 @@ describe Ethereum::Client do
 
     describe ".get_chain" do
       let (:request) { {"jsonrpc":"2.0","method":"net_version","params":[],"id":1} }
-      let (:response) { '{"jsonrpc":"2.0","result":"0xd30beea08891180","id":1}' }
+      let (:response) { '{"jsonrpc":"2.0","result":"950469433750000000","id":1}' }
       it "returns chain no" do
         expect(client).to receive(:send_single).once.with(request.to_json).and_return(response)
         expect(client.get_chain). to eq 950469433750000000

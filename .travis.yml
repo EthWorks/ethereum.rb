@@ -3,7 +3,7 @@ language: ruby
 rvm:
   - 2.3.1
 env:
-  - PARITY="1.6.5"
+  - PARITY="1.6.10"
 cache:
   bundler: true
   directories:
