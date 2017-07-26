@@ -25,12 +25,16 @@ module Ethereum
       @gas_price = @client.gas_price
     end
 
-    def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil)
+    def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil, contract_index: nil)
       contract = nil
       if file.present?
         contracts = Ethereum::Initializer.new(file, client).build_all
         raise "No contracts complied" if contracts.empty?
-        contract = contracts.first.class_object.new
+        if contract_index
+          contract = contracts[contract_index].class_object.new
+        else
+          contract = contracts.first.class_object.new
+        end
       else
         abi = JSON.parse(abi) if abi.is_a? String
         contract = Ethereum::Contract.new(name, code, abi, client)
@@ -69,7 +73,7 @@ module Ethereum
       Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
       @nonce ||= @client.get_nonce(key.address) - 1
       @nonce += 1
-      args = { 
+      args = {
         from: key.address,
         value: 0,
         data: payload,
@@ -163,11 +167,11 @@ module Ethereum
       logs["result"].each do |result|
         inputs = evt.input_types
         outputs = inputs.zip(result["topics"][1..-1])
-        data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []} 
+        data = {blockNumber: result["blockNumber"].hex, transactionHash: result["transactionHash"], blockHash: result["blockHash"], transactionIndex: result["transactionIndex"].hex, topics: []}
         outputs.each do |output|
           data[:topics] << formatter.from_payload(output)
         end
-        collection << data 
+        collection << data
       end
       return collection
     end
