@@ -22,7 +22,7 @@ module Ethereum
 
     def wait_for_miner(timeout = 1500.seconds)
       start_time = Time.now
-      while self.mined? == false
+      loop do
         raise Timeout::Error if ((Time.now - start_time) > timeout)
         sleep 5
         return true if self.mined?
@@ -33,4 +33,4 @@ module Ethereum
       Transaction.new(address, connection, nil, nil)
     end
   end
-end
+end 
