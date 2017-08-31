@@ -18,7 +18,7 @@ module Ethereum
 
     def mined?
       return true if @mined
-      @mined = @connection.get_transaction_by_hash(@id)["result"]["blockNumber"].present? rescue nil
+      @mined = @connection.eth_get_transaction_by_hash(@id)["result"]["blockNumber"].present?
       @mined ||= false
     end
 
