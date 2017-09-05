@@ -39,9 +39,9 @@ module Ethereum
       start_time = Time.now
       loop do
         raise "Transaction #{@id} timed out." if ((Time.now - start_time) > timeout) 
-        sleep step
         yield if block_given?
         return true if deployed?
+        sleep step
       end
     end
 
