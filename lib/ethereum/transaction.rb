@@ -24,8 +24,8 @@ module Ethereum
       start_time = Time.now
       loop do
         raise Timeout::Error if ((Time.now - start_time) > timeout)
-        sleep 5
         return true if self.mined?
+        sleep 5
       end
     end
 
