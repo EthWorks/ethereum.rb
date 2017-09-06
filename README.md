@@ -70,7 +70,7 @@ contract2 = MyContract2.new
 contract2 = contract.deploy_and_wait
 ```
 
-All names used to name contract in solidity source will transalte to name of classes in ruby (camelized).
+All names used to name contract in solidity source will translate to name of classes in ruby (camelized).
 
 Note: If class of given name exist it will be undefined first to avoid name collision.
 
