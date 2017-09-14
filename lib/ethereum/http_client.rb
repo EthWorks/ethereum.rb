@@ -1,4 +1,5 @@
 require 'net/http'
+require 'json'
 module Ethereum
   class HttpClient < Client
     attr_accessor :host, :port, :uri, :ssl
@@ -30,8 +31,10 @@ module Ethereum
       return response.body
     end
 
-    def send_batch(_batch)
-      raise NotImplementedError
+    def send_batch(batch)
+      result = send_single(batch.to_json)
+      result = JSON.parse(result)
+      return result.sort_by! { |c| c['id'] }
     end
   end
 
