@@ -18,7 +18,7 @@ module Ethereum
 
     def mined?
       return true if @mined
-      @mined = @connection.get_transaction_by_hash(@id)["result"]["blockNumber"].present? rescue nil
+      @mined = @connection.eth_get_transaction_by_hash(@id)["result"]["blockNumber"].present?
       @mined ||= false
     end
 
@@ -39,9 +39,9 @@ module Ethereum
       start_time = Time.now
       loop do
         raise "Transaction #{@id} timed out." if ((Time.now - start_time) > timeout) 
-        sleep step
         yield if block_given?
         return true if deployed?
+        sleep step
       end
     end
 
