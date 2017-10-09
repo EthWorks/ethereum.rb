@@ -29,7 +29,7 @@ module Ethereum
       contract = nil
       if file.present?
         contracts = Ethereum::Initializer.new(file, client).build_all
-        raise "No contracts complied" if contracts.empty?
+        raise "No contracts compiled" if contracts.empty?
         if contract_index
           contract = contracts[contract_index].class_object.new
         else
