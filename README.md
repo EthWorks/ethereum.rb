@@ -96,6 +96,15 @@ If you want to create new contract, that is not yet deployed from ABI definition
 contract = Ethereum::Contract.create(name: "MyContract", abi: abi, code: "...")
 ```
 
+### Simple Truffle integration
+
+If you use Truffle to build and deploy contracts, you can pick up the Truffle artifacts to initialize
+a contract. For example, if you have a MyContract in the Truffle directory at `/my/truffle/project`:
+
+```
+contract = Ethereum::Contract.create(name: 'MyContract, truffle: { paths: [ '/my/truffle/project' ] }, client: client, address: '0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd')
+```
+
 ### Interacting with contract
 
 Functions defined in a contract are exposed using the following conventions:

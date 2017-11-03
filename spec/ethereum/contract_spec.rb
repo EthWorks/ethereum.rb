@@ -146,4 +146,39 @@ describe Ethereum::Contract do
     it_behaves_like "communicate with node"
   end
 
+  context "truffle" do
+    let(:tpaths) { [ './spec/truffle' ] }
+    
+    it "finds artifacts with explicit path list" do
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne', tpaths)).not_to eql(nil)
+    end
+    
+    it "finds artifacts with implicit path list" do
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne')).to eql(nil)
+      Ethereum::Contract.truffle_paths.concat(tpaths)
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne')).not_to eql(nil)
+      Ethereum::Contract.truffle_paths = []
+    end
+
+    it "loads contract data from the Truffle artifacts" do
+      artifacts = Ethereum::Contract.find_truffle_artifacts('TestContractOne', tpaths)
+      tcontract = Ethereum::Contract.create(name: "TestContractOne", truffle: { paths: tpaths }, client: client, address: address)
+
+      expect(tcontract.parent.code).to eql(artifacts['bytecode'][2, artifacts['bytecode'].length])
+      expect(tcontract.abi).to eql(artifacts['abi'])
+
+      expect(tcontract.call.methods).to include(:counter_for)
+      expect(tcontract.call.methods).to include(:add_counter)
+      expect(tcontract.call.methods).to include(:remove_counter)
+
+      expect(tcontract.transact.methods).to include(:counter_for)
+      expect(tcontract.transact.methods).to include(:add_counter)
+      expect(tcontract.transact.methods).to include(:remove_counter)
+
+      expect(tcontract.transact_and_wait.methods).to include(:counter_for)
+      expect(tcontract.transact_and_wait.methods).to include(:add_counter)
+      expect(tcontract.transact_and_wait.methods).to include(:remove_counter)
+    end
+  end
+
 end

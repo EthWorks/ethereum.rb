@@ -25,7 +25,32 @@ module Ethereum
       @gas_price = @client.gas_price
     end
 
-    def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil, contract_index: nil)
+    # Creates a contract wrapper.
+    # This method attempts to instantiate a contract object from a Solidity source file, from a Truffle
+    # artifacts file, or from explicit API and bytecode.
+    # - If *:file* is present, the method compiles it and looks up the contract factory at *:contract_index*
+    #   (0 if not provided). *:abi* and *:code* are ignored.
+    # - If *:truffle* is present, the method looks up the Truffle artifacts data for *:name* and uses
+    #   those data to build a contract instance.
+    # - Otherwise, the method uses *:name*, *:code*, and *:abi* to build the contract instance.
+    #
+    # @param opts [Hash] Options to the method.
+    # @option opts [String] :file Path to the Solidity source that contains the contract code.
+    # @option opts [Ethereum::Singleton] :client The client to use.
+    # @option opts [String] :code The hex representation of the contract's bytecode.
+    # @option opts [Array,String] :abi The contract's ABI; a string is assumed to contain a JSON representation
+    #  of the ABI.
+    # @option opts [String] :address The contract's address.
+    # @option opts [String] :name The contract name.
+    # @option opts [Integer] :contract_index The index of the contract data in the compiled file.
+    # @option opts [Hash] :truffle If this parameter is present, the method uses Truffle information to
+    #  generate the contract wrapper.
+    #  - *:paths* An array of strings containing the list of paths where to look up Truffle artifacts files.
+    #    See also {#find_truffle_artifacts}.
+    #
+    # @return [Ethereum::Contract] Returns a contract wrapper.
+
+    def self.create(file: nil, client: Ethereum::Singleton.instance, code: nil, abi: nil, address: nil, name: nil, contract_index: nil, truffle: nil)
       contract = nil
       if file.present?
         contracts = Ethereum::Initializer.new(file, client).build_all
@@ -36,7 +61,20 @@ module Ethereum
           contract = contracts.first.class_object.new
         end
       else
-        abi = JSON.parse(abi) if abi.is_a? String
+        if truffle.present? && truffle.is_a?(Hash)
+          artifacts = find_truffle_artifacts(name, (truffle[:paths].is_a?(Array)) ? truffle[:paths] : [])
+          if artifacts
+            abi = artifacts['abi']
+            # The truffle artifacts store bytecodes with a 0x tag, which we need to remove
+            # this may need to be 'deployedBytecode'
+            code = (artifacts['bytecode'].start_with?('0x')) ? artifacts['bytecode'][2, artifacts['bytecode'].length] : artifacts['bytecode']
+          else
+            abi = nil
+            code = nil
+          end
+        else
+          abi = JSON.parse(abi) if abi.is_a? String
+        end
         contract = Ethereum::Contract.new(name, code, abi, client)
         contract.build
         contract = contract.class_object.new
@@ -217,6 +255,46 @@ module Ethereum
       Object.send(:remove_const, class_name) if Object.const_defined?(class_name)
       Object.const_set(class_name, class_methods)
       @class_object = class_methods
+    end
+
+    # Get the list of paths where to look up Truffle artifacts files.
+    #
+    # @return [Array<String>] Returns the array containing the list of lookup paths.
+
+    def self.truffle_paths()
+      @truffle_paths = [] unless @truffle_paths
+      @truffle_paths
+    end
+
+    # Set the list of paths where to look up Truffle artifacts files.
+    #
+    # @param paths [Array<String>, nil] The array containing the list of lookup paths; a `nil` value is
+    #  converted to the empty array.
+
+    def self.truffle_paths=(paths)
+      @truffle_paths = (paths.is_a?(Array)) ? paths : []
+    end
+
+    # Looks up and loads a Truffle artifacts file.
+    # This method iterates over the `truffle_path` elements, looking for an artifact file in the
+    # `build/contracts` subdirectory.
+    #
+    # @param name [String] The name of the contract whose artifacts to look up.
+    # @param paths [Array<String>] An additional list of paths to look up; this list, if present, is
+    #  prepended to the `truffle_path`.
+    #
+    # @return [Hash,nil] Returns a hash containing the parsed JSON from the artifacts file; if no file
+    #  was found, returns `nil`.
+
+    def self.find_truffle_artifacts(name, paths = [])
+      subpath = File.join('build', 'contracts', "#{name}.json")
+
+      found = paths.concat(truffle_paths).find { |p| File.file?(File.join(p, subpath)) }
+      if (found) 
+        JSON.parse(IO.read(File.join(found, subpath)))
+      else
+        nil
+      end
     end
 
     private
