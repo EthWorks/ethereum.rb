@@ -102,7 +102,13 @@ If you use Truffle to build and deploy contracts, you can pick up the Truffle ar
 a contract. For example, if you have a MyContract in the Truffle directory at `/my/truffle/project`:
 
 ```
-contract = Ethereum::Contract.create(name: 'MyContract, truffle: { paths: [ '/my/truffle/project' ] }, client: client, address: '0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd')
+contract = Ethereum::Contract.create(name: "MyContract", truffle: { paths: [ '/my/truffle/project' ] }, client: client, address: '0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd')
+```
+
+The contract factory will attempt to load the deployed address from the Truffle artifacts if the client's network is present:
+
+```
+contract = Ethereum::Contract.create(name: "MyContract", truffle: { paths: [ '/my/truffle/project' ] }, client: client)
 ```
 
 ### Interacting with contract
