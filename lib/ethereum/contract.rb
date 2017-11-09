@@ -40,7 +40,9 @@ module Ethereum
     # @option opts [String] :code The hex representation of the contract's bytecode.
     # @option opts [Array,String] :abi The contract's ABI; a string is assumed to contain a JSON representation
     #  of the ABI.
-    # @option opts [String] :address The contract's address.
+    # @option opts [String] :address The contract's address; if not present and +:truffle+ is present,
+    #  the method attempts to determine the address from the artifacts' +networks+ key and the client's
+    #  network id.
     # @option opts [String] :name The contract name.
     # @option opts [Integer] :contract_index The index of the contract data in the compiled file.
     # @option opts [Hash] :truffle If this parameter is present, the method uses Truffle information to
@@ -68,6 +70,14 @@ module Ethereum
             # The truffle artifacts store bytecodes with a 0x tag, which we need to remove
             # this may need to be 'deployedBytecode'
             code = (artifacts['bytecode'].start_with?('0x')) ? artifacts['bytecode'][2, artifacts['bytecode'].length] : artifacts['bytecode']
+            unless address
+              address = if client
+                          network_id = client.net_version['result']
+                          (artifacts['networks'][network_id]) ? artifacts['networks'][network_id]['address'] : nil
+                        else
+                          nil
+                        end
+            end
           else
             abi = nil
             code = nil
