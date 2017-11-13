@@ -7,6 +7,7 @@ describe Ethereum::Contract do
     def default_account() "0x27dcb234fab8190e53e2d949d7b2c37411efb72e" end
     def gas_price() nil end
     def gas_limit() nil end
+    def net_version() {"jsonrpc"=>"2.0", "id"=>1, "result"=>"1234"} end
   end
 
   let(:client) { MockClient.new }
@@ -144,6 +145,48 @@ describe Ethereum::Contract do
     let(:eth_send_result) { '{"jsonrpc":"2.0", "result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003616c610000000000000000000000000000000000000000000000000000000000", "id": 1}' }
     subject { expect(contract.call_raw.greet[:formatted]).to eq ["ala"] }
     it_behaves_like "communicate with node"
+  end
+
+  context "truffle" do
+    let(:tpaths) { [ './spec/truffle' ] }
+    
+    it "finds artifacts with explicit path list" do
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne', tpaths)).not_to eql(nil)
+    end
+    
+    it "finds artifacts with implicit path list" do
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne')).to eql(nil)
+      Ethereum::Contract.truffle_paths.concat(tpaths)
+      expect(Ethereum::Contract.find_truffle_artifacts('TestContractOne')).not_to eql(nil)
+      Ethereum::Contract.truffle_paths = []
+    end
+
+    it "loads contract data from the Truffle artifacts" do
+      # net_address is from the artifacts file for network id '1234'
+      net_address = '0xc0c32feb41be1f1eba28f3612d3ca7e458974cdb'
+      artifacts = Ethereum::Contract.find_truffle_artifacts('TestContractOne', tpaths)
+      tcontract = Ethereum::Contract.create(name: "TestContractOne", truffle: { paths: tpaths }, client: client, address: address)
+
+      expect(tcontract.parent.code).to eql(artifacts['bytecode'][2, artifacts['bytecode'].length])
+      expect(tcontract.abi).to eql(artifacts['abi'])
+      expect(tcontract.address).to eql(address)
+
+      expect(tcontract.call.methods).to include(:counter_for)
+      expect(tcontract.call.methods).to include(:add_counter)
+      expect(tcontract.call.methods).to include(:remove_counter)
+
+      expect(tcontract.transact.methods).to include(:counter_for)
+      expect(tcontract.transact.methods).to include(:add_counter)
+      expect(tcontract.transact.methods).to include(:remove_counter)
+
+      expect(tcontract.transact_and_wait.methods).to include(:counter_for)
+      expect(tcontract.transact_and_wait.methods).to include(:add_counter)
+      expect(tcontract.transact_and_wait.methods).to include(:remove_counter)
+
+      tcontract = Ethereum::Contract.create(name: "TestContractOne", truffle: { paths: tpaths }, client: client)
+
+      expect(tcontract.address).to eql(net_address)
+    end
   end
 
 end
