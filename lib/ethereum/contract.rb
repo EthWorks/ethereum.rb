@@ -166,7 +166,12 @@ module Ethereum
     end
 
     def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+      transaction_options = args.find { |e| e.kind_of?(Hash) } || {}
+      args.delete(transaction_options)
+
+      opts = {to: @address, from: @sender, data: call_payload(fun, args)}
+      opts.merge!(transaction_options)
+      add_gas_options_args(opts)
     end
 
     def call_raw(fun, *args)
