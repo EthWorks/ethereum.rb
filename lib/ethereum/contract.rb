@@ -114,7 +114,7 @@ module Ethereum
     end
 
     def send_transaction(tx_args)
-        @client.eth_send_transaction(tx_args)["result"]
+      @client.eth_send_transaction(tx_args)["result"]
     end
 
     def send_raw_transaction(payload, to = nil)
@@ -300,7 +300,7 @@ module Ethereum
       subpath = File.join('build', 'contracts', "#{name}.json")
 
       found = paths.concat(truffle_paths).find { |p| File.file?(File.join(p, subpath)) }
-      if (found) 
+      if (found)
         JSON.parse(IO.read(File.join(found, subpath)))
       else
         nil
