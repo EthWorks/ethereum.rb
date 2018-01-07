@@ -163,7 +163,7 @@ module Ethereum
 
     def call_payload(fun, args)
       args.reject! { |e| e.kind_of?(Hash) }
-      "0x" + fun.signature + (@encoder.encode_arguments(fun.inputs, args).presence || "0"*64)
+      "0x" + fun.signature + @encoder.encode_arguments(fun.inputs, args)
     end
 
     def call_args(fun, args)
