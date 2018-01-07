@@ -114,16 +114,16 @@ module Ethereum
     end
 
     def send_transaction(tx_args)
-        @client.eth_send_transaction(tx_args)["result"]
+      @client.eth_send_transaction(tx_args)["result"]
     end
 
-    def send_raw_transaction(payload, to = nil)
+    def send_raw_transaction(payload, to = nil, value = 0)
       Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
       @nonce ||= @client.get_nonce(key.address) - 1
       @nonce += 1
       args = {
         from: key.address,
-        value: 0,
+        value: value,
         data: payload,
         nonce: @nonce,
         gas_limit: gas_limit,
@@ -162,11 +162,17 @@ module Ethereum
     end
 
     def call_payload(fun, args)
+      args.reject! { |e| e.kind_of?(Hash) }
       "0x" + fun.signature + @encoder.encode_arguments(fun.inputs, args)
     end
 
     def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+      transaction_options = args.find { |e| e.kind_of?(Hash) } || {}
+      args.delete(transaction_options)
+
+      opts = {to: @address, from: @sender, data: call_payload(fun, args)}
+      opts.merge!(transaction_options)
+      add_gas_options_args(opts)
     end
 
     def call_raw(fun, *args)
@@ -186,7 +192,9 @@ module Ethereum
 
     def transact(fun, *args)
       if key
-        tx = send_raw_transaction(call_payload(fun, args), address)
+        transaction_options = args.find { |e| e.kind_of?(Hash) } || {}
+        args.delete(transaction_options)
+        tx = send_raw_transaction(call_payload(fun, args), address, transaction_options[:value])
       else
         tx = send_transaction(call_args(fun, args))
       end
@@ -300,7 +308,7 @@ module Ethereum
       subpath = File.join('build', 'contracts', "#{name}.json")
 
       found = paths.concat(truffle_paths).find { |p| File.file?(File.join(p, subpath)) }
-      if (found) 
+      if (found)
         JSON.parse(IO.read(File.join(found, subpath)))
       else
         nil
