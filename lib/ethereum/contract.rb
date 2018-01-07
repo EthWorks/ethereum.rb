@@ -117,13 +117,13 @@ module Ethereum
       @client.eth_send_transaction(tx_args)["result"]
     end
 
-    def send_raw_transaction(payload, to = nil)
+    def send_raw_transaction(payload, to = nil, value = 0)
       Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
       @nonce ||= @client.get_nonce(key.address) - 1
       @nonce += 1
       args = {
         from: key.address,
-        value: 0,
+        value: value,
         data: payload,
         nonce: @nonce,
         gas_limit: gas_limit,
@@ -191,7 +191,9 @@ module Ethereum
 
     def transact(fun, *args)
       if key
-        tx = send_raw_transaction(call_payload(fun, args), address)
+        transaction_options = args.find { |e| e.kind_of?(Hash) } || {}
+        args.delete(transaction_options)
+        tx = send_raw_transaction(call_payload(fun, args), address, transaction_options[:value])
       else
         tx = send_transaction(call_args(fun, args))
       end
