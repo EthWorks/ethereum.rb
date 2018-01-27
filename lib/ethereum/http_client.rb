@@ -2,14 +2,15 @@ require 'net/http'
 require 'json'
 module Ethereum
   class HttpClient < Client
-    attr_accessor :host, :port, :uri, :ssl
+    attr_accessor :host, :port, :uri, :ssl, :proxy
 
-    def initialize(host, log = false)
+    def initialize(host, proxy = nil, log = false)
       super(log)
       uri = URI.parse(host)
       raise ArgumentError unless ['http', 'https'].include? uri.scheme
       @host = uri.host
       @port = uri.port
+      @proxy = proxy
       
       @ssl = uri.scheme == 'https'
       if ssl
@@ -20,7 +21,13 @@ module Ethereum
     end
 
     def send_single(payload)
-      http = ::Net::HTTP.new(@host, @port)
+      if @proxy.present?
+        _, p_username, p_password, p_host, p_port = @proxy.gsub(/(:|\/|@)/,' ').squeeze(' ').split
+        http = ::Net::HTTP.new(@host, @port, p_host, p_port, p_username, p_password)
+      else
+        http = ::Net::HTTP.new(@host, @port)
+      end
+
       if @ssl
         http.use_ssl = true
       end
@@ -28,13 +35,13 @@ module Ethereum
       request = ::Net::HTTP::Post.new(uri, header)
       request.body = payload
       response = http.request(request)
-      return response.body
+      response.body
     end
 
     def send_batch(batch)
       result = send_single(batch.to_json)
       result = JSON.parse(result)
-      return result.sort_by! { |c| c['id'] }
+      result.sort_by! { |c| c['id'] }
     end
   end
 

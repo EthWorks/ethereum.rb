@@ -9,3 +9,5 @@
 /tmp/
 /.*.swp
 /**/.*.swp
+
+.idea
