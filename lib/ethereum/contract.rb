@@ -263,8 +263,8 @@ module Ethereum
           parent
         end
       end
-      Object.send(:remove_const, class_name) if Object.const_defined?(class_name)
-      Object.const_set(class_name, class_methods)
+      Ethereum::Contract.send(:remove_const, class_name) if Ethereum::Contract.const_defined?(class_name)
+      Ethereum::Contract.const_set(class_name, class_methods)
       @class_object = class_methods
     end
 
@@ -301,7 +301,7 @@ module Ethereum
       subpath = File.join('build', 'contracts', "#{name}.json")
 
       found = paths.concat(truffle_paths).find { |p| File.file?(File.join(p, subpath)) }
-      if (found) 
+      if (found)
         JSON.parse(IO.read(File.join(found, subpath)))
       else
         nil
