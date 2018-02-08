@@ -263,7 +263,7 @@ module Ethereum
           parent
         end
       end
-      Ethereum::Contract.send(:remove_const, class_name) if Ethereum::Contract.const_defined?(class_name)
+      Ethereum::Contract.send(:remove_const, class_name) if Ethereum::Contract.const_defined?(class_name, false)
       Ethereum::Contract.const_set(class_name, class_methods)
       @class_object = class_methods
     end
