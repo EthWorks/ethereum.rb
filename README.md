@@ -124,11 +124,12 @@ contract.call.[function_name](params)
 **Example Contract in Solidity**
 ```
 contract SimpleRegistry {
-
+  event LogRegister(bytes32 key, string value);
   mapping (bytes32 => string) public registry;
 
   function register(bytes32 key, string value) {
     registry[key] = value;
+    LogRegister(key, value);
   }
 
   function get(bytes32 key) public constant returns(string) {
@@ -160,6 +161,37 @@ Will call method of the contract and return result.
 Note that no transaction need to be send to the network as method is read-only.
 On the other hand `register` method will change contract state, so you need to use `transact` or `transact_and_wait` to call it.
 
+### Receiving Contract Events
+
+Using the example smart contract described above, one can listen for `LogRegister` events by using filters.
+
+You can get a list of events from a certain block number to the latest:
+
+```ruby
+require 'ostruct'
+
+event_abi = contract.abi.find {|a| a['name'] == 'LogRegister'}
+event_inputs = event_abi['inputs'].map {|i| OpenStruct.new(i)}
+decoder = Ethereum::Decoder.new
+
+filter_id = contract.new_filter.log_register(
+  {
+    from_block: '0x0',
+    to_block: 'latest',
+    address: '0x....',
+    topics: []
+  }
+)
+
+events = contract.get_filter_logs.log_register(filter_id)
+
+events.each do |event|
+  transaction_id = event[:transactionHash]
+  transaction = ethereum.eth_get_transaction_receipt(transaction_id)
+  args = decoder.decode_arguments(event_inputs, entry['data'])
+  puts "#{transaction.inspect} with args: #{args}"
+end
+```
 
 ### IPC Client Connection
 
