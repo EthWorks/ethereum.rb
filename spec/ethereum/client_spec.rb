@@ -67,7 +67,7 @@ describe Ethereum::Client do
     end
 
     describe ".get_nonce" do
-      let (:request) { {"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "latest"],"id":1} }
+      let (:request) { {"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "pending"],"id":1} }
       let (:response) { '{"jsonrpc":"2.0","result":"0xd30beea08891180","id":1}' }
       it "returns chain no" do
         expect(client).to receive(:send_single).once.with(request.to_json).and_return(response)
