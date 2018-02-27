@@ -31,6 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry", "~> 0.10"
   spec.add_development_dependency "eth", "~> 0.4"
 
-  spec.add_dependency "activesupport", "~> 5.0"
+  spec.add_dependency "activesupport", ">= 4.0"
   spec.add_dependency "digest-sha3", "~> 1.1"
 end
