@@ -69,7 +69,8 @@ module Ethereum
             abi = artifacts['abi']
             # The truffle artifacts store bytecodes with a 0x tag, which we need to remove
             # this may need to be 'deployedBytecode'
-            code = (artifacts['bytecode'].start_with?('0x')) ? artifacts['bytecode'][2, artifacts['bytecode'].length] : artifacts['bytecode']
+            code_key = artifacts['bytecode'].present? ? 'bytecode' : 'unlinked_binary'
+            code = (artifacts[code_key].start_with?('0x')) ? artifacts[code_key][2, artifacts[code_key].length] : artifacts[code_key]
             unless address
               address = if client
                           network_id = client.net_version['result']
