@@ -73,7 +73,7 @@ module Ethereum
     end
 
     def get_nonce(address)
-      eth_get_transaction_count(address, "latest")["result"].to_i(16)
+      eth_get_transaction_count(address, "pending")["result"].to_i(16)
     end
     
 

@@ -5,7 +5,7 @@ module Ethereum
 
     attr_reader :address
     attr_accessor :key
-    attr_accessor :gas_limit, :gas_price
+    attr_accessor :gas_limit, :gas_price, :nonce
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
     attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
@@ -247,7 +247,7 @@ module Ethereum
         extend Forwardable
         def_delegators :parent, :deploy_payload, :deploy_args, :call_payload, :call_args
         def_delegators :parent, :signed_deploy, :key, :key=
-        def_delegators :parent, :gas_limit, :gas_price, :gas_limit=, :gas_price=
+        def_delegators :parent, :gas_limit, :gas_price, :gas_limit=, :gas_price=, :nonce, :nonce=
         def_delegators :parent, :abi, :deployment, :events
         def_delegators :parent, :estimate, :deploy, :deploy_and_wait
         def_delegators :parent, :address, :address=, :sender, :sender=
