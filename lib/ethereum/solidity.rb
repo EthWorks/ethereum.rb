@@ -14,7 +14,7 @@ module Ethereum
 
     def initialize(bin_path = "solc")
       @bin_path = bin_path
-      @args = "--bin --abi --add-std --optimize"
+      @args = "--bin --abi --optimize"
     end
 
     def compile(filename)
