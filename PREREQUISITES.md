@@ -16,7 +16,7 @@ Currently the only node supported by ethereum.rb is [parity](https://ethcore.io/
     $ brew tap ethcore/ethcore
     $ brew install parity --beta
 
-To install parity on linux download latest package from [parity github](https://github.com/ethcore/parity/releases) and install on your computer.
+To install parity on linux download latest package from [parity github](https://github.com/paritytech/parity/releases) and install on your computer.
 
 It might work with [geth](https://github.com/ethereum/go-ethereum/wiki/geth) as well, but this configuration is not tested. 
 
