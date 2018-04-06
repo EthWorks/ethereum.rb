@@ -60,7 +60,7 @@ module Ethereum
         if contract_index
           contract = contracts[contract_index].class_object.new
         else
-          contract = contracts.first.class_object.new
+          contract = contracts.last.class_object.new
         end
       else
         if truffle.present? && truffle.is_a?(Hash)
@@ -301,7 +301,7 @@ module Ethereum
       subpath = File.join('build', 'contracts', "#{name}.json")
 
       found = paths.concat(truffle_paths).find { |p| File.file?(File.join(p, subpath)) }
-      if (found) 
+      if (found)
         JSON.parse(IO.read(File.join(found, subpath)))
       else
         nil
