@@ -14,6 +14,8 @@ module Ethereum
     attr_accessor :command, :id, :log, :logger, :default_account, :gas_price, :gas_limit
 
     def initialize(log = false)
+      # "latest", "earliest" or "pending"
+      @state = 'latest'
       @id = 0
       @log = log
       @batch = nil
@@ -114,10 +116,25 @@ module Ethereum
 
     def send_command(command,args)
       if ["eth_getBalance", "eth_call"].include?(command)
-        args << "latest"
+        args << @state
       end
 
       payload = {jsonrpc: "2.0", method: command, params: encode_params(args), id: get_id}
+      @logger.info("Sending #{payload.to_json}") if @log
+      if @batch
+        @batch << payload
+        return true
+      else
+        output = JSON.parse(send_single(payload.to_json))
+        @logger.info("Received #{output.to_json}") if @log
+        reset_id
+        raise IOError, output["error"]["message"] if output["error"]
+        return output
+      end
+    end
+
+    def send_raw_command(command,args)
+      payload = {jsonrpc: "2.0", method: command, params: args, id: get_id}
       @logger.info("Sending #{payload.to_json}") if @log
       if @batch
         @batch << payload
@@ -136,6 +153,10 @@ module Ethereum
       define_method method_name do |*args|
         send_command(rpc_command, args)
       end
+    end
+
+    def set_state(state)
+      @state = state
     end
 
   end
