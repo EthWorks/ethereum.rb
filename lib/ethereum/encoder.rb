@@ -62,7 +62,7 @@ module Ethereum
     end
 
     def encode_dynamic_bytes(value)
-      location = encode_uint(@inputs ? @inputs.size * 32 : 32)
+      location = encode_uint(@inputs ? size_of_inputs(@inputs) + @tail.size/2 : 32)
       size = encode_uint(value.size)
       content = encode_static_bytes(value)
       [location, size + content]
