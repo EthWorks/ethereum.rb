@@ -86,8 +86,9 @@ module Ethereum
     end
 
 
-    def transfer(key, address, amount)
-      Eth.configure { |c| c.chain_id = net_version["result"].to_i }
+    def transfer(key, address, amount, chain_id = nil)
+      chain_id ||= net_version["result"].to_i
+      Eth.configure { |c| c.chain_id = chain_id }
       args = { 
         from: key.address,
         to: address,
@@ -102,8 +103,8 @@ module Ethereum
       eth_send_raw_transaction(tx.hex)["result"]
     end
     
-    def transfer_and_wait(key, address, amount)
-      return wait_for(transfer(key, address, amount))
+    def transfer_and_wait(key, address, amount, chain_id = nil)
+      return wait_for(transfer(key, address, amount, chain_id))
     end
     
     def wait_for(tx)
