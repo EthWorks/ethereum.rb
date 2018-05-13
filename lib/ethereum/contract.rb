@@ -8,7 +8,7 @@ module Ethereum
     attr_accessor :gas_limit, :gas_price, :nonce
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
-    attr_accessor :call_raw_proxy, :call_proxy, :transact_proxy, :transact_and_wait_proxy
+    attr_accessor :call_raw_proxy, :call_proxy, :encode_tx_proxy, :transact_proxy, :transact_and_wait_proxy
     attr_accessor :new_filter_proxy, :get_filter_logs_proxy, :get_filter_change_proxy
 
     def initialize(name, code, abi, client = Ethereum::Singleton.instance)
@@ -118,13 +118,13 @@ module Ethereum
         @client.eth_send_transaction(tx_args)["result"]
     end
 
-    def send_raw_transaction(payload, to = nil)
+    def send_raw_transaction(payload, to = nil, tx_args = nil)
       Eth.configure { |c| c.chain_id = @client.net_version["result"].to_i }
       @nonce ||= @client.get_nonce(key.address) - 1
       @nonce += 1
       args = {
         from: key.address,
-        value: 0,
+        value: ((!tx_args.nil? && tx_args.key?(:value) && !tx_args[:value].nil?) ? tx_args[:value] : 0),
         data: payload,
         nonce: @nonce,
         gas_limit: gas_limit,
@@ -166,12 +166,20 @@ module Ethereum
       "0x" + fun.signature + (@encoder.encode_arguments(fun.inputs, args).presence || "0"*64)
     end
 
-    def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+    def call_args(tx_args, fun, args)
+      argsHash = {}
+      argsHash[:to] = @address
+      argsHash[:from] = @sender
+      argsHash[:data] = call_payload(fun, args)
+      argsHash[:value] = "0x#{tx_args[:value]}" if !tx_args.nil? && tx_args.key?(:value) && !tx_args[:value].nil?
+
+      add_gas_options_args(argsHash)
+
+      # add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
     end
 
     def call_raw(fun, *args)
-      raw_result = @client.eth_call(call_args(fun, args))["result"]
+      raw_result = @client.eth_call(call_args(nil, fun, args))["result"]
       output = @decoder.decode_arguments(fun.outputs, raw_result)
       return {data: call_payload(fun, args), raw: raw_result, formatted: output}
     end
@@ -185,11 +193,23 @@ module Ethereum
       end
     end
 
+    def encode_tx(tx_args, fun, *args)
+      puts "Encoding transaction!"
+
+      if key
+        tx = send_raw_transaction(call_payload(fun, args), address, tx_args)
+      else
+        tx = send_transaction(call_args(tx_args, fun, args))
+      end
+
+      return Ethereum::Transaction.new(tx, @client, call_payload(fun, args), args)
+    end
+
     def transact(fun, *args)
       if key
         tx = send_raw_transaction(call_payload(fun, args), address)
       else
-        tx = send_transaction(call_args(fun, args))
+        tx = send_transaction(call_args(nil, fun, args))
       end
       return Ethereum::Transaction.new(tx, @client, call_payload(fun, args), args)
     end
@@ -254,6 +274,7 @@ module Ethereum
         def_delegators :parent, :address, :address=, :sender, :sender=
         def_delegator :parent, :call_raw_proxy, :call_raw
         def_delegator :parent, :call_proxy, :call
+        def_delegator :parent, :encode_tx_proxy, :encode_tx
         def_delegator :parent, :transact_proxy, :transact
         def_delegator :parent, :transact_and_wait_proxy, :transact_and_wait
         def_delegator :parent, :new_filter_proxy, :new_filter
@@ -317,14 +338,18 @@ module Ethereum
 
       def create_function_proxies
         parent = self
-        call_raw_proxy, call_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new
+        call_raw_proxy, call_proxy, encode_tx_proxy, transact_proxy, transact_and_wait_proxy = Class.new, Class.new, Class.new, Class.new, Class.new
         @functions.each do |fun|
           call_raw_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call_raw(fun, *args) }
           call_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.call(fun, *args) }
+          encode_tx_proxy.send(:define_method, parent.function_name(fun)) do |*args, &block| 
+            tx_args  = block.call(fun, args) if !block.nil?
+            parent.encode_tx(tx_args, fun, *args)
+          end
           transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
           transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
         end
-        @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
+        @call_raw_proxy, @call_proxy, @encode_tx_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, encode_tx_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
       end
 
       def create_event_proxies
