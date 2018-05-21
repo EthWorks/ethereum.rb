@@ -59,6 +59,10 @@ module Ethereum
         raise "No contracts compiled" if contracts.empty?
         if contract_index
           contract = contracts[contract_index].class_object.new
+        elsif name
+          contract = contracts.find{|c| c.name == name}
+          raise "Not found contract with name '#{name}'" unless contract
+          contract = contract.class_object.new
         else
           contract = contracts.first.class_object.new
         end
