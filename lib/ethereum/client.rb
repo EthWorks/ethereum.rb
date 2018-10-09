@@ -87,17 +87,38 @@ module Ethereum
 
 
     def transfer(key, address, amount)
-      Eth.configure { |c| c.chain_id = net_version["result"].to_i }
-      args = { 
-        from: key.address,
-        to: address,
-        value: amount,
-        data: "",
-        nonce: get_nonce(key.address),
-        gas_limit: gas_limit,
-        gas_price: gas_price
+      nonce = get_nonce(key.address)
+      send_raw_transaction(key, address, amount, '', nonce, gas_limit, gas_price)
+    end
+
+    def send_raw_transaction(key, to, value, data, nonce, gas_limit, gas_price)
+      # 1/ Prepare tx arguments:
+      args = {
+          from: key.address,
+          value: value,
+          data: data,
+          nonce: nonce,
+          gas_limit: gas_limit,
+          gas_price: gas_price
       }
+
+      args[:to] = to if to
       tx = Eth::Tx.new(args)
+      
+      # 2/ Configure chain_id (allows signing txns on Kovan (?) & ETC)
+      # se3000/ruby-eth introduced a breaking change in v0.4.9: the config object
+      # doesn't expose a chain_id method anymore; the method is now called default_chain_id
+      # and the chain id can be overridden at the tx level.
+      # See https://github.com/EthWorks/ethereum.rb/issues/94
+
+      chain_id = net_version["result"].to_i
+      eth_0_4_9_or_above = Eth.respond_to? :default_chain_id
+      if eth_0_4_9_or_above
+        tx.chain_id = chain_id
+      else
+        Eth.configure { |c| c.chain_id = chain_id }
+      end
+
       tx.sign key
       eth_send_raw_transaction(tx.hex)["result"]
     end
