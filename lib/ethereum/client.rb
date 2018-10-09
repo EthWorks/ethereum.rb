@@ -110,10 +110,8 @@ module Ethereum
       # doesn't expose a chain_id method anymore; the method is now called default_chain_id
       # and the chain id can be overridden at the tx level.
       # See https://github.com/EthWorks/ethereum.rb/issues/94
-
       chain_id = net_version["result"].to_i
-      eth_0_4_9_or_above = Eth.respond_to? :default_chain_id
-      if eth_0_4_9_or_above
+      if Eth.respond_to? :default_chain_id
         tx.chain_id = chain_id
       else
         Eth.configure { |c| c.chain_id = chain_id }
