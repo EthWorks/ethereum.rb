@@ -4,7 +4,8 @@ module Ethereum
     CHAIN_PREFIX = {
       17 => "no-explorer-for-devmode.",
       42 => "kovan.",
-      3 => "ropsten."
+      3 => "ropsten.",
+      4 => "rinkeby."
     }
 
     def link_to_tx(label, txid, **opts)
