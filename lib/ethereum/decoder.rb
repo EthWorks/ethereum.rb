@@ -57,7 +57,7 @@ module Ethereum
     end
 
     def decode_static_bytes(value, subtype = nil, start = 0)
-      trim(value, start, subtype.to_i*8).scan(/.{2}/).collect {|x| x.hex}.pack('C*').strip
+      trim(value, start, subtype.to_i*8).scan(/.{2}/).collect {|x| x.hex}.pack('C*')
     end
 
     def decode_dynamic_bytes(value, start = 0)
@@ -76,7 +76,7 @@ module Ethereum
       types.each.with_index.map { |t , i| decode(t, data, i*64) }
     end
 
-    private 
+    private
       def trim(value, start, bitsize = 256)
         value[start+63-(bitsize/4-1)..start+63]
       end
