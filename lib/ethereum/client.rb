@@ -115,9 +115,7 @@ module Ethereum
     def send_command(command,args)
       if ["eth_getBalance", "eth_call"].include?(command)
         if args[0].has_key?(:default_block)
-          default_block = args[0][:default_block]
-          args[0].delete(:default_block)
-          args << default_block
+          args << args[0].delete(:default_block)
         else
           args << "latest"
         end
