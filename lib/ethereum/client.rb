@@ -113,7 +113,7 @@ module Ethereum
     end
 
     def send_command(command,args)
-      if ["eth_getBalance", "eth_call"].include?(command)
+      if ["eth_call"].include?(command)
         if args[0].has_key?(:default_block)
           args << args[0].delete(:default_block)
         else
