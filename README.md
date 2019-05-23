@@ -105,13 +105,13 @@ contract = Ethereum::Contract.create(name: "MyContract", abi: abi, code: "...")
 If you use Truffle to build and deploy contracts, you can pick up the Truffle artifacts to initialize
 a contract. For example, if you have a MyContract in the Truffle directory at `/my/truffle/project`:
 
-```
+```ruby
 contract = Ethereum::Contract.create(name: "MyContract", truffle: { paths: [ '/my/truffle/project' ] }, client: client, address: '0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd')
 ```
 
 The contract factory will attempt to load the deployed address from the Truffle artifacts if the client's network is present:
 
-```
+```ruby
 contract = Ethereum::Contract.create(name: "MyContract", truffle: { paths: [ '/my/truffle/project' ] }, client: client)
 ```
 
@@ -119,7 +119,7 @@ contract = Ethereum::Contract.create(name: "MyContract", truffle: { paths: [ '/m
 
 Functions defined in a contract are exposed using the following conventions:
 
-```
+```ruby
 contract.transact.[function_name](params)
 contract.transact_and_wait.[function_name](params)  
 contract.call.[function_name](params)
@@ -337,7 +337,9 @@ Then, run `rake spec` to run the tests.
 
 Test that do send transactions to blockchain are marked with `blockchain` tag. Good practice is to run first fast tests that use no ether and only if they pass, run slow tests that do spend ether. To do that  use the following line:
 
-    $ bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
+```bash
+$ bundle exec rspec --tag ~blockchain && bundle exec rspec --tag blockchain
+```
 
 You need ethereum node up and running for tests to pass and it needs to be working on testnet (Ropsten).
 
