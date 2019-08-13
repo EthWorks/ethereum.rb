@@ -24,8 +24,16 @@ module Ethereum
       .gsub(/(ufixed)(\z|\D)/, '\1128x128\2')
     end
 
+    def self.input_to_string(input)
+      if input.type == 'tuple'
+        "(#{input.components.collect {|component| self.to_canonical_type(component.with_indifferent_access[:type]) }.join(",")})"
+      else
+        self.to_canonical_type(input.type)
+      end
+    end
+
     def self.calc_signature(name, inputs)
-      "#{name}(#{inputs.collect {|x| self.to_canonical_type(x.type) }.join(",")})"
+      "#{name}(#{inputs.collect {|input| self.input_to_string(input) }.join(",")})"
     end
 
     def self.calc_id(signature)

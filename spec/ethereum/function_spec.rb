@@ -27,4 +27,21 @@ describe Ethereum::Function do
     end
   end
 
+  context "calculates signature with tuple" do
+    let(:inputs_json1) { {"type" => "tuple", "name" => "nomatter",
+                          "components" => [ {
+                                             "name": "var1",
+                                             "type": "address"
+                                            },
+                                            {
+                                             "name": "var2",
+                                             "type": "int"
+                                            } ] } }
+    let(:inputs) { [Ethereum::FunctionInput.new(inputs_json1)] }
+    it "simple" do
+      expect(Ethereum::Function.calc_signature("sam", inputs)).to eq "sam((address,int256))"
+    end
+  end
+
+
 end
