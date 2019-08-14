@@ -25,8 +25,9 @@ module Ethereum
     end
 
     def self.input_to_string(input)
-      if input.type == 'tuple'
-        "(#{input.components.collect {|component| self.to_canonical_type(component.with_indifferent_access[:type]) }.join(",")})"
+      tuple_match = /tuple(.*)/.match(input.type)
+      if tuple_match
+        "(#{input.components.collect {|component| self.to_canonical_type(component.with_indifferent_access[:type]) }.join(",")})#{tuple_match[1]}"
       else
         self.to_canonical_type(input.type)
       end
