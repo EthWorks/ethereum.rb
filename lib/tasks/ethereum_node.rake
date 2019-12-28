@@ -3,11 +3,11 @@ require 'open3'
 namespace :ethereum do
   namespace :node do
 
-    desc "Run testnet (ropsten) node"
+    desc "Run testnet (goerli) node"
     task :test do
-      args = "--chain testnet --warp"
+      args = "--chain testnet"
       out, _, _ = Open3.capture3("parity #{args} account list")
-      account = out.split(/[\[,\]]/)[1]
+      account = out.split(/[\[\n\]]/)[0]
       cmd = "parity #{args} --password ~/Library/Application\\ Support/io.parity.ethereum/pass --unlock #{account} --author #{account}"
       puts cmd
       system cmd
