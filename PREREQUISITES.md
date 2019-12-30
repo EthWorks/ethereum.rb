@@ -65,7 +65,7 @@ To do that adding create file containing password accessable from your parity fo
  * `/Users/You/AppData/Roaming/Parity/Ethereum` on Windows
  * `/Users/you/Library/Application Support/io.parity.ethereum` on MacOS
  * `/home/you/.local/share/parity` on Linux/Unix
- * `/home/you/.parity` on Linux and MacOS for Parity versions older then 2.5.0
+ * `/home/you/.parity` on Linux and MacOS for Parity versions older then 1.5.0
 
 Warnning: Running a parity node with unlock wallet is a considerable security risk and should be avoided on production servers. Especially avoid running node with unlocked wallet and enabled json rpc server in http mode.
 
