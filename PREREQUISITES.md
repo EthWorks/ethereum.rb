@@ -2,7 +2,7 @@
 
 ## Compatibility and requirements
 
-* Tested with parity 1.5, might work with geth and older parity, but was not tested.
+* Tested with parity 2.5, might work with geth and older parity, but was not tested.
 * Tested with solc 0.4.16
 * Ruby 2.x
 * UNIX/Linux or OS X environment
@@ -60,7 +60,7 @@ There is a rake task to run node on testnet network, that you can run from your 
 
     $ rake ethereum:node:test
 
-It will run parity node, unlock the first account on the account list, but you need to supply it with password. 
+It will run parity node, unlock the first account on the account list, but you need to supply it with password.
 To do that adding create file containing password accessable from your parity folder, which should be one of the following:
  * `/Users/You/AppData/Roaming/Parity/Ethereum` on Windows
  * `/Users/you/Library/Application Support/io.parity.ethereum` on MacOS
@@ -69,4 +69,7 @@ To do that adding create file containing password accessable from your parity fo
 
 Warnning: Running a parity node with unlock wallet is a considerable security risk and should be avoided on production servers. Especially avoid running node with unlocked wallet and enabled json rpc server in http mode.
 
-To send transaction on a testnet blockchain you will need test ether, you can get it [here](http://faucet.ropsten.be:3001/).
+To send transaction on a testnet blockchain you will need test ether, you can get it at the following site.
+
+* [Goerli Testnet Faucet](https://goerli-faucet.slock.it/)
+* [Goerli: Authenticated Faucet](https://faucet.goerli.mudit.blog/)
