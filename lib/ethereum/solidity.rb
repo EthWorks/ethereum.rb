@@ -10,7 +10,7 @@ module Ethereum
 
   class Solidity
 
-    OUTPUT_REGEXP = /======= (\S*):(\S*) =======\s*Binary:\s*(\S*)\s*Contract JSON ABI\s*(\S*)/
+    OUTPUT_REGEXP = /======= (\S*):(\S*) =======\s*Binary:\s*(\S*)\s*Contract JSON ABI\s*(.*)/
 
     def initialize(bin_path = "solc")
       @bin_path = bin_path
