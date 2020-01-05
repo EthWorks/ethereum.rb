@@ -78,7 +78,7 @@ module Ethereum
     
 
     def transfer_to(address, amount)
-      eth_send_transaction({to: address, value: int_to_hex(amount)})
+      eth_send_transaction({from: default_account, to: address, value: int_to_hex(amount)})
     end
 
     def transfer_to_and_wait(address, amount)
