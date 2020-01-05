@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Ethereum do
 
-  let(:client) { Ethereum::IpcClient.new }
+  let(:client) { Ethereum::Singleton.instance }
   let(:path) { "#{Dir.pwd}/spec/fixtures/TestContract.sol" }
 
   it "builds, deploys, call methods, receives events and kills contract", blockchain: true do
@@ -12,7 +12,7 @@ describe Ethereum do
 
     filter_id = @works.new_filter.changed address: contract_address, topics: []
     tx_address = @works.transact_and_wait.set("some4key", "somethevalue").address
-    expect(Ethereum::Transaction.from_blockchain(tx_address).mined?).to be true
+    expect(Ethereum::Transaction.from_blockchain(tx_address, Ethereum::Singleton.instance).mined?).to be true
 
     expect(@works.get_filter_logs.changed(filter_id)[0][:transactionHash]).to eq tx_address
 
