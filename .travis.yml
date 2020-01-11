@@ -3,6 +3,8 @@ language: ruby
 rvm:
   - 2.4.3
   - 2.5.0
+  - 2.6
+  - 2.7
 env:
   - PARITY="2.5.12"
 cache:
