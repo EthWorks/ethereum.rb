@@ -5,7 +5,7 @@ sudo add-apt-repository ppa:ethereum/ethereum -y
 sudo apt-get update
 sudo apt-get -y install dpkg
 sudo apt-get -y install libssl-dev
-curl -o /usr/bin/solc -fL https://github.com/ethereum/solidity/releases/download/v0.5.11/solc-static-linux \
+curl -o /usr/bin/solc -fL https://github.com/ethereum/solidity/releases/download/v0.5.16/solc-static-linux \
      && chmod 775 /usr/bin/solc \
      && chown travis:travis /usr/bin/solc
 echo "Solc version"
