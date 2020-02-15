@@ -5,7 +5,7 @@
 The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as fast and easy as possible (but not easier!).
 
 ## Maintainer
-Project is currently maintained by @kurotaky
+Project is currently maintained by [@kurotaky](https://github.com/kurotaky).
 
 ## Highlights
 
