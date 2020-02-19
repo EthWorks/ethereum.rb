@@ -1,34 +1,34 @@
-pragma solidity ^0.4.8;
+pragma solidity >=0.5.16 <0.6.0;
 
 contract TestContract {
 
-    address public owner;
+    address payable public owner;
 
-    function TestContract(string title) {
+    constructor(string memory title) public {
         owner = msg.sender;
     }
 
-    function kill() {
+    function kill() public {
         if (msg.sender == owner) {
             selfdestruct(owner);
-            killed();
+            emit killed();
         }
     }
 
     mapping(bytes32 => bytes32) public signatures;
 
     function set(bytes32 id, bytes32 sig) public {
-      if (msg.sender != owner) throw;
+      require(msg.sender == owner);
       signatures[id] = sig;
-      changed();
+      emit changed();
     }
 
-    function get(bytes32 id) constant returns (bytes32, string) {
+    function get(bytes32 id) public view returns (bytes32, string memory) {
         return (signatures[id], "żółć");
     }
 
-    function unset(bytes32 id) {
-        if (msg.sender != owner) throw;
+    function unset(bytes32 id) public {
+        require(msg.sender == owner);
         signatures[id] = bytes32(0x0);
     }
 

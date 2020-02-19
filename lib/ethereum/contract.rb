@@ -84,7 +84,7 @@ module Ethereum
             code = nil
           end
         else
-          abi = JSON.parse(abi) if abi.is_a? String
+          abi = abi.is_a?(String) ? JSON.parse(abi) : abi.map(&:deep_stringify_keys)
         end
         contract = Ethereum::Contract.new(name, code, abi, client)
         contract.build
