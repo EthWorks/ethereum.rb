@@ -59,6 +59,8 @@ contract.call.greet # => "Hello from ethereum.rb!"
 
 You can see example contract [greeter here](https://github.com/marekkirejczyk/ruby_ethereum_example/blob/master/contracts/greeter.sol).
 
+> If contract method name uses camel case you must convert it to snake case when use call: `call.your_method`.
+
 ## Smart contracts
 
 ### Compile multiple contracts at once
