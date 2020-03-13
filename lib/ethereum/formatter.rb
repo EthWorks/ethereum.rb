@@ -73,12 +73,12 @@ module Ethereum
 
     def to_wei(amount, unit = "ether")
       return nil if amount.nil?
-      BigDecimal.new(UNITS[unit.to_sym] * amount, 16).to_s.to_i rescue nil
+      BigDecimal(UNITS[unit.to_sym] * amount, 16).to_s.to_i rescue nil
     end
 
     def from_wei(amount, unit = "ether")
       return nil if amount.nil?
-      (BigDecimal.new(amount, 16) / BigDecimal.new(UNITS[unit.to_sym], 16)).to_s rescue nil
+      (BigDecimal(amount, 16) / BigDecimal(UNITS[unit.to_sym], 16)).to_s rescue nil
     end
 
     def from_address(address)
