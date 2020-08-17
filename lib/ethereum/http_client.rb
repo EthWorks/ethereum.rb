@@ -13,7 +13,11 @@ module Ethereum
       @proxy = proxy
       
       @ssl = uri.scheme == 'https'
-      @uri = URI("#{uri.scheme}://#{@host}:#{@port}#{uri.path}")
+      if uri.user && uri.password
+        @uri = URI("#{uri.scheme}://#{uri.user}:#{uri.password}@#{@host}:#{@port}#{uri.path}")
+      else
+        @uri = URI("#{uri.scheme}://#{@host}:#{@port}#{uri.path}")
+      end
     end
 
     def send_single(payload)
@@ -29,6 +33,7 @@ module Ethereum
       end
       header = {'Content-Type' => 'application/json'}
       request = ::Net::HTTP::Post.new(uri, header)
+      request.basic_auth(@uri.user, @uri.password) if @uri.user && @uri.password
       request.body = payload
       response = http.request(request)
       response.body
