@@ -5,6 +5,7 @@ module Ethereum
 
     attr_reader :address
     attr_accessor :key
+    attr_accessor :default_block
     attr_accessor :gas_limit, :gas_price, :nonce
     attr_accessor :code, :name, :abi, :class_object, :sender, :deployment, :client
     attr_accessor :events, :functions, :constructor_inputs
@@ -167,7 +168,9 @@ module Ethereum
     end
 
     def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+      params = {to: @address, from: @sender, data: call_payload(fun, args)}
+      params.merge!({default_block: @default_block}) if @default_block.present?
+      add_gas_options_args(params)
     end
 
     def call_raw(fun, *args)
