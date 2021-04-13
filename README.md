@@ -238,6 +238,12 @@ You can also obtain default client:
 client = Ethereum::Singleton.instance
 ```
 
+### HTTP Basic Auth
+
+```ruby
+client = Ethereum::HttpClient.new('http://localhost:8545', { basic_auth: { username: '<USER>', password: '<PASSWORD>' } })
+```
+
 ### Calling json rpc methods
 
 Ethereum.rb allows you to interact directly with Ethereum node using json rpc api calls.
