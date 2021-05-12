@@ -5,12 +5,17 @@ module Ethereum
 
     IPC_PATHS = [
       "#{ENV['HOME']}/.parity/jsonrpc.ipc",
+      "#{ENV['HOME']}/.openethereum/jsonrpc.ipc",
       "#{ENV['HOME']}/Library/Ethereum/geth.ipc",
       "#{ENV['HOME']}/Library/Ethereum/testnet/geth.ipc",
       "#{ENV['HOME']}/Library/Application\ Support/io.parity.ethereum/jsonrpc.ipc",
+      "#{ENV['HOME']}/Library/Application\ Support/io.openethereum.ethereum/jsonrpc.ipc",
       "#{ENV['HOME']}/.local/share/parity/jsonrpc.ipc",
       "#{ENV['HOME']}/.local/share/io.parity.ethereum/jsonrpc.ipc",
       "#{ENV['HOME']}/AppData/Roaming/Parity/Ethereum/jsonrpc.ipc",
+      "#{ENV['HOME']}/.local/share/openethereum/jsonrpc.ipc",
+      "#{ENV['HOME']}/.local/share/io.openethereum.ethereum/jsonrpc.ipc",
+      "#{ENV['HOME']}/AppData/Roaming/openethereum/Ethereum/jsonrpc.ipc",
       "#{ENV['HOME']}/.ethereum/geth.ipc",
       "#{ENV['HOME']}/.ethereum/testnet/geth.ipc"
     ]
