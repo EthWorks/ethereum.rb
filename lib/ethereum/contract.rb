@@ -1,5 +1,4 @@
 require 'forwardable'
-
 module Ethereum
   class Contract
 
@@ -166,7 +165,9 @@ module Ethereum
     end
 
     def call_args(fun, args)
-      add_gas_options_args({to: @address, from: @sender, data: call_payload(fun, args)})
+      options = {to: @address, from: @sender, data: call_payload(fun, args)}
+
+      fun.constant ? options : add_gas_options_args(options)
     end
 
     def call_raw(fun, *args)

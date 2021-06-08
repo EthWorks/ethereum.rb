@@ -292,6 +292,16 @@ contract.gas_limit = 2_000_000_
 contract.gas_price = 24_000_000_000
 ```
 
+### Custom block
+
+You can change the block used by the client. Defaulted at `'latest'` if not specified.
+If the specified block is older than the latest, transactions are impossible, and only contract `call` are available, as the blockchain is immutable.
+
+```ruby
+client.block_number = 12_596_089
+```
+
+
 ## Utils
 
 ### Url helpers for rails applications

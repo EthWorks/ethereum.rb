@@ -22,7 +22,7 @@ module Ethereum
     end
 
     def self.default_path(paths = IPC_PATHS)
-      path = paths.select { |path| File.exist?(path) }.first
+      path = paths.find { |path| File.exist?(path) }
       path || raise("Ipc file not found. Please pass in the file path explicitly to IpcClient initializer")
     end
 
