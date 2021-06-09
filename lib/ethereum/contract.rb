@@ -323,7 +323,7 @@ module Ethereum
           transact_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact(fun, *args) }
           transact_and_wait_proxy.send(:define_method, parent.function_name(fun)) { |*args| parent.transact_and_wait(fun, *args) }
         end
-        @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.new, call_proxy.new, transact_proxy.new, transact_and_wait_proxy.new
+        @call_raw_proxy, @call_proxy, @transact_proxy, @transact_and_wait_proxy =  call_raw_proxy.allocate, call_proxy.allocate, transact_proxy.allocate, transact_and_wait_proxy.allocate
       end
 
       def create_event_proxies
@@ -334,7 +334,7 @@ module Ethereum
           get_filter_logs_proxy.send(:define_method, evt.name.underscore) { |*args| parent.get_filter_logs(evt, *args) }
           get_filter_change_proxy.send(:define_method, evt.name.underscore) { |*args| parent.get_filter_changes(evt, *args) }
         end
-        @new_filter_proxy, @get_filter_logs_proxy, @get_filter_change_proxy = new_filter_proxy.new, get_filter_logs_proxy.new, get_filter_change_proxy.new
+        @new_filter_proxy, @get_filter_logs_proxy, @get_filter_change_proxy = new_filter_proxy.allocate, get_filter_logs_proxy.allocate, get_filter_change_proxy.allocate
       end
   end
 end
