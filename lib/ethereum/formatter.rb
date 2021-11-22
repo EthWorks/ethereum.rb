@@ -81,6 +81,16 @@ module Ethereum
       (BigDecimal(amount, 16) / BigDecimal(UNITS[unit.to_sym], 16)).to_s rescue nil
     end
 
+    def to_gwei(amount, unit = "ether")
+      return nil if amount.nil?
+      (BigDecimal(UNITS[unit.to_sym] * amount, 16)/ BigDecimal(UNITS[:gwei], 16)).to_s.to_i rescue nil
+    end
+
+    def from_gwei(amount, unit = "ether")
+      return nil if amount.nil?
+      (BigDecimal(UNITS[:gwei] * amount, 16) / BigDecimal(UNITS[unit.to_sym], 16)).to_s rescue nil
+    end
+
     def from_address(address)
       return "0x0000000000000000000000000000000000000000" if address.nil?
       address.gsub(/^0x/,'').rjust(64, "0")

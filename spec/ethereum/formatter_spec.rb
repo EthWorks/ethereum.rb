@@ -13,4 +13,14 @@ describe Ethereum::Formatter do
     expect(formatter.from_wei(1000000000000000000)).to eq "1.0"
     expect(formatter.from_wei(nil)).to be_nil
   end
+
+  it "#to_gwei" do
+    expect(formatter.to_gwei(1)).to eq 1000000000
+    expect(formatter.to_gwei(nil)).to be_nil
+  end
+
+  it "#from_gwei" do
+    expect(formatter.from_gwei(1000000000)).to eq "1.0"
+    expect(formatter.from_gwei(nil)).to be_nil
+  end
 end
