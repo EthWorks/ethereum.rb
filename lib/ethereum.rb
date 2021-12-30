@@ -1,7 +1,7 @@
 require "ethereum/version"
 require 'active_support'
 require 'active_support/core_ext'
-require 'keccak'
+require 'digest/keccak'
 
 module Ethereum
   require 'ethereum/abi'
