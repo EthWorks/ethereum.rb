@@ -32,5 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "eth-patched", "~> 0.4"
 
   spec.add_dependency "activesupport", ">= 4.0"
-  spec.add_dependency "keccak.rb", "~> 1.2"
+  spec.add_dependency "keccak", "~> 1.2"
 end
