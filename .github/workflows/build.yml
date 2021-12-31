@@ -1,0 +1,35 @@
+---
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+    - name: Install Dependencies
+      run: |
+        sudo bin/install_parity
+        gem update --system
+        gem install bundler
+        bundle install
+    - name: Run Tests
+      run: |
+        ./openethereum --chain dev --password ~/.devpass --unlock 00a329c0648769a73afac7f9381e08fb43dbea72 --author 00a329c0648769a73afac7f9381e08fb43dbea72 daemon ~/.openethereum.pid --log-file ~/.openethereum.log
+        sleep 5
+        ./openethereum --chain dev account list
+        cat ~/.openethereum.log
+        rspec
+        killall openethereum
+        sleep 5
+        cat /tmp/ethereum_ruby_http.log
