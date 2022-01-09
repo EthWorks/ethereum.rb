@@ -86,13 +86,15 @@ module Ethereum
     end
 
 
-    def transfer(key, address, amount, data = "")
-      Eth.configure { |c| c.chain_id = net_version["result"].to_i }
+    def transfer(key, address, amount, options = {})
+      chain_id = options[:chain_id] || net_version["result"].to_i
+
+      Eth.configure { |c| c.chain_id = chain_id}
       args = {
         from: key.address,
         to: address,
         value: amount,
-        data: data,
+        data: (options[:data] || ""),
         nonce: get_nonce(key.address),
         gas_limit: gas_limit,
         gas_price: gas_price
