@@ -17,7 +17,7 @@ module Ethereum
 
             last = ret[-5,5]
             break if last=="}\n\n> "
-            last = last[-3,3]
+            last = ret[-3,3]
             break if last=="}\n\n"
         end
         return ret
