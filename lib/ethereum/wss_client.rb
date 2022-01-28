@@ -12,7 +12,7 @@ module Ethereum
                 ret = ret + @ws_out.read_nonblock(1024*1024)
             end
         rescue IO::WaitReadable
-            retry if IO.select([@ws_out],[],[],0.1)!=nil
+            retry if IO.select([@ws_out],[],[],0.001)!=nil
         end
         return ret
     end
