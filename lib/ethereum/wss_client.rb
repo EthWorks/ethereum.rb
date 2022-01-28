@@ -4,15 +4,21 @@ require 'json'
 module Ethereum
   class WssClient < Client
     attr_accessor :host,:ws_in,:ws_out,:ws_err,:wait_thr
-
     
     def read_all_buf()
         ret = ""
-        begin
-            loop do
-                ret = ret + @ws_out.read_nonblock(1024*1024)
+        loop do
+            begin
+                loop do
+                    ret = ret + @ws_out.read_nonblock(1024*1024)
+                end
+            rescue IO::WaitReadable
             end
-        rescue IO::WaitReadable
+
+            last = ret[-5,5]
+            break if last=="}\n\n> "
+            last = last[-3,3]
+            break if last=="}\n\n"
         end
         return ret
     end    
