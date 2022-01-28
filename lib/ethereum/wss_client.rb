@@ -9,7 +9,7 @@ module Ethereum
     def read_all_buf()
         ret = ""
         begin
-            ret = ret + @ws_out.read_nonblock(1024*1024)
+            ret = ret + @ws_out.read_nonblock(64*1024*1024)
         rescue IO::WaitReadable
         end
         return ret
