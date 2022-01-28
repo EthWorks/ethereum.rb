@@ -53,7 +53,12 @@ module Ethereum
     end
   
     def send_single(payload)
-        @ws_in.write_nonblock(payload+"\n")
+        begin
+            @ws_in.write_nonblock(payload+"\n")
+        rescue Errno::EPIPE
+            get_ws()
+            retry
+        end
         ret = ""
         loop do
             ret=read_all_buf()
