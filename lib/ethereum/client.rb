@@ -28,6 +28,7 @@ module Ethereum
     def self.create(host_or_ipcpath, log = false)
       return IpcClient.new(host_or_ipcpath, log) if host_or_ipcpath.end_with? '.ipc'
       return HttpClient.new(host_or_ipcpath, log) if host_or_ipcpath.start_with? 'http'
+      return WssClient.new(host_or_ipcpath, log) if host_or_ipcpath.start_with? 'wss'
       raise ArgumentError.new('Unable to detect client type')
     end
 
