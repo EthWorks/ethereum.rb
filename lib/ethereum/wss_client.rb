@@ -69,7 +69,7 @@ module Ethereum
 
   class WssClient < Client
     attr_accessor :host #,:ws_in,:ws_out,:ws_err,:wait_thr
-    attr_accessor :pool
+    attr_accessor :pool,:semaphore
 
     POOL_SIZE = 10
 
@@ -81,17 +81,27 @@ module Ethereum
     end
     
     def get_pool_ws()
-        open_pool = @pool.filter do |x| x[1]=="open" end
-        if open_pool.size == 0 then 
+        action = nil
+        
+        semaphore.synchronize{ 
+            open_pool = @pool.filter do |x| x[1]=="open" end
+            if open_pool.size == 0 then 
+                action= "new"
+            else
+                ws = open_pool[0][0]
+                change_pool_status(ws,"work")
+                return ws
+            end            
+        }
+
+        if action=="new" then
             new_ws = WssConnection.new(@host)
             @pool << [new_ws,"work"]
             return new_ws
-        else
-            ws = open_pool[0][0]
-            change_pool_status(ws,"work")
-            return ws
         end
     end
+
+
 
     def release_pool_ws(ws)
         change_pool_status(ws,"open")
@@ -101,6 +111,7 @@ module Ethereum
         super(log)
         @host = host
         @pool = []
+        @semaphore = Mutex.new
     end
   
     def send_single(payload)
