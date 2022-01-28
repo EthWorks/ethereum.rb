@@ -5,17 +5,16 @@ module Ethereum
   class WssClient < Client
     attr_accessor :host,:ws_in,:ws_out,:ws_err,:wait_thr
 
+    
     def read_all_buf()
         ret = ""
         begin
-            loop do
-                ret = ret + @ws_out.read_nonblock(1024*1024)
-            end
+            ret = ret + @ws_out.read_nonblock(1024*1024)
         rescue IO::WaitReadable
-            retry if IO.select([@ws_out],[],[],0.0001)!=nil
         end
         return ret
-    end
+    end    
+
 
     def get_ws()
         if @wait_thr and @wait_thr.status==false then
@@ -33,7 +32,7 @@ module Ethereum
             payload = "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[],\"id\":1}"
             loop do
                 @ws_in.write_nonblock(payload+"\n")
-                io_sel = IO.select([@ws_out],[],[],0.1)
+                io_sel = IO.select([@ws_out],[],[],0.01)
                 break if io_sel!=nil
             end
             loop do
@@ -46,21 +45,23 @@ module Ethereum
     end
 
     def initialize(host, log = false)
-      super(log)
-      @host = host
-    end
-
-    def send_single(payload)
+        super(log)
+        @host = host
         get_ws() 
+    end
+  
+    def send_single(payload)
         @ws_in.write_nonblock(payload+"\n")
         ret = ""
         loop do
             ret=read_all_buf()
-            ret=ret.gsub(/^> |> =$/,"")
+            ret=ret[2,ret.size-2] if ret[0]==">" and ret[1]==" "
+            ret=ret[0,ret.size-2] if ret[-2]==">" and ret[-1]==" "
             break if ret!=""
         end
         return ret
     end
+
 
     # Note: Guarantees the results are in the same order as defined in batch call.
     # client.batch do
