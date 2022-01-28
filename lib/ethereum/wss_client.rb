@@ -44,7 +44,7 @@ module Ethereum
             payload = "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[],\"id\":1}"
             loop do
                 @ws_in.write_nonblock(payload+"\n")
-                io_sel = IO.select([@ws_out],[],[],0.01)
+                io_sel = IO.select([@ws_out],[],[],0.1)
                 break if io_sel!=nil
             end
             loop do
@@ -82,7 +82,7 @@ module Ethereum
     
     def get_pool_ws()
         action = nil
-        
+
         semaphore.synchronize{ 
             open_pool = @pool.filter do |x| x[1]=="open" end
             if open_pool.size == 0 then 
