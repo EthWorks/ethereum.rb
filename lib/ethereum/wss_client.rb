@@ -2,9 +2,9 @@ require 'open3'
 require 'json'
 
 module Ethereum
-  class WssClient < Client
-    attr_accessor :host,:ws_in,:ws_out,:ws_err,:wait_thr
-    
+  class WssConnection
+    attr_accessor :host,:ws_in,:ws_out,:ws_err,:wait_thr,:index
+
     def read_all_buf()
         ret = ""
         loop do
@@ -23,6 +23,10 @@ module Ethereum
         return ret
     end    
 
+    def initialize(host)
+        @host = host
+        get_ws()
+    end
 
     def get_ws()
         if @wait_thr and @wait_thr.status==false then
@@ -52,26 +56,65 @@ module Ethereum
         return @ws_in,@ws_out,@ws_err,@wait_thr
     end
 
-    def initialize(host, log = false)
-        super(log)
-        @host = host
-        get_ws() 
-    end
-  
-    def send_single(payload)
+    def write_nonblock(str)
         begin
-            @ws_in.write_nonblock(payload+"\n")
+            @ws_in.write_nonblock(str)
         rescue Errno::EPIPE
             get_ws()
             retry
         end
+    end
+
+  end
+
+  class WssClient < Client
+    attr_accessor :host #,:ws_in,:ws_out,:ws_err,:wait_thr
+    attr_accessor :pool
+
+    POOL_SIZE = 10
+
+    def change_pool_status(ws,status)
+        @pool.map! do |x|
+            x[1]=status if x[0]==ws
+            x
+        end
+    end
+    
+    def get_pool_ws()
+        open_pool = @pool.filter do |x| x[1]=="open" end
+        if open_pool.size == 0 then 
+            new_ws = WssConnection.new(@host)
+            @pool << [new_ws,"work"]
+            return new_ws
+        else
+            ws = open_pool[0][0]
+            change_pool_status(ws,"work")
+            return ws
+        end
+    end
+
+    def release_pool_ws(ws)
+        change_pool_status(ws,"open")
+    end
+
+    def initialize(host, log = false)
+        super(log)
+        @host = host
+        @pool = []
+    end
+  
+    def send_single(payload)
+        ws = get_pool_ws()
+        ws.write_nonblock(payload+"\n")
+
         ret = ""
         loop do
-            ret=read_all_buf()
+            ret=ws.read_all_buf()
             ret=ret[2,ret.size-2] if ret[0]==">" and ret[1]==" "
             ret=ret[0,ret.size-2] if ret[-2]==">" and ret[-1]==" "
             break if ret!=""
         end
+        release_pool_ws(ws)
         return ret
     end
 
