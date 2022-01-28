@@ -12,7 +12,7 @@ module Ethereum
                 ret = ret + @ws_out.read_nonblock(1024*1024)
             end
         rescue IO::WaitReadable
-            retry if IO.select([@ws_out],[],[],0.001)!=nil
+            retry if IO.select([@ws_out],[],[],0.0001)!=nil
         end
         return ret
     end
@@ -33,7 +33,7 @@ module Ethereum
             payload = "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[],\"id\":1}"
             loop do
                 @ws_in.write_nonblock(payload+"\n")
-                io_sel = IO.select([@ws_out],[],[],1)
+                io_sel = IO.select([@ws_out],[],[],0.1)
                 break if io_sel!=nil
             end
             loop do
