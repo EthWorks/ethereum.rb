@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/EthWorks/ethereum.rb.svg?branch=master)](https://travis-ci.org/EthWorks/ethereum.rb) [![security](https://hakiri.io/github/NullVoxPopuli/MetaHash/master.svg)](https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb) [![Code Climate](https://codeclimate.com/github/marekkirejczyk/ethereum.rb/badges/gpa.svg)](https://codeclimate.com/github/marekkirejczyk/ethereum.rb)
 
-The goal of ethereum.rb is to make interacting with ethereum blockchain from ruby as fast and easy as possible (but not easier!).
+The goal of ethereum.rb is to make interacting with the Ethereum blockchain from Ruby as fast and easy as possible (but not easier!).
 
 ## Maintainer
 Project is currently maintained by [@kurotaky](https://github.com/kurotaky).
@@ -21,7 +21,7 @@ Project is currently maintained by [@kurotaky](https://github.com/kurotaky).
 
 ## Installation
 
-Before installing gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md), especially that you have:
+Before installing the gem make sure you meet all [prerequisites](https://github.com/marekkirejczyk/ethereum.rb/blob/master/PREREQUISITES.md), especially that you have:
 * compatible ethereum node installed
 * compatible solidity compiler installed
 * wallet with some ethereum on it
@@ -44,14 +44,14 @@ Or install it yourself as:
 
 ## Basic Usage
 
-You can create contract from solidity source and deploy it to the blockchain, with following code:
+You can create a contract from solidity source and deploy it to the blockchain, with the following code:
 
 ```ruby
 contract = Ethereum::Contract.create(file: "greeter.sol")
 address = contract.deploy_and_wait("Hello from ethereum.rb!")
 ```
 
-Deployment may take up to couple of minutes. Once deployed you can start interacting with contract, e.g. calling it's methods:
+Deployment may take up to a couple of minutes. Once deployed you can start interacting with the contract, e.g. calling it's methods:
 
 ```ruby
 contract.call.greet # => "Hello from ethereum.rb!"
@@ -81,21 +81,21 @@ Note: If class of given name exist it will be undefined first to avoid name coll
 
 ### Get contract from blockchain
 
-The other way to obtain contract instance is get one that already exist in the blockchain. To do so you need a contract name, contract address and ABI definition.
+The other way to obtain a contract instance is to get one that already exists on the blockchain. To do so you need a contract name, contract address and ABI definition.
 
 ```ruby
 contract = Ethereum::Contract.create(name: "MyContract", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ", abi: abi)
 ```
 
-Note that you need to specify contract name, that will be used to define new class in ruby, as it is not a part of ABI definition.
+Note that you need to specify a contract name, that will be used to define new class in ruby, as it is not a part of the ABI definition.
 
-Alternatively you can obtain abi definition and name from contract source file:
+Alternatively you can obtain the abi definition and name from a contract source file:
 
 ```ruby
 contract = Ethereum::Contract.create(file: "MyContract.sol", address: "0x01a4d1A62F01ED966646acBfA8BB0b59960D06dd ")
 ```
 
-If you want to create new contract, that is not yet deployed from ABI definition you will need also to supply binary code:
+If you want to create a new contract, that is not yet deployed from ABI definition you will need also to supply binary code:
 
 ```ruby
 contract = Ethereum::Contract.create(name: "MyContract", abi: abi, code: "...")
