@@ -247,7 +247,7 @@ Api calls translates directly to client methods. E.g. to call `eth_gasPrice` met
 client.eth_gas_price # => {"jsonrpc"=>"2.0", "result"=>"0x4a817c800", "id"=>1}
 ```
 
-Note: methods are transated to underscore notation.
+Note: methods are translated to underscore notation using metaprogramming (See [`client.rb`](./lib/ethereum/client.rb) for more information).
 
 Full list of json rpc methods is available [here](https://github.com/ethereum/wiki/wiki/JSON-RPC#user-content-json-rpc-methods)
 
