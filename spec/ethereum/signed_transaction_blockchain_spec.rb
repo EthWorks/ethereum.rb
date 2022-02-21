@@ -1,4 +1,3 @@
-require 'eth'
 require 'spec_helper'
 
 describe Ethereum do
