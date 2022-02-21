@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - master
+      - fix-ci
 
 jobs:
   build:
