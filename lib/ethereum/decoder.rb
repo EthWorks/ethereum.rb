@@ -73,13 +73,13 @@ module Ethereum
     def decode_arguments(arguments, data, start = 0)
       data = data.gsub(/^0x/,'')
       types = arguments.map { |o| o.type }
-      i = 0
+      i = start
       types.map do |t |
         if t == "tuple"
           args = decode_arguments(arguments[i].components, data, i)
           i += arguments[i].components.size - 1
         else
-          args = decode(t, data, (start+i)*64)
+          args = decode(t, data, (i)*64)
         end
         i += 1
         args
