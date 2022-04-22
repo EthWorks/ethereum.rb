@@ -79,7 +79,7 @@ module Ethereum
           args = decode_arguments(arguments[i].components, data, i)
           i += arguments[i].components.size - 1
         else
-          args = decode(t, data, (i)*64)
+          args = decode(t, data, i*64)
         end
         i += 1
         args
