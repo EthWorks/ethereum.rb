@@ -70,13 +70,23 @@ module Ethereum
       decode_dynamic_bytes(value, start).force_encoding('utf-8')
     end
 
-    def decode_arguments(arguments, data)
+    def decode_arguments(arguments, data, start = 0)
       data = data.gsub(/^0x/,'')
       types = arguments.map { |o| o.type }
-      types.each.with_index.map { |t , i| decode(t, data, i*64) }
+      i = start
+      types.map do |t |
+        if t == "tuple"
+          args = decode_arguments(arguments[i].components, data, i)
+          i += arguments[i].components.size - 1
+        else
+          args = decode(t, data, i*64)
+        end
+        i += 1
+        args
+      end
     end
 
-    private 
+    private
       def trim(value, start, bitsize = 256)
         value[start+63-(bitsize/4-1)..start+63]
       end
