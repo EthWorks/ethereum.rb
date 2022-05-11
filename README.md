@@ -1,11 +1,21 @@
-# Ethereum Ruby library - Ethereum.rb
+# Ethereum for Ruby
 
-[![Build Status](https://travis-ci.org/EthWorks/ethereum.rb.svg?branch=master)](https://travis-ci.org/EthWorks/ethereum.rb) [![security](https://hakiri.io/github/NullVoxPopuli/MetaHash/master.svg)](https://hakiri.io/github/NullVoxPopuli/MetaHash/master) [![Dependency Status](https://gemnasium.com/marekkirejczyk/ethereum.rb.svg)](https://gemnasium.com/marekkirejczyk/ethereum.rb) [![Code Climate](https://codeclimate.com/github/marekkirejczyk/ethereum.rb/badges/gpa.svg)](https://codeclimate.com/github/marekkirejczyk/ethereum.rb)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/q9f/eth.rb/Spec)](https://github.com/q9f/eth.rb/actions)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/q9f/eth.rb)](https://github.com/q9f/eth.rb/releases)
+[![Gem](https://img.shields.io/gem/v/eth)](https://rubygems.org/gems/eth)
+[![Gem](https://img.shields.io/gem/dt/eth)](https://rubygems.org/gems/eth)
+[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fq9f%2Feth.rb&count_bg=%2379C83D&title_bg=%23555555&icon=rubygems.svg&icon_color=%23FF0000&title=visitors&edge_flat=false)](https://hits.seeyoufarm.com)
+[![codecov](https://codecov.io/gh/q9f/eth.rb/branch/main/graph/badge.svg?token=IK7USBPBZY)](https://codecov.io/gh/q9f/eth.rb)
+[![Maintainability](https://api.codeclimate.com/v1/badges/469e6f66425198ad7614/maintainability)](https://codeclimate.com/github/q9f/eth.rb/maintainability)
+[![Top Language](https://img.shields.io/github/languages/top/q9f/eth.rb?color=red)](https://github.com/q9f/eth.rb/pulse)
+[![Yard Doc API](https://img.shields.io/badge/documentation-API-blue)](https://q9f.github.io/eth.rb)
+[![Usage Wiki](https://img.shields.io/badge/usage-WIKI-blue)](https://github.com/q9f/eth.rb/wiki)
+[![Open-Source License](https://img.shields.io/github/license/q9f/eth.rb)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/q9f/eth.rb/issues)
 
-The goal of ethereum.rb is to make interacting with the Ethereum blockchain from Ruby as fast and easy as possible (but not easier!).
+A straightforward library to build, sign, and broadcast Ethereum transactions. It allows the separation of key and node management. Sign transactions and handle keys anywhere you can run Ruby and broadcast transactions through any local or remote node. Sign messages and recover signatures for authentication.
 
-## Maintainer
-Project is currently maintained by [@kurotaky](https://github.com/kurotaky).
+**Note,** this repository is just a public archive of the no longer maintained `ethereum` gem. For the partial rewrite and merge with the `eth` gem see [q9f/eth.rb](https://github.com/q9f/eth.rb/).
 
 ## Highlights
 
@@ -122,7 +132,7 @@ Functions defined in a contract are exposed using the following conventions:
 
 ```ruby
 contract.transact.[function_name](params)
-contract.transact_and_wait.[function_name](params)  
+contract.transact_and_wait.[function_name](params)
 contract.call.[function_name](params)
 ```
 
