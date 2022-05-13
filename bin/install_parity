@@ -1,21 +1,23 @@
 #!/bin/bash
 
-echo "Installing parity..."
+echo "Installing Solidity..."
 sudo add-apt-repository ppa:ethereum/ethereum -y
 sudo apt-get update
-sudo apt-get -y install dpkg
+sudo apt-get -y install dpkg unzip
 sudo apt-get -y install libssl-dev
-curl -o /usr/bin/solc -fL https://github.com/ethereum/solidity/releases/download/v0.5.16/solc-static-linux \
+curl -o /usr/bin/solc -fL https://github.com/ethereum/solidity/releases/download/v0.5.17/solc-static-linux \
      && chmod 775 /usr/bin/solc \
      && chown travis:travis /usr/bin/solc
-echo "Solc version"
+echo "Solc version:"
 solc --version
 
-wget https://releases.parity.io/ethereum/v$PARITY\/x86_64-unknown-linux-gnu/parity
-chmod u+x parity
-chown travis:travis parity
+echo "Installing OpenEthereum..."
+wget https://github.com/openethereum/openethereum/releases/download/v$OE_VER/openethereum-linux-v$OE_VER.zip
+unzip openethereum-linux-v$OE_VER.zip
+chmod u+x openethereum
+chown travis:travis openethereum
 
-echo "Setuping parity..."
+echo "Setting up Open Ethereum..."
 mkdir -p ~/.local/share/io.parity.ethereum/keys/DevelopmentChain
 chown -R travis:travis ~/.local/share/io.parity.ethereum
 echo $devwallet > ~/.local/share/io.parity.ethereum/keys/DevelopmentChain/UTC--2017-03-31T14-19-47Z--c05e3b8b-18aa-ab4f-c5ec-09f555bf5357
