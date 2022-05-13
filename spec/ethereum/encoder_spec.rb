@@ -54,7 +54,9 @@ describe Ethereum::Encoder do
 
   context "bytes32" do
     let (:expected) { '6461766500000000000000000000000000000000000000000000000000000000' }
+    let (:hex_value) { '0xc12ad2000c304a0793c206dbe77f27eb26517185a589f87fec4e784422a88b0b' }
     specify { expect("bytes32").to encode_and_decode("dave").to(expected) }
+    it { expect(decoder.decode("bytes32", hex_value)).to eq "c12ad2000c304a0793c206dbe77f27eb26517185a589f87fec4e784422a88b0b" }
   end
 
   context "fixed" do

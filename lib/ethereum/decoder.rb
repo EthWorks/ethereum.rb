@@ -8,6 +8,7 @@ module Ethereum
       elsif is_array
         decode_dynamic_array(array_subtype, value, start)
       else
+        @is_hex_value = value.start_with?("0x")
         value = value.gsub(/^0x/,'')
         core, subtype = Abi::parse_type(type)
         method_name = "decode_#{core}".to_sym
@@ -57,7 +58,12 @@ module Ethereum
     end
 
     def decode_static_bytes(value, subtype = nil, start = 0)
-      trim(value, start, subtype.to_i*8).scan(/.{2}/).collect {|x| x.hex}.pack('C*').strip
+      trimed_value = trim(value, start, subtype.to_i*8).scan(/.{2}/)
+      if @is_hex_value
+        trimed_value.join
+      else
+        trimed_value.collect {|x| x.hex}.pack('C*').strip
+      end
     end
 
     def decode_dynamic_bytes(value, start = 0)
